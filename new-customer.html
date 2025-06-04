@@ -1,90 +1,177 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Customer</title>
+  <title>New Customer Form</title>
   <style>
     body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f9f9f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f4f8;
+      margin: 0; padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background: white;
+      padding: 30px 40px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 420px;
+      box-sizing: border-box;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 24px;
+      color: #333;
     }
     label {
       display: block;
-      margin-bottom: 10px;
+      margin-bottom: 14px;
+      font-weight: 600;
+      color: #555;
     }
-    input {
+    input[type="text"],
+    input[type="number"] {
       width: 100%;
-      padding: 8px;
-      margin-top: 4px;
-      border-radius: 4px;
+      padding: 10px 12px;
+      border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    .location-wrapper {
+      margin-bottom: 18px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    #location {
+      flex: 1;
+      background: #e9ecef;
     }
     button {
-      background: #007bff;
-      color: white;
-      padding: 10px 16px;
+      background-color: #007bff;
       border: none;
+      color: white;
+      font-weight: 600;
+      font-size: 18px;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .get-location-btn {
+      background: #28a745;
+      padding: 10px 15px;
+      font-size: 14px;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 15px;
-      font-size: 16px;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+    .get-location-btn:hover {
+      background-color: #1e7e34;
+    }
+    .message {
+      margin-top: 16px;
+      font-weight: 600;
+      color: green;
+      text-align: center;
     }
   </style>
 </head>
 <body>
-  <h2>فۆرمی زیادکردنی کڕیار</h2>
-  <form id="customerForm">
-    <label>کۆدی کڕیار:
-      <input type="text" id="code" required />
-    </label>
-    <label>ناو:
-      <input type="text" id="name" required />
-    </label>
-    <label>مۆبایل:
-      <input type="text" id="mobile" required />
-    </label>
-    <label>مانای کڕیار:
-      <input type="number" id="balance" required />
-    </label>
-    <button type="submit">زیادکردنی کڕیار</button>
+  <form id="customerForm" novalidate>
+    <h2>Add New Customer</h2>
+
+    <label for="code">Customer Code</label>
+    <input type="text" id="code" name="code" required autocomplete="off" />
+
+    <label for="name">Name</label>
+    <input type="text" id="name" name="name" required autocomplete="off" />
+
+    <label for="mobile">Mobile</label>
+    <input type="text" id="mobile" name="mobile" required autocomplete="off" />
+
+    <label for="balance">Balance</label>
+    <input type="number" id="balance" name="balance" required min="0" step="any" />
+
+    <div class="location-wrapper">
+      <input type="text" id="location" name="location" placeholder="GPS Location (latitude,longitude)" readonly required />
+      <button type="button" class="get-location-btn" onclick="getLocation()">Get GPS</button>
+    </div>
+
+    <button type="submit">Add Customer</button>
+
+    <div class="message" id="message"></div>
   </form>
 
   <script>
-    const form = document.getElementById('customerForm');
-
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
-
-      const code = document.getElementById('code').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
-      const balance = parseFloat(document.getElementById('balance').value);
-
-      // گرتنی ناونیشانی GPS بەکارهێنانی Geolocation API
+    function getLocation() {
+      const locationInput = document.getElementById('location');
       if (!navigator.geolocation) {
-        alert("گرتنی ناونیشانی GPS لە ئامرازەکەتەوە بەردەست نیە.");
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
+      navigator.geolocation.getCurrentPosition(
+        position => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+          locationInput.value = `${lat},${lon}`;
+        },
+        error => {
+          alert("Unable to retrieve your location. Please allow GPS access.");
+        }
+      );
+    }
+
+    document.getElementById('customerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const code = this.code.value.trim();
+      const name = this.name.value.trim();
+      const mobile = this.mobile.value.trim();
+      const balance = this.balance.value.trim();
+      const location = this.location.value.trim();
+
+      if (!code || !name || !mobile || !balance || !location) {
+        alert("Please fill out all fields including GPS location.");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude.toFixed(6);
-        const longitude = position.coords.longitude.toFixed(6);
-        const location = `${latitude}, ${longitude}`;
+      const customer = { code, name, mobile, balance, location };
 
-        // خوێندنەوە و زیادکردنی کڕیارەکە بۆ localStorage
-        let customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      // Clear previous customers and add only the new one
+      localStorage.removeItem('customers');
+      localStorage.setItem('customers', JSON.stringify([customer]));
 
-        customers.push({ code, name, mobile, balance, location });
+      // Notify parent window (dashboard) to refresh data
+      window.parent.postMessage('customer-added', '*');
 
-        localStorage.setItem("customers", JSON.stringify(customers));
-
-        // ئاگاداری لە داتاکەش بۆ پەڕەی سەرەکی (dashboard)
-        window.parent.postMessage("customer-added", "*");
-      }, error => {
-        alert("هەڵەیەک ڕویدا لە کاتی گرتنی ناونیشانی GPS: " + error.message);
-      });
+      // Reset form
+      this.reset();
+      document.getElementById('location').value = '';
+      
+      const message = document.getElementById('message');
+      message.textContent = 'Customer added successfully!';
+      
+      setTimeout(() => {
+        message.textContent = '';
+      }, 4000);
     });
   </script>
 </body>
