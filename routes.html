@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ڕووتەکان</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      padding: 20px;
+      direction: rtl;
+    }
+
+    .route-form {
+      background-color: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 600px;
+      margin: auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+      text-align: right;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="route-form">
+    <h1>زیادکردنی ڕووت</h1>
+
+    <form id="routeForm">
+      <label for="routeName">ناوی ڕووت</label>
+      <input type="text" id="routeName" name="routeName" required>
+
+      <label for="routeArea">شوێنی ڕووت</label>
+      <input type="text" id="routeArea" name="routeArea" required>
+
+      <label for="salesperson">ناوی فڕۆشیار</label>
+      <input type="text" id="salesperson" name="salesperson">
+
+      <button type="submit">زیادکردن</button>
+    </form>
+  </div>
+
+  <script>
+    document.getElementById("routeForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("routeName").value;
+      const area = document.getElementById("routeArea").value;
+      const salesperson = document.getElementById("salesperson").value;
+
+      // لێرە دەتوانیت بەکارهێنانی localStorage، fetch، یان AJAX بۆ ناردنی داتا بکەیت
+      alert(`ڕووت زیادکرا:\n- ناو: ${name}\n- شوێن: ${area}\n- فڕۆشیار: ${salesperson}`);
+
+      // پاککردنی فۆرم
+      document.getElementById("routeForm").reset();
+    });
+  </script>
+
+</body>
+</html>
