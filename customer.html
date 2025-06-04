@@ -45,6 +45,8 @@
       flex-wrap: wrap;
       gap: 12px;
       margin-bottom: 20px;
+      justify-content: flex-end;
+      align-items: center;
     }
 
     .filter-item {
@@ -57,10 +59,27 @@
       background-color: #fafafa;
     }
 
+    .new-customer-btn {
+      padding: 10px 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      white-space: nowrap;
+    }
+
+    .new-customer-btn:hover {
+      background-color: #0056b3;
+    }
+
     .results-count {
       font-size: 14px;
       color: #666;
       margin-bottom: 10px;
+      text-align: right;
     }
 
     .customer-table {
@@ -129,6 +148,10 @@
       .filter-item {
         min-width: 100%;
       }
+
+      .search-filters {
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -138,6 +161,7 @@
 
     <h2>Search Filters</h2>
     <div class="search-filters">
+      <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
       <select class="filter-item">
         <option>Select Region</option>
         <option>Region 1</option>
@@ -243,7 +267,12 @@
   <script>
     function viewCustomer(customerId) {
       alert(`Opening customer page for ID: ${customerId}`);
-      // Example: window.location.href = `customer-details.html?id=${customerId}`;
+      // window.location.href = `customer-details.html?id=${customerId}`;
+    }
+
+    function addNewCustomer() {
+      alert('Redirecting to add new customer form...');
+      // window.location.href = 'new-customer.html'; // ئەمە لەگەڵ پەڕەی زیادکردنی کریار ئەنجام بدە
     }
   </script>
 </body>
