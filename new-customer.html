@@ -1,178 +1,148 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Customer Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Customer</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f4f8;
-      margin: 0; padding: 20px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      background: #f9f9f9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
     }
-    form {
+    .form-container {
       background: white;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 420px;
-      box-sizing: border-box;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      max-width: 500px;
+      margin: auto;
     }
     h2 {
+      margin-bottom: 20px;
+      font-size: 22px;
       text-align: center;
-      margin-bottom: 24px;
-      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
     }
     label {
       display: block;
-      margin-bottom: 14px;
-      font-weight: 600;
-      color: #555;
+      margin-bottom: 6px;
+      font-weight: bold;
     }
-    input[type="text"],
-    input[type="number"] {
+    input {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
+      padding: 10px;
       border: 1px solid #ccc;
-      font-size: 16px;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
+      border-radius: 6px;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #007bff;
-      outline: none;
-    }
-    .location-wrapper {
-      margin-bottom: 18px;
+    .gps-group {
       display: flex;
-      gap: 10px;
       align-items: center;
     }
-    #location {
+    .gps-group input {
       flex: 1;
-      background: #e9ecef;
     }
-    button {
-      background-color: #007bff;
-      border: none;
+    .gps-btn {
+      background: #007bff;
       color: white;
-      font-weight: 600;
-      font-size: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
-      width: 100%;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0056b3;
-    }
-    .get-location-btn {
-      background: #28a745;
-      padding: 10px 15px;
-      font-size: 14px;
+      border: none;
+      padding: 10px;
       border-radius: 6px;
+      margin-left: 10px;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+    }
+    .gps-btn:hover {
+      background: #0056b3;
+    }
+    .submit-btn {
+      width: 100%;
+      background: #28a745;
       color: white;
+      padding: 12px;
       border: none;
-      transition: background-color 0.3s ease;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
     }
-    .get-location-btn:hover {
-      background-color: #1e7e34;
-    }
-    .message {
-      margin-top: 16px;
-      font-weight: 600;
-      color: green;
-      text-align: center;
+    .submit-btn:hover {
+      background: #218838;
     }
   </style>
 </head>
 <body>
-  <form id="customerForm" novalidate>
-    <h2>Add New Customer</h2>
 
+<div class="form-container">
+  <h2>Add New Customer</h2>
+  <div class="form-group">
     <label for="code">Customer Code</label>
-    <input type="text" id="code" name="code" required autocomplete="off" />
-
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required autocomplete="off" />
-
-    <label for="mobile">Mobile</label>
-    <input type="text" id="mobile" name="mobile" required autocomplete="off" />
-
+    <input type="text" id="code" required>
+  </div>
+  <div class="form-group">
+    <label for="name">Full Name</label>
+    <input type="text" id="name" required>
+  </div>
+  <div class="form-group">
+    <label for="mobile">Mobile Number</label>
+    <input type="text" id="mobile" required>
+  </div>
+  <div class="form-group">
     <label for="balance">Balance</label>
-    <input type="number" id="balance" name="balance" required min="0" step="any" />
-
-    <div class="location-wrapper">
-      <input type="text" id="location" name="location" placeholder="GPS Location (latitude,longitude)" readonly required />
-      <button type="button" class="get-location-btn" onclick="getLocation()">Get GPS</button>
+    <input type="number" id="balance" value="0" required>
+  </div>
+  <div class="form-group">
+    <label for="location">GPS Location</label>
+    <div class="gps-group">
+      <input type="text" id="location" readonly placeholder="Click the map icon to select">
+      <button class="gps-btn" onclick="getLocation()">
+        📍 Map
+      </button>
     </div>
+  </div>
+  <button class="submit-btn" onclick="saveCustomer()">Save Customer</button>
+</div>
 
-    <button type="submit">Add Customer</button>
+<script>
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        document.getElementById('location').value = `${lat}, ${lon}`;
+        window.open(`https://www.google.com/maps?q=${lat},${lon}`, '_blank');
+      }, function(err) {
+        alert("Unable to retrieve location. Please allow location access.");
+      });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
 
-    <div class="message" id="message"></div>
-  </form>
+  function saveCustomer() {
+    const customer = {
+      code: document.getElementById("code").value.trim(),
+      name: document.getElementById("name").value.trim(),
+      mobile: document.getElementById("mobile").value.trim(),
+      balance: parseFloat(document.getElementById("balance").value) || 0,
+      location: document.getElementById("location").value.trim()
+    };
 
-  <script>
-    function getLocation() {
-      const locationInput = document.getElementById('location');
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const lat = position.coords.latitude.toFixed(6);
-          const lon = position.coords.longitude.toFixed(6);
-          locationInput.value = `${lat},${lon}`;
-        },
-        error => {
-          alert("Unable to retrieve your location. Please allow GPS access.");
-        }
-      );
+    if (!customer.code || !customer.name || !customer.mobile) {
+      alert("Please fill all required fields.");
+      return;
     }
 
-    document.getElementById('customerForm').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const code = this.code.value.trim();
-      const name = this.name.value.trim();
-      const mobile = this.mobile.value.trim();
-      const balance = this.balance.value.trim();
-      const location = this.location.value.trim();
+    const stored = localStorage.getItem("customers");
+    const data = stored ? JSON.parse(stored) : [];
+    data.push(customer);
+    localStorage.setItem("customers", JSON.stringify(data));
 
-      if (!code || !name || !mobile || !balance || !location) {
-        alert("Please fill out all fields including GPS location.");
-        return;
-      }
+    parent.postMessage("customer-added", "*");
+  }
+</script>
 
-      const customer = { code, name, mobile, balance, location };
-
-      // Clear previous customers and add only the new one
-      localStorage.removeItem('customers');
-      localStorage.setItem('customers', JSON.stringify([customer]));
-
-      // Notify parent window (dashboard) to refresh data
-      window.parent.postMessage('customer-added', '*');
-
-      // Reset form
-      this.reset();
-      document.getElementById('location').value = '';
-      
-      const message = document.getElementById('message');
-      message.textContent = 'Customer added successfully!';
-      
-      setTimeout(() => {
-        message.textContent = '';
-      }, 4000);
-    });
-  </script>
 </body>
 </html>
