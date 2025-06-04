@@ -29,8 +29,8 @@
       left: 0 !important;
       width: 100% !important;
       background: white !important;
-      padding: 20px;
-      font-size: 14px;
+      color: black !important;
+      -webkit-print-color-adjust: exact !important;
     }
   }
 </style>
@@ -94,7 +94,7 @@
     {date:'2025-06-04 13:44', trans:'DST/9068/INV-4769', party:'M.Shaz', amount:36000, due:36000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
     {date:'2025-06-04 13:41', trans:'DST/2002/INV-4771', party:'Kogae hoshmand', amount:57500, due:57500, status:'Due', createdBy:'Zaman A13'},
     {date:'2025-06-04 13:40', trans:'DST/9068/INV-4768', party:'M.7ama', amount:12000, due:12000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
-    // داتای زیاد بکە ئەگەر پێویستت بوو
+    // زیاد بکە ئەویش...
   ];
 
   let filteredInvoices = invoices;
@@ -165,8 +165,8 @@
     }
 
     let html = `
-      <h2 style="text-align:center;">Selected Sales Invoices</h2>
-      <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
+      <h2 style="text-align:center; color: black;">Selected Sales Invoices</h2>
+      <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse; color: black;">
         <thead style="background: #ddd;">
           <tr>
             <th>Date</th>
@@ -200,7 +200,6 @@
 
     $('#printArea').html(html);
 
-    // بەکارهێنانی setTimeout بۆ دابەشکردنی پرینت و بارکردنی DOM
     setTimeout(() => {
       window.print();
     }, 100);
@@ -211,10 +210,10 @@
 
     $('#startDate, #endDate, #selectUser, #searchInput').on('input change', filterInvoices);
 
-    // کۆنترۆڵی سلێکت ڕیزەکان
+    // Handle checkbox changes
     $(document).on('change', '.select-row', updateTotalSelected);
 
-    // کۆنترۆڵی "Select All"
+    // Select all toggle
     $('#selectAll').change(function(){
       $('.select-row').prop('checked', $(this).prop('checked'));
       updateTotalSelected();
