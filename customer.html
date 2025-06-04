@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>سەرەکییەکانی کڕیار</title>
+  <title>Customer Dashboard</title>
   <style>
     body {
       background: #f4f6f9;
@@ -32,7 +32,7 @@
       border-radius: 6px;
       font-size: 14px;
       cursor: pointer;
-      float: left;
+      float: right;
     }
     .customer-table {
       width: 100%;
@@ -42,7 +42,7 @@
     .customer-table th, .customer-table td {
       border: 1px solid #ccc;
       padding: 10px;
-      text-align: right;
+      text-align: left;
     }
     .seo-status {
       color: green;
@@ -68,7 +68,7 @@
     .close-btn {
       position: absolute;
       top: 10px;
-      left: 15px;
+      right: 15px;
       font-size: 24px;
       cursor: pointer;
     }
@@ -81,17 +81,17 @@
 </head>
 <body>
   <div class="dashboard">
-    <h1>سەرەکییەکانی کڕیار</h1>
-    <button class="new-customer-btn" onclick="addNewCustomer()">زیادکردنی کڕیار</button>
+    <h1>Customer Management</h1>
+    <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
 
     <table class="customer-table">
       <thead>
         <tr>
-          <th>کۆد</th>
-          <th>ناو</th>
-          <th>مۆبایل</th>
-          <th>مانای کڕیار</th>
-          <th>ناونیشانی GPS</th>
+          <th>Code</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Balance</th>
+          <th>GPS Location</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -128,7 +128,13 @@
           <td>${c.name}</td>
           <td>${c.mobile}</td>
           <td>IQD ${c.balance}</td>
-          <td>${c.location || '<span class="seo-status">❌</span>'}</td>
+          <td>
+            ${
+              c.location
+                ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>`
+                : '<span class="seo-status">❌</span>'
+            }
+          </td>
         `;
         tbody.appendChild(tr);
       });
