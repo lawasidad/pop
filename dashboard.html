@@ -120,7 +120,6 @@
             font-size: 14px;
             text-align: right;
         }
-
         .logout-btn {
             margin-top: 15px;
             padding: 10px 20px;
@@ -131,11 +130,9 @@
             cursor: pointer;
             font-size: 14px;
         }
-
         .logout-btn:hover {
             background-color: #c82333;
         }
-
         @media (max-width: 600px) {
             .stats-container {
                 grid-template-columns: 1fr;
@@ -214,6 +211,18 @@
 
         <div class="divider"></div>
 
+        <h2>زیادکردنی کریار</h2>
+        <form id="addCustomerForm" style="margin-top: 15px; text-align: right;">
+            <input type="text" id="customerName" placeholder="ناوی کریار" required style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <input type="text" id="customerPhone" placeholder="ژمارەی مۆبایل" required style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <input type="text" id="customerAddress" placeholder="ناونیشان" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 5px; border: 1px solid #ccc;">
+            <button type="submit" style="padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 5px;">زیادکردن</button>
+        </form>
+
+        <div id="customerList" style="margin-top: 15px;"></div>
+
+        <div class="divider"></div>
+
         <div class="footer">
             <h2>lawa bradosti</h2>
             <div>Settings</div>
@@ -226,13 +235,27 @@
 
     <script>
         function logout() {
-            // پاککردنی زانیارییەکان ئەگەر پێویستە
-            // localStorage.clear();
-            // sessionStorage.clear();
-
-            // گەڕانەوە بۆ index.html
             window.location.href = './index.html';
         }
+
+        document.getElementById("addCustomerForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const name = document.getElementById("customerName").value.trim();
+            const phone = document.getElementById("customerPhone").value.trim();
+            const address = document.getElementById("customerAddress").value.trim();
+
+            if (name && phone) {
+                const customerItem = document.createElement("div");
+                customerItem.style.marginTop = "10px";
+                customerItem.style.padding = "10px";
+                customerItem.style.border = "1px solid #ddd";
+                customerItem.style.borderRadius = "5px";
+                customerItem.style.background = "#f8f9fa";
+                customerItem.innerHTML = `<strong>${name}</strong> - ${phone}<br>${address}`;
+                document.getElementById("customerList").appendChild(customerItem);
+                document.getElementById("addCustomerForm").reset();
+            }
+        });
     </script>
 </body>
 </html>
