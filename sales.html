@@ -1,37 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Invoice - Select & Print</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-  <style>
-    body { padding: 20px; background: #f8f9fa; }
-    .table-responsive { max-height: 500px; overflow-y: auto; background: white; border-radius: 8px; }
-    .table thead th {
-      position: sticky;
-      top: 0;
-      background: #343a40;
-      color: white;
-    }
-    tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
-
-    /* Print style */
-    @media print {
-      body * { visibility: hidden; }
-      #printArea, #printArea * {
-        visibility: visible;
-      }
-      #printArea {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        padding: 20px;
-        font-size: 14px;
-      }
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sales Invoice - Select & Print</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  body { padding: 20px; background: #f8f9fa; }
+  .table-responsive { max-height: 500px; overflow-y: auto; background: white; border-radius: 8px; }
+  .table thead th {
+    position: sticky;
+    top: 0;
+    background: #343a40;
+    color: white;
+  }
+  tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
+</style>
 </head>
 <body>
 
@@ -40,10 +24,10 @@
 
   <div class="row g-3 mb-3">
     <div class="col-md-3">
-      <input type="date" class="form-control" id="startDate" />
+      <input type="date" class="form-control" id="startDate" placeholder="Start Date" />
     </div>
     <div class="col-md-3">
-      <input type="date" class="form-control" id="endDate" />
+      <input type="date" class="form-control" id="endDate" placeholder="End Date" />
     </div>
     <div class="col-md-3">
       <select class="form-select" id="selectUser">
@@ -62,7 +46,7 @@
     <table class="table table-bordered table-hover align-middle" id="invoiceTable">
       <thead>
         <tr>
-          <th><input type="checkbox" id="selectAll" /></th>
+          <th><input type="checkbox" id="selectAll" title="Select All"/></th>
           <th>Date</th>
           <th>Transaction No.</th>
           <th>Party Name</th>
@@ -81,9 +65,6 @@
     <button class="btn btn-success" id="printSelected">Print Selected</button>
   </div>
 </div>
-
-<!-- Hidden area to prepare for print -->
-<div class="d-none" id="printArea"></div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -160,21 +141,32 @@
     }
 
     let html = `
-      <h2 style="text-align:center;">Selected Sales Invoices</h2>
-      <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #ddd;">
-          <tr>
-            <th>Date</th>
-            <th>Transaction No.</th>
-            <th>Party Name</th>
-            <th>Amount (IQD)</th>
-            <th>Due (IQD)</th>
-            <th>Status</th>
-            <th>Created By</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
+      <html>
+      <head>
+        <title>Print Invoices</title>
+        <style>
+          body { font-family: sans-serif; padding: 20px; }
+          h2 { text-align: center; margin-bottom: 20px; }
+          table { width: 100%; border-collapse: collapse; }
+          th, td { border: 1px solid black; padding: 8px; text-align: left; }
+          th { background-color: #eee; }
+        </style>
+      </head>
+      <body>
+        <h2>Selected Sales Invoices</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Transaction No.</th>
+              <th>Party Name</th>
+              <th>Amount (IQD)</th>
+              <th>Due (IQD)</th>
+              <th>Status</th>
+              <th>Created By</th>
+            </tr>
+          </thead>
+          <tbody>`;
 
     selectedIndexes.forEach(i => {
       const inv = filteredInvoices[i];
@@ -187,18 +179,21 @@
           <td style="text-align:right;">${inv.due.toLocaleString()}</td>
           <td>${inv.status}</td>
           <td>${inv.createdBy}</td>
-        </tr>
-      `;
+        </tr>`;
     });
 
-    html += `</tbody></table>`;
+    html += `
+          </tbody>
+        </table>
+      </body>
+      </html>`;
 
-    $('#printArea').html(html);
-
-    // small delay to make sure DOM updates
-    setTimeout(() => {
-      window.print();
-    }, 100);
+    const printWindow = window.open('', '', 'width=900,height=700');
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
   }
 
   $(document).ready(function(){
@@ -212,5 +207,6 @@
     $('#printSelected').click(printSelectedInvoices);
   });
 </script>
+
 </body>
 </html>
