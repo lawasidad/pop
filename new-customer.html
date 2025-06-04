@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Customer Form with GPS</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f6f9;
+      padding: 20px;
+    }
+    .form-container {
+      max-width: 500px;
+      background: #fff;
+      margin: 30px auto;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 25px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="tel"],
+    input[type="email"],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 18px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus,
+    input[type="tel"]:focus,
+    input[type="email"]:focus,
+    select:focus {
+      border-color: #007bff;
+      outline: none;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .gps-info {
+      margin-bottom: 18px;
+      font-size: 14px;
+      color: #333;
+      background: #eef6ff;
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #b6d4fe;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="form-container">
+    <h2>New Customer</h2>
+    <form id="newCustomerForm">
+      <label for="customerCode">کۆدی کریار</label>
+      <input type="text" id="customerCode" name="customerCode" placeholder="کۆدی کریار بنوسە" required />
+
+      <label for="customerName">ناوی کریار</label>
+      <input type="text" id="customerName" name="customerName" placeholder="ناوی کریار بنوسە" required />
+
+      <label for="mobile">ژمارەی موبایل</label>
+      <input type="tel" id="mobile" name="mobile" placeholder="٠٧٥٠٠٠٠٠٠٠٠" pattern="[0-9]{10,12}" required />
+
+      <label for="region">هەرێم</label>
+      <select id="region" name="region" required>
+        <option value="">هەرێمێک هەڵبژێرە</option>
+        <option value="region1">Region 1</option>
+        <option value="region2">Region 2</option>
+      </select>
+
+      <label for="city">شار</label>
+      <select id="city" name="city" required>
+        <option value="">شارێک هەڵبژێرە</option>
+        <option value="city1">City 1</option>
+        <option value="city2">City 2</option>
+      </select>
+
+      <label for="route">ڕووت</label>
+      <select id="route" name="route" required>
+        <option value="">ڕووتێک هەڵبژێرە</option>
+        <option value="route1">Route 1</option>
+        <option value="route2">Route 2</option>
+      </select>
+
+      <div class="gps-info" id="gpsStatus">
+        شوێنەکەت لێرە نیشان دەدرێت...
+      </div>
+
+      <input type="hidden" id="latitude" name="latitude" />
+      <input type="hidden" id="longitude" name="longitude" />
+
+      <button type="button" onclick="getLocation()">وەرگرتنی GPS</button>
+      <button type="submit">زیادکردنی کریار</button>
+    </form>
+  </div>
+
+  <script>
+    function getLocation() {
+      const status = document.getElementById('gpsStatus');
+      if (!navigator.geolocation) {
+        status.textContent = 'متأسفانه براوزەرەکەت پشتگیریی GPS ناکات.';
+        return;
+      }
+
+      status.textContent = 'چاوەڕوان بە، شوێنەکەت دەرەکەوێت...';
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude.toFixed(6);
+          const lon = position.coords.longitude.toFixed(6);
+
+          document.getElementById('latitude').value = lat;
+          document.getElementById('longitude').value = lon;
+
+          status.textContent = `شوێنەکەت وەرگیرا: Lat: ${lat}, Lon: ${lon}`;
+        },
+        (error) => {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              status.textContent = 'بێڕێزی بەکارهێنەر بۆ بەکارهێنانی GPS.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              status.textContent = 'نازانرا شوێنەکەت لە ئێستادا.';
+              break;
+            case error.TIMEOUT:
+              status.textContent = 'کاتی وەرگرتنی شوێن تەواو نەبوو.';
+              break;
+            default:
+              status.textContent = 'هەڵەیەک ڕویدا لە وەرگرتنی شوێن.';
+              break;
+          }
+        }
+      );
+    }
+
+    document.getElementById('newCustomerForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const customerData = {
+        code: this.customerCode.value.trim(),
+        name: this.customerName.value.trim(),
+        mobile: this.mobile.value.trim(),
+        region: this.region.value,
+        city: this.city.value,
+        route: this.route.value,
+        latitude: this.latitude.value,
+        longitude: this.longitude.value
+      };
+
+      if (!customerData.latitude || !customerData.longitude) {
+        alert('تکایە شوێنەکەت وەرگرە بەکۆنکردن لە دوگمەی "وەرگرتنی GPS"!');
+        return;
+      }
+
+      console.log('New Customer Data:', customerData);
+      alert('کریار بەسەرکەوتوویی زیادکرا!');
+
+      this.reset();
+      document.getElementById('gpsStatus').textContent = 'شوێنەکەت لێرە نیشان دەدرێت...';
+    });
+  </script>
+
+</body>
+</html>
