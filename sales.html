@@ -16,7 +16,6 @@
   }
   tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
   .print-area { display: none; }
-
   @media print {
     body * {
       visibility: hidden !important;
@@ -95,6 +94,7 @@
     {date:'2025-06-04 13:44', trans:'DST/9068/INV-4769', party:'M.Shaz', amount:36000, due:36000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
     {date:'2025-06-04 13:41', trans:'DST/2002/INV-4771', party:'Kogae hoshmand', amount:57500, due:57500, status:'Due', createdBy:'Zaman A13'},
     {date:'2025-06-04 13:40', trans:'DST/9068/INV-4768', party:'M.7ama', amount:12000, due:12000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
+    // داتای زیاد بکە ئەگەر پێویستت بوو
   ];
 
   let filteredInvoices = invoices;
@@ -200,10 +200,10 @@
 
     $('#printArea').html(html);
 
-    // Wait a bit to render then print
+    // بەکارهێنانی setTimeout بۆ دابەشکردنی پرینت و بارکردنی DOM
     setTimeout(() => {
       window.print();
-    }, 200);
+    }, 100);
   }
 
   $(document).ready(function(){
@@ -211,10 +211,10 @@
 
     $('#startDate, #endDate, #selectUser, #searchInput').on('input change', filterInvoices);
 
-    // Handle checkbox changes
+    // کۆنترۆڵی سلێکت ڕیزەکان
     $(document).on('change', '.select-row', updateTotalSelected);
 
-    // Select all toggle
+    // کۆنترۆڵی "Select All"
     $('#selectAll').change(function(){
       $('.select-row').prop('checked', $(this).prop('checked'));
       updateTotalSelected();
