@@ -1,84 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sales Invoice Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    body { background-color: #f8f9fa; }
-    .invoice-row:hover { background-color: #eef2f7; }
-    .status-due { color: red; font-weight: bold; }
-    .status-paid { color: green; font-weight: bold; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Sales Invoice</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  body { padding: 20px; }
+  .table-responsive { max-height: 500px; overflow-y: auto; }
+  .print-area { display: none; }
+  @media print {
+    body * { visibility: hidden; }
+    .print-area, .print-area * { visibility: visible; }
+    .print-area { position: absolute; top: 0; left: 0; width: 100%; }
+  }
+</style>
 </head>
 <body>
-  <div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h2>Sales Invoices</h2>
-      <h5>Total: <strong>IQD 9,034,750</strong></h5>
-    </div>
 
-    <div class="row g-3 mb-4">
-      <div class="col-md-4">
-        <input type="text" class="form-control" placeholder="Search Invoice or Party Name">
-      </div>
-      <div class="col-md-3">
-        <input type="date" class="form-control">
-      </div>
-      <div class="col-md-3">
-        <input type="date" class="form-control">
-      </div>
-      <div class="col-md-2">
-        <select class="form-select">
-          <option selected>Select User</option>
-          <option>HOSHMAND H1</option>
-          <option>Zaman A13</option>
-        </select>
-      </div>
-    </div>
-
-    <div class="table-responsive">
-      <table class="table table-striped table-bordered align-middle">
-        <thead class="table-light">
-          <tr>
-            <th>Date</th>
-            <th>Invoice No.</th>
-            <th>Party Name</th>
-            <th>Amount</th>
-            <th>Due</th>
-            <th>Created By</th>
-            <th>Status</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="invoice-row">
-            <td>2025-06-04 13:55</td>
-            <td>DST/9931/INV-3481</td>
-            <td>Kogay Hana</td>
-            <td>IQD 172,500</td>
-            <td>IQD 172,500</td>
-            <td>MANSUR RANYA-R3</td>
-            <td class="status-due">Due</td>
-            <td>
-              <button class="btn btn-sm btn-outline-primary">View</button>
-              <button class="btn btn-sm btn-outline-success">Print</button>
-            </td>
-          </tr>
-          <!-- More rows can be added here -->
-        </tbody>
-      </table>
-    </div>
-
-    <nav>
-      <ul class="pagination justify-content-end">
-        <li class="page-item disabled"><a class="page-link">Previous</a></li>
-        <li class="page-item active"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">Next</a></li>
-      </ul>
-    </nav>
+<div class="container">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Sales Invoice</h2>
+    <button class="btn btn-primary" onclick="window.print()">Print</button>
   </div>
+
+  <div class="row g-3 mb-3">
+    <div class="col-md-3">
+      <label for="dateRange" class="form-label">Date Range</label>
+      <input type="text" class="form-control" id="dateRange" placeholder="YYYY-MM-DD - YYYY-MM-DD" />
+    </div>
+    <div class="col-md-3">
+      <label for="selectUser" class="form-label">Select User</label>
+      <select class="form-select" id="selectUser">
+        <option value="">All Users</option>
+        <option value="MANSUR RANYA-R3">MANSUR RANYA-R3</option>
+        <option value="SHKAR SLIMANY-S2">SHKAR SLIMANY-S2</option>
+        <option value="Zaman A13">Zaman A13</option>
+        <!-- Add more users here -->
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="selectStatus" class="form-label">Select Status</label>
+      <select class="form-select" id="selectStatus">
+        <option value="">All Statuses</option>
+        <option value="Paid">Paid</option>
+        <option value="Due">Due</option>
+        <!-- Add more statuses here -->
+      </select>
+    </div>
+    <div class="col-md-3">
+      <label for="searchInput" class="form-label">Search</label>
+      <input type="search" class="form-control" id="searchInput" placeholder="Search..." />
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-bordered table-hover" id="invoiceTable">
+      <thead class="table-light sticky-top">
+        <tr>
+          <th>Date</th>
+          <th>Transaction No.</th>
+          <th>Party Name</th>
+          <th>Amount</th>
+          <th>Due</th>
+          <th>Status</th>
+          <th>Comment</th>
+          <th>Created By</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="invoiceBody">
+        <!-- Rows will be inserted here by JavaScript -->
+      </tbody>
+    </table>
+  </div>
+
+  <nav aria-label="Page navigation" class="mt-3">
+    <ul class="pagination justify-content-center" id="pagination"></ul>
+  </nav>
+
+  <div class="mt-4 text-end">
+    <strong>Total: IQD <span id="totalAmount">0</span></strong>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  const invoices = [
+    {date:'2025-06-04 13:55', trans:'DST/9931/INV-3481', party:'Kogay hana', amount:172500, due:172500, status:'Due', comment:'', createdBy:'MANSUR RANYA-R3'},
+    {date:'2025-06-04 13:44', trans:'DST/9068/INV-4769', party:'M.Shaz', amount:36000, due:36000, status:'Due', comment:'', createdBy:'SHKAR SLIMANY-S2'},
+    {date:'2025-06-04 13:41', trans:'DST/2002/INV-4771', party:'Kogae hoshmand', amount:57500, due:57500, status:'Due', comment:'', createdBy:'Zaman A13'},
+    {date:'2025-06-04 13:40', trans:'DST/9068/INV-4768', party:'M.7ama', amount:12000, due:12000, status:'Due', comment:'', createdBy:'SHKAR SLIMANY-S2'},
+    // Add more data as needed...
+  ];
+
+  const rowsPerPage = 10;
+  let currentPage = 1;
+  let filteredInvoices = invoices;
+
+  function renderTable() {
+    const tbody = $('#invoiceBody');
+    tbody.empty();
+
+    const start = (currentPage - 1) * rowsPerPage;
+    const end = start + rowsPerPage;
+    const pageInvoices = filteredInvoices.slice(start, end);
+
+    pageInvoices.forEach(inv => {
+      tbody.append(`
+        <tr>
+          <td>${inv.date}</td>
+          <td>${inv.trans}</td>
+          <td>${inv.party}</td>
+          <td>IQD ${inv.amount.toLocaleString()}</td>
+          <td>IQD ${inv.due.toLocaleString()}</td>
+          <td>${inv.status}</td>
+          <td>${inv.comment}</td>
+          <td>${inv.createdBy}</td>
+          <td><button class="btn btn-sm btn-info" onclick="alert('View ${inv.trans}')">View</button></td>
+        </tr>
+      `);
+    });
+
+    renderPagination();
+    renderTotal();
+  }
+
+  function renderPagination() {
+    const pageCount = Math.ceil(filteredInvoices.length / rowsPerPage);
+    const pagination = $('#pagination');
+    pagination.empty();
+
+    if(pageCount <= 1) return;
+
+    for(let i = 1; i <= pageCount; i++) {
+      const activeClass = (i === currentPage) ? 'active' : '';
+      pagination.append(`
+        <li class="page-item ${activeClass}"><a class="page-link" href="#" data-page="${i}">${i}</a></li>
+      `);
+    }
+
+    $('.page-link').click(function(e) {
+      e.preventDefault();
+      currentPage = Number($(this).data('page'));
+      renderTable();
+    });
+  }
+
+  function renderTotal() {
+    const total = filteredInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+    $('#totalAmount').text(total.toLocaleString());
+  }
+
+  function filterInvoices() {
+    const dateRange = $('#dateRange').val();
+    const user = $('#selectUser').val();
+    const status = $('#selectStatus').val();
+    const search = $('#searchInput').val().toLowerCase();
+
+    filteredInvoices = invoices.filter(inv => {
+      let pass = true;
+
+      if(user && inv.createdBy !== user) pass = false;
+      if(status && inv.status.toLowerCase() !== status.toLowerCase()) pass = false;
+
+      if(search) {
+        const combined = (inv.trans + inv.party + inv.createdBy).toLowerCase();
+        if(!combined.includes(search)) pass = false;
+      }
+
+      if(dateRange) {
+        const [startDate, endDate] = dateRange.split(' - ');
+        if(startDate && endDate) {
+          const invDate = new Date(inv.date);
+          if(invDate < new Date(startDate) || invDate > new Date(endDate)) pass = false;
+        }
+      }
+
+      return pass;
+    });
+
+    currentPage = 1;
+    renderTable();
+  }
+
+  $(document).ready(function(){
+    renderTable();
+
+    $('#dateRange, #selectUser, #selectStatus').on('change', filterInvoices);
+    $('#searchInput').on('input', filterInvoices);
+  });
+</script>
+
 </body>
 </html>
