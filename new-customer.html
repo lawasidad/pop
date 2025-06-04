@@ -3,35 +3,113 @@
 <head>
   <meta charset="UTF-8" />
   <title>New Customer</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 20px;
+      background: #f9f9f9;
+    }
+    label {
+      display: block;
+      margin-bottom: 10px;
+    }
+    input {
+      width: 100%;
+      padding: 8px;
+      margin-top: 4px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    button {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background-color: #0056b3;
+    }
+    .location-btn {
+      margin-bottom: 20px;
+    }
+  </style>
 </head>
-<body style="font-family: sans-serif; padding: 20px;">
-  <h2>New Customer Form</h2>
+<body>
+  <h2>فۆرمی کڕیاری نوێ</h2>
   <form id="customerForm">
-    <label>Customer Code:<br><input type="text" id="code" required></label><br><br>
-    <label>Name:<br><input type="text" id="name" required></label><br><br>
-    <label>Mobile:<br><input type="text" id="mobile" required></label><br><br>
-    <label>Balance:<br><input type="number" id="balance" required></label><br><br>
-    <button type="submit">Add Customer</button>
+    <label>کۆدی کڕیار:
+      <input type="text" id="code" required />
+    </label>
+
+    <label>ناو:
+      <input type="text" id="name" required />
+    </label>
+
+    <label>مۆبایل:
+      <input type="text" id="mobile" required />
+    </label>
+
+    <label>بەرهەمی کڕیار (Balance):
+      <input type="number" id="balance" required />
+    </label>
+
+    <label>ناونیشانی جێگرەوە (Geo Location):
+      <input type="text" id="location" readonly required />
+    </label>
+
+    <button type="button" class="location-btn" onclick="getLocation()">📍 وەرگرتنی ناونیشانی جێگرەوە</button>
+
+    <button type="submit">زیادکردنی کڕیار</button>
   </form>
 
   <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          function(position) {
+            const coords = position.coords.latitude + "," + position.coords.longitude;
+            document.getElementById("location").value = coords;
+          },
+          function(error) {
+            alert("ناتوانرێت ناونیشان وەرگیرا. تکایە ڕێگە بدە بۆ دەستگەیشتن بە GPS.");
+          }
+        );
+      } else {
+        alert("پێوەکراوەکەت جێگرەوە پشتیوانی ناکات.");
+      }
+    }
+
     document.getElementById("customerForm").addEventListener("submit", function(e) {
       e.preventDefault();
-      const code = document.getElementById("code").value;
-      const name = document.getElementById("name").value;
-      const mobile = document.getElementById("mobile").value;
-      const balance = document.getElementById("balance").value;
 
-      const customer = { code, name, mobile, balance };
+      const code = document.getElementById("code").value.trim();
+      const name = document.getElementById("name").value.trim();
+      const mobile = document.getElementById("mobile").value.trim();
+      const balance = document.getElementById("balance").value.trim();
+      const location = document.getElementById("location").value.trim();
 
-      // پاککردنی داتاکانی کۆن
+      if (!location) {
+        alert("تکایە سەرەتا ناونیشانی جێگرەوە بکەوە.");
+        return;
+      }
+
+      const customer = { code, name, mobile, balance, location };
+
+      // تەنها زیادکردنی ئەم کڕیارە (پێش ئەوە داتاکانی کۆن پاک دەکات)
       localStorage.removeItem("customers");
-
-      // تەنها زیادکردنی ئەم یەکەم کڕیارە
       localStorage.setItem("customers", JSON.stringify([customer]));
 
-      // ئاگادارکردنەوەی پەڕەی سەرەکی
+      // ئاگادارکردنەوەی پەڕەی سەرەکی بۆ ئەوەی داتاکە نوێ بکرێتەوە
       window.parent.postMessage("customer-added", "*");
+
+      // داتاکان پاک بکە لە فۆرمەکە بۆ دواتر
+      this.reset();
+      document.getElementById("location").value = "";
+      alert("کڕیار بە سەرکەوتوویی زیادکرا!");
     });
   </script>
 </body>
