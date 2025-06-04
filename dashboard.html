@@ -226,9 +226,12 @@
 
     <script>
         function logout() {
-            // لێرە دەتوانیت session/localStorage پاک بکەیت ئەگەر پێویستت بوو
+            // پاککردنی زانیارییەکان ئەگەر پێویستە
             // localStorage.clear();
-            window.location.replace('login.html');
+            // sessionStorage.clear();
+
+            // گەڕانەوە بۆ index.html
+            window.location.href = './index.html';
         }
     </script>
 </body>
