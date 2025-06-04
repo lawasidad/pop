@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard</title>
+    <title>لوحة التحكم</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
         }
         body {
             background-color: #f0f2f5;
@@ -29,17 +29,20 @@
             margin-bottom: 15px;
             padding-bottom: 8px;
             border-bottom: 1px solid #e0e0e0;
+            text-align: right;
         }
         h2 {
             font-size: 16px;
             color: #444;
             margin: 15px 0 10px;
+            text-align: right;
         }
         .menu {
             display: flex;
             flex-wrap: wrap;
             gap: 8px;
             margin-bottom: 15px;
+            justify-content: flex-end;
         }
         .menu-item {
             background: #f5f5f5;
@@ -70,6 +73,7 @@
             padding: 12px;
             border-radius: 5px;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            text-align: right;
         }
         .stat-title {
             font-size: 14px;
@@ -94,6 +98,7 @@
             padding: 10px;
             border-radius: 5px;
             font-size: 14px;
+            text-align: right;
         }
         .quick-stat-item div:last-child {
             font-weight: bold;
@@ -113,6 +118,7 @@
             border-radius: 5px;
             margin-top: 15px;
             font-size: 14px;
+            text-align: right;
         }
 
         .logout-btn {
@@ -124,6 +130,7 @@
             border-radius: 5px;
             cursor: pointer;
             font-size: 14px;
+            width: 100%;
         }
 
         .logout-btn:hover {
@@ -142,86 +149,27 @@
 </head>
 <body>
     <div class="dashboard">
-        <h1>Dashboard</h1>
+        <h1>لوحة التحكم</h1>
         
-        <h2>Live Location</h2>
+        <h2>المواقع المباشرة</h2>
         <div class="menu">
-            <div class="menu-item" onclick="window.location.href='inventory.html'">Inventory</div>
-            <div class="menu-item" onclick="window.location.href='customer.html'">Parties</div>
-            <div class="menu-item" onclick="window.location.href='sales.html'">Sales</div>
-            <div class="menu-item" onclick="window.location.href='purchase.html'">Purchase</div>
-            <div class="menu-item" onclick="window.location.href='van-sale.html'">Van Sale</div>
-            <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
-            <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
+            <div class="menu-item" onclick="window.location.href='inventory.html'">المخزون</div>
+            <div class="menu-item" onclick="window.location.href='customer.html'">العملاء</div>
+            <div class="menu-item" onclick="window.location.href='sales.html'">المبيعات</div>
+            <div class="menu-item" onclick="window.location.href='purchase.html'">المشتريات</div>
+            <div class="menu-item" onclick="window.location.href='van-sale.html'">مبيعات الفان</div>
+            <div class="menu-item" onclick="window.location.href='finance.html'">المالية</div>
+            <div class="menu-item" onclick="window.location.href='routes.html'">الطرق</div>
         </div>
         
         <div class="divider"></div>
         
         <div class="stats-container">
             <div class="stat-box">
-                <div class="stat-title">Order</div>
-                <div class="stat-value">IQD 0</div>
+                <div class="stat-title">الطلبات</div>
+                <div class="stat-value">0 دينار</div>
                 <div class="stat-value">0</div>
             </div>
             <div class="stat-box">
-                <div class="stat-title">Invoice</div>
-                <div class="stat-value">IQD 17,277,500.00</div>
-                <div class="stat-value">291 units</div>
-            </div>
-            <div class="stat-box">
-                <div class="stat-title">03/06/2025 - 03/06/2021</div>
-                <div class="stat-value">Visited 435</div>
-            </div>
-        </div>
-        
-        <div class="divider"></div>
-        
-        <div class="quick-stats">
-            <h2>Quick Statistics</h2>
-            <div class="quick-stats-grid">
-                <div class="quick-stat-item">
-                    <div>To collect:</div>
-                    <div>1103828500</div>
-                </div>
-                <div class="quick-stat-item">
-                    <div>To pay:</div>
-                    <div>0</div>
-                </div>
-                <div class="quick-stat-item">
-                    <div>Low Stock Count:</div>
-                    <div>0</div>
-                </div>
-                <div class="quick-stat-item">
-                    <div>Stock Value:</div>
-                    <div>0</div>
-                </div>
-                <div class="quick-stat-item">
-                    <div>Product Count:</div>
-                    <div>20</div>
-                </div>
-                <div class="quick-stat-item">
-                    <div>Party Count:</div>
-                    <div>6139</div>
-                </div>
-            </div>
-        </div>
-        
-        <div class="divider"></div>
-        
-        <div class="footer">
-            <h2>Enterprise Yearly</h2>
-            <div>Settings</div>
-            <div>+91 8092856577</div>
-            <button class="logout-btn" onclick="logout()">Log out</button>
-        </div>
-        
-        <input type="text" class="search-bar" placeholder="Type here to search">
-    </div>
-
-    <script>
-        function logout() {
-            window.location.href = "login.html"; // ئەمە دەنێرێ بۆ پەڕەی چوونە ژوورەوە
-        }
-    </script>
-</body>
-</html>
+                <div class="stat-title">الفواتير</div>
+                <div class="stat-value">17,277,
