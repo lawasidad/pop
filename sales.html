@@ -1,211 +1,149 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ku">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sales Invoice - Select & Print</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<style>
-  body { padding: 20px; background: #f8f9fa; }
-  .table-responsive { max-height: 500px; overflow-y: auto; background: white; border-radius: 8px; }
-  .table thead th {
-    position: sticky;
-    top: 0;
-    background: #343a40;
-    color: white;
-  }
-  tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
-  .print-area { display: none; }
-  @media print {
-    body * { visibility: hidden; }
-    .print-area, .print-area * { visibility: visible; }
-    .print-area { position: absolute; top: 0; left: 0; width: 100%; font-size: 14px; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فۆرمی فرۆشتن</title>
+  <style>
+    body {
+      font-family: "Tahoma", Arial, sans-serif;
+      margin: 20px;
+      background: #f0f0f0;
+      color: #222;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #0056b3;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #fff;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th, td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #ddd;
+      text-align: center;
+      font-size: 14px;
+    }
+    th {
+      background-color: #007bff;
+      color: white;
+      font-weight: 600;
+    }
+    tbody tr:hover {
+      background-color: #f5f5f5;
+    }
+    #printBtn {
+      margin: 15px 0;
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    #printBtn:hover {
+      background-color: #0056b3;
+    }
+
+    /* Print Style */
+    @media print {
+      body * {
+        visibility: hidden;
+      }
+      #printArea, #printArea * {
+        visibility: visible;
+      }
+      #printArea {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: white;
+        padding: 10px;
+        box-shadow: none;
+      }
+      table {
+        box-shadow: none;
+        border: 1px solid black;
+      }
+      th, td {
+        border: 1px solid black;
+        padding: 8px 12px;
+        font-size: 13px;
+      }
+      #printBtn {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="container">
-  <h2 class="mb-4 text-center text-primary">Sales Invoice - Select & Print</h2>
+<h2>فۆرمی فرۆشتن</h2>
 
-  <div class="row g-3 mb-3">
-    <div class="col-md-3">
-      <input type="date" class="form-control" id="startDate" placeholder="Start Date" />
-    </div>
-    <div class="col-md-3">
-      <input type="date" class="form-control" id="endDate" placeholder="End Date" />
-    </div>
-    <div class="col-md-3">
-      <select class="form-select" id="selectUser">
-        <option value="">All Users</option>
-        <option value="MANSUR RANYA-R3">MANSUR RANYA-R3</option>
-        <option value="SHKAR SLIMANY-S2">SHKAR SLIMANY-S2</option>
-        <option value="Zaman A13">Zaman A13</option>
-      </select>
-    </div>
-    <div class="col-md-3">
-      <input type="search" class="form-control" id="searchInput" placeholder="Search by Party or Trans No." />
-    </div>
-  </div>
+<button id="printBtn" onclick="printForm()">پرینت کردن</button>
 
-  <div class="table-responsive shadow-sm">
-    <table class="table table-bordered table-hover align-middle" id="invoiceTable">
-      <thead>
-        <tr>
-          <th><input type="checkbox" id="selectAll" title="Select All"/></th>
-          <th>Date</th>
-          <th>Transaction No.</th>
-          <th>Party Name</th>
-          <th>Amount (IQD)</th>
-          <th>Due (IQD)</th>
-          <th>Status</th>
-          <th>Created By</th>
-        </tr>
-      </thead>
-      <tbody id="invoiceBody"></tbody>
-    </table>
-  </div>
-
-  <div class="d-flex justify-content-between align-items-center mt-3">
-    <div><strong>Total Selected Amount: IQD <span id="totalSelected">0</span></strong></div>
-    <button class="btn btn-success" id="printSelected">Print Selected</button>
-  </div>
+<div id="printArea">
+  <table>
+    <thead>
+      <tr>
+        <th>کاتژمێر</th>
+        <th>ژمارەی وەسڵ</th>
+        <th>ناوی کڕیار</th>
+        <th>کۆی گشتی</th>
+        <th>قەرز</th>
+        <th>دۆخ</th>
+        <th>دروستکراو لەلایەن</th>
+      </tr>
+    </thead>
+    <tbody id="invoiceTableBody">
+      <!-- داتاکان ئەوێ دابنرێن -->
+    </tbody>
+  </table>
 </div>
 
-<!-- Print Area -->
-<div class="print-area" id="printArea"></div>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
+  // نموونەی داتا بۆ فۆرمی فرۆشتن (لە دەتوانیت ئەمە گۆڕی بۆ داتای خۆت)
   const invoices = [
-    {date:'2025-06-04 13:55', trans:'DST/9931/INV-3481', party:'Kogay hana', amount:172500, due:172500, status:'Due', createdBy:'MANSUR RANYA-R3'},
-    {date:'2025-06-04 13:44', trans:'DST/9068/INV-4769', party:'M.Shaz', amount:36000, due:36000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
-    {date:'2025-06-04 13:41', trans:'DST/2002/INV-4771', party:'Kogae hoshmand', amount:57500, due:57500, status:'Due', createdBy:'Zaman A13'},
-    {date:'2025-06-04 13:40', trans:'DST/9068/INV-4768', party:'M.7ama', amount:12000, due:12000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
-    // زیاد بکە ئەویش...
+    { date: "2025-06-04 13:55", trans: "DST/9931/INV-3481", party: "Kogay hana", amount: 172500, due: 172500, status: "Unpaid", createdBy: "MANSUR RANYA-R3" },
+    { date: "2025-06-04 13:44", trans: "DST/9068/INV-4769", party: "M.Shaz", amount: 36000, due: 36000, status: "Unpaid", createdBy: "SHKAR SLIMANY-S2" },
+    { date: "2025-06-04 13:41", trans: "DST/2002/INV-4771", party: "Kogae hoshmand", amount: 57500, due: 57500, status: "Unpaid", createdBy: "Zaman A13" }
   ];
 
-  let filteredInvoices = invoices;
-
   function renderTable() {
-    const tbody = $('#invoiceBody');
-    tbody.empty();
+    const tbody = document.getElementById('invoiceTableBody');
+    tbody.innerHTML = "";
 
-    filteredInvoices.forEach((inv, idx) => {
-      tbody.append(`
-        <tr>
-          <td><input type="checkbox" class="select-row" data-index="${idx}" /></td>
-          <td>${inv.date}</td>
-          <td>${inv.trans}</td>
-          <td>${inv.party}</td>
-          <td class="text-end">${inv.amount.toLocaleString()}</td>
-          <td class="text-end">${inv.due.toLocaleString()}</td>
-          <td>${inv.status}</td>
-          <td>${inv.createdBy}</td>
-        </tr>
-      `);
-    });
+    invoices.forEach(inv => {
+      const tr = document.createElement('tr');
 
-    updateTotalSelected();
-  }
-
-  function updateTotalSelected() {
-    let total = 0;
-    $('.select-row:checked').each(function(){
-      const idx = $(this).data('index');
-      total += filteredInvoices[idx].amount;
-    });
-    $('#totalSelected').text(total.toLocaleString());
-  }
-
-  function filterInvoices() {
-    const start = $('#startDate').val();
-    const end = $('#endDate').val();
-    const user = $('#selectUser').val().toLowerCase();
-    const search = $('#searchInput').val().toLowerCase();
-
-    filteredInvoices = invoices.filter(inv => {
-      let valid = true;
-
-      if (start && new Date(inv.date) < new Date(start)) valid = false;
-      if (end && new Date(inv.date) > new Date(end)) valid = false;
-      if (user && inv.createdBy.toLowerCase() !== user) valid = false;
-      if (search) {
-        const combined = (inv.party + inv.trans).toLowerCase();
-        if (!combined.includes(search)) valid = false;
-      }
-
-      return valid;
-    });
-
-    renderTable();
-  }
-
-  function printSelectedInvoices() {
-    const selectedIndexes = [];
-    $('.select-row:checked').each(function(){
-      selectedIndexes.push($(this).data('index'));
-    });
-
-    if(selectedIndexes.length === 0) {
-      alert('Please select at least one invoice to print.');
-      return;
-    }
-
-    let html = `
-      <h2 style="text-align:center;">Selected Sales Invoices</h2>
-      <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
-        <thead style="background: #ddd;">
-          <tr>
-            <th>Date</th>
-            <th>Transaction No.</th>
-            <th>Party Name</th>
-            <th>Amount (IQD)</th>
-            <th>Due (IQD)</th>
-            <th>Status</th>
-            <th>Created By</th>
-          </tr>
-        </thead>
-        <tbody>
-    `;
-
-    selectedIndexes.forEach(i => {
-      const inv = filteredInvoices[i];
-      html += `
-        <tr>
-          <td>${inv.date}</td>
-          <td>${inv.trans}</td>
-          <td>${inv.party}</td>
-          <td style="text-align:right;">${inv.amount.toLocaleString()}</td>
-          <td style="text-align:right;">${inv.due.toLocaleString()}</td>
-          <td>${inv.status}</td>
-          <td>${inv.createdBy}</td>
-        </tr>
+      tr.innerHTML = `
+        <td>${inv.date}</td>
+        <td>${inv.trans}</td>
+        <td>${inv.party}</td>
+        <td style="text-align:right">${inv.amount.toLocaleString()}</td>
+        <td style="text-align:right">${inv.due.toLocaleString()}</td>
+        <td>${inv.status}</td>
+        <td>${inv.createdBy}</td>
       `;
+
+      tbody.appendChild(tr);
     });
+  }
 
-    html += `</tbody></table>`;
-
-    $('#printArea').html(html);
+  function printForm() {
     window.print();
   }
 
-  $(document).ready(function(){
-    renderTable();
-
-    $('#startDate, #endDate, #selectUser, #searchInput').on('input change', filterInvoices);
-
-    // Handle checkbox changes
-    $(document).on('change', '.select-row', updateTotalSelected);
-
-    // Select all toggle
-    $('#selectAll').change(function(){
-      $('.select-row').prop('checked', $(this).prop('checked'));
-      updateTotalSelected();
-    });
-
-    $('#printSelected').click(printSelectedInvoices);
-  });
+  // بۆ هەڵسەنگاندنی فۆرمی سەرەتا
+  renderTable();
 </script>
 
 </body>
