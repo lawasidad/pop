@@ -1,164 +1,177 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <title>فۆرمی فرۆشتن</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        body {
-            background-color: #f2f2f2;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
-        .sales-form {
-            background: white;
-            max-width: 700px;
-            margin: 0 auto;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-        }
-        h1 {
-            font-size: 20px;
-            margin-bottom: 20px;
-            color: #333;
-            text-align: right;
-        }
-        .form-group {
-            margin-bottom: 15px;
-            text-align: right;
-        }
-        label {
-            display: block;
-            font-size: 14px;
-            color: #444;
-            margin-bottom: 5px;
-        }
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 10px;
-            font-size: 14px;
-            border-radius: 6px;
-            border: 1px solid #ccc;
-        }
-        .btn {
-            padding: 10px 20px;
-            background: #28a745;
-            color: white;
-            border: none;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
-        .btn:hover {
-            background: #218838;
-        }
-        .btn-print {
-            background: #007bff;
-            margin-right: 10px;
-        }
-        .sales-table {
-            margin-top: 20px;
-            width: 100%;
-            border-collapse: collapse;
-        }
-        .sales-table th,
-        .sales-table td {
-            border: 1px solid #ccc;
-            padding: 8px;
-            text-align: right;
-        }
-        .sales-table th {
-            background-color: #f0f0f0;
-        }
+  <meta charset="UTF-8">
+  <title>Sales Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', sans-serif;
+    }
 
-        @media print {
-            .btn, select, input {
-                display: none;
-            }
-        }
-    </style>
+    body {
+      background-color: #f7fafc;
+      margin: 0;
+      padding: 20px;
+    }
+
+    .container {
+      background: #ffffff;
+      max-width: 750px;
+      margin: auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      color: #2d3748;
+      font-size: 24px;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      color: #4a5568;
+      font-weight: 500;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    button {
+      background-color: #3182ce;
+      color: white;
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+    button:hover {
+      background-color: #2b6cb0;
+    }
+
+    .btn-print {
+      background-color: #38a169;
+      margin-left: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #e2e8f0;
+    }
+
+    th {
+      background-color: #edf2f7;
+      font-weight: 600;
+    }
+
+    @media print {
+      button, select, input {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
 
-<div class="sales-form">
-    <h1>فۆرمی فرۆشتن</h1>
+<div class="container">
+  <h2>Sales Form</h2>
 
-    <div class="form-group">
-        <label for="userSelect">دیاریکردنی بەکارهێنەر</label>
-        <select id="userSelect">
-            <option value="user1">بەکارهێنەر ١</option>
-            <option value="user2">بەکارهێنەر ٢</option>
-            <option value="user3">بەکارهێنەر ٣</option>
-        </select>
-    </div>
+  <div class="form-group">
+    <label for="userSelect">Select User</label>
+    <select id="userSelect">
+      <option value="">-- Choose a user --</option>
+      <option value="User A">User A</option>
+      <option value="User B">User B</option>
+      <option value="User C">User C</option>
+    </select>
+  </div>
 
-    <div class="form-group">
-        <label for="product">ناوی بەرهەم</label>
-        <input type="text" id="product" placeholder="ناوی بەرهەم بنووسە">
-    </div>
+  <div class="form-group">
+    <label for="product">Product Name</label>
+    <input type="text" id="product" placeholder="Enter product name">
+  </div>
 
-    <div class="form-group">
-        <label for="price">نرخ</label>
-        <input type="text" id="price" placeholder="نرخی بەرهەم">
-    </div>
+  <div class="form-group">
+    <label for="price">Unit Price (IQD)</label>
+    <input type="number" id="price" placeholder="Enter price">
+  </div>
 
-    <div class="form-group">
-        <label for="quantity">ژمارە</label>
-        <input type="text" id="quantity" placeholder="ژمارەی فرۆشتن">
-    </div>
+  <div class="form-group">
+    <label for="quantity">Quantity</label>
+    <input type="number" id="quantity" placeholder="Enter quantity">
+  </div>
 
-    <button class="btn" onclick="addSale()">زیادکردنی وەسل</button>
-    <button class="btn btn-print" onclick="window.print()">پرێنت</button>
+  <button onclick="addSale()">Add Sale</button>
+  <button class="btn-print" onclick="window.print()">Print Receipt</button>
 
-    <table class="sales-table" id="salesTable">
-        <thead>
-            <tr>
-                <th>بەکارهێنەر</th>
-                <th>بەرهەم</th>
-                <th>نرخ</th>
-                <th>ژمارە</th>
-                <th>کۆی گشتی</th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-    </table>
+  <table id="salesTable">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Product</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Total</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 </div>
 
 <script>
-    function addSale() {
-        const user = document.getElementById("userSelect").value;
-        const product = document.getElementById("product").value;
-        const price = parseFloat(document.getElementById("price").value);
-        const quantity = parseInt(document.getElementById("quantity").value);
+  function addSale() {
+    const user = document.getElementById('userSelect').value;
+    const product = document.getElementById('product').value.trim();
+    const price = parseFloat(document.getElementById('price').value);
+    const quantity = parseInt(document.getElementById('quantity').value);
 
-        if (!product || isNaN(price) || isNaN(quantity)) {
-            alert("تکایە هەموو خانەکان بە دروستی پڕبکەوە");
-            return;
-        }
-
-        const total = price * quantity;
-
-        const tbody = document.getElementById("salesTable").querySelector("tbody");
-        const row = document.createElement("tr");
-
-        row.innerHTML = `
-            <td>${user}</td>
-            <td>${product}</td>
-            <td>${price.toLocaleString()}</td>
-            <td>${quantity}</td>
-            <td>${total.toLocaleString()}</td>
-        `;
-
-        tbody.appendChild(row);
-
-        // پاککردنی خانەکان دوای زیادکردن
-        document.getElementById("product").value = '';
-        document.getElementById("price").value = '';
-        document.getElementById("quantity").value = '';
+    if (!user || !product || isNaN(price) || isNaN(quantity) || price <= 0 || quantity <= 0) {
+      alert('Please fill all fields correctly.');
+      return;
     }
+
+    const total = price * quantity;
+    const table = document.getElementById('salesTable').querySelector('tbody');
+
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${user}</td>
+      <td>${product}</td>
+      <td>${price.toLocaleString()}</td>
+      <td>${quantity}</td>
+      <td>${total.toLocaleString()}</td>
+    `;
+
+    table.appendChild(row);
+
+    document.getElementById('product').value = '';
+    document.getElementById('price').value = '';
+    document.getElementById('quantity').value = '';
+  }
 </script>
 
 </body>
