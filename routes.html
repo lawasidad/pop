@@ -1,95 +1,103 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ڕووتەکان</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
-      direction: rtl;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>فۆرمی ڕووت</title>
+    <style>
+        body {
+            background-color: #f0f2f5;
+            font-family: Arial, sans-serif;
+            padding: 20px;
+        }
 
-    .route-form {
-      background-color: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 600px;
-      margin: auto;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+        .route-form-container {
+            background: white;
+            max-width: 600px;
+            margin: 0 auto;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+        }
 
-    h1 {
-      text-align: right;
-      margin-bottom: 20px;
-      font-size: 22px;
-    }
+        h1 {
+            text-align: right;
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 20px;
+        }
 
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
+        .form-group {
+            margin-bottom: 15px;
+            text-align: right;
+        }
 
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      font-size: 14px;
-    }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #444;
+            font-size: 14px;
+        }
 
-    button {
-      padding: 10px 20px;
-      background-color: #007bff;
-      border: none;
-      color: white;
-      border-radius: 5px;
-      font-size: 14px;
-      cursor: pointer;
-    }
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+        }
 
-    button:hover {
-      background-color: #0056b3;
-    }
-  </style>
+        .submit-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
 </head>
 <body>
 
-  <div class="route-form">
+<div class="route-form-container">
     <h1>زیادکردنی ڕووت</h1>
-
     <form id="routeForm">
-      <label for="routeName">ناوی ڕووت</label>
-      <input type="text" id="routeName" name="routeName" required>
-
-      <label for="routeArea">شوێنی ڕووت</label>
-      <input type="text" id="routeArea" name="routeArea" required>
-
-      <label for="salesperson">ناوی فڕۆشیار</label>
-      <input type="text" id="salesperson" name="salesperson">
-
-      <button type="submit">زیادکردن</button>
+        <div class="form-group">
+            <label for="country">ولات</label>
+            <input type="text" id="country" name="country" placeholder="ناوی ولات بنووسە">
+        </div>
+        <div class="form-group">
+            <label for="city">شار</label>
+            <input type="text" id="city" name="city" placeholder="ناوی شار بنووسە">
+        </div>
+        <div class="form-group">
+            <label for="area">ناوچە</label>
+            <input type="text" id="area" name="area" placeholder="ناوی ناوچە بنووسە">
+        </div>
+        <button type="submit" class="submit-btn">زیادکردن</button>
     </form>
-  </div>
+</div>
 
-  <script>
+<script>
     document.getElementById("routeForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      const name = document.getElementById("routeName").value;
-      const area = document.getElementById("routeArea").value;
-      const salesperson = document.getElementById("salesperson").value;
+        e.preventDefault();
 
-      // لێرە دەتوانیت بەکارهێنانی localStorage، fetch، یان AJAX بۆ ناردنی داتا بکەیت
-      alert(`ڕووت زیادکرا:\n- ناو: ${name}\n- شوێن: ${area}\n- فڕۆشیار: ${salesperson}`);
+        const country = document.getElementById("country").value;
+        const city = document.getElementById("city").value;
+        const area = document.getElementById("area").value;
 
-      // پاککردنی فۆرم
-      document.getElementById("routeForm").reset();
+        alert(`ڕووت زیادکرا:\nولات: ${country}\nشار: ${city}\nناوچە: ${area}`);
+
+        // لێرەدا دەتوانیت بەکارهێنە بۆ ناردنی زانیاریەکان بۆ سێرڤەر یان هێنانیان ناو دیتابەیس
+        // نموونە:
+        // fetch('/api/routes', { method: 'POST', body: JSON.stringify({ country, city, area }) });
     });
-  </script>
+</script>
 
 </body>
 </html>
