@@ -1,227 +1,244 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inventory Management</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventory Form</title>
   <style>
     * {
       box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
     }
+
     body {
-      background: #f7f9fc;
       margin: 0;
+      background: #f4f6f9;
       padding: 20px;
-      color: #333;
     }
+
     .container {
-      max-width: 900px;
+      max-width: 1000px;
       margin: auto;
-      background: #fff;
-      padding: 25px 30px;
-      border-radius: 8px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    h1 {
+
+    h2 {
       text-align: center;
       margin-bottom: 20px;
       color: #2c3e50;
     }
+
     form {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr 1fr auto;
+      display: flex;
+      flex-wrap: wrap;
       gap: 15px;
-      margin-bottom: 30px;
-      align-items: center;
+      margin-bottom: 25px;
     }
-    input[type="text"],
-    input[type="number"] {
+
+    form input {
+      flex: 1 1 180px;
       padding: 10px;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      font-size: 16px;
-      transition: border-color 0.3s;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #3498db;
-      outline: none;
-    }
-    button {
+
+    form button {
+      padding: 10px 20px;
       background: #3498db;
       color: white;
       border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s;
     }
-    button:hover {
-      background: #2980b9;
-    }
+
     .search-box {
-      margin-bottom: 20px;
       text-align: right;
+      margin-bottom: 15px;
     }
+
     .search-box input {
-      padding: 10px 15px;
+      padding: 10px;
       width: 100%;
       max-width: 300px;
-      font-size: 16px;
-      border: 1.5px solid #ddd;
-      border-radius: 6px;
-      transition: border-color 0.3s;
+      border: 1px solid #ccc;
+      border-radius: 8px;
     }
-    .search-box input:focus {
-      border-color: #3498db;
-      outline: none;
-    }
+
     table {
       width: 100%;
       border-collapse: collapse;
-      font-size: 15px;
+      font-size: 14px;
     }
+
     th, td {
-      padding: 12px 15px;
+      padding: 10px;
       border-bottom: 1px solid #eee;
       text-align: left;
     }
+
     th {
-      background: #3498db;
+      background-color: #3498db;
       color: white;
-      font-weight: 600;
-      user-select: none;
     }
+
     tr:hover {
-      background-color: #f0f8ff;
+      background-color: #f1f1f1;
     }
-    @media (max-width: 700px) {
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #3498db;
+      cursor: pointer;
+      margin: 0 5px;
+    }
+
+    @media (max-width: 768px) {
       form {
-        grid-template-columns: 1fr 1fr;
+        flex-direction: column;
       }
-      button {
-        grid-column: span 2;
+
+      form input, form button {
         width: 100%;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      td {
+        position: relative;
+        padding-left: 50%;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        color: #555;
       }
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>Inventory Management</h1>
+<div class="container">
+  <h2>Inventory Management</h2>
 
-    <form id="inventory-form">
-      <input type="text" id="productName" placeholder="Product Name" required />
-      <input type="text" id="productCode" placeholder="Product Code" required />
-      <input type="number" id="quantity" placeholder="Quantity" min="0" required />
-      <input type="number" id="price" placeholder="Price (IQD)" min="0" step="0.01" required />
-      <button type="submit">Add Product</button>
-    </form>
+  <form id="inventoryForm">
+    <input type="text" id="name" placeholder="Product Name" required />
+    <input type="text" id="code" placeholder="Product Code" required />
+    <input type="number" id="quantity" placeholder="Quantity" required />
+    <input type="number" id="price" placeholder="Unit Price" required />
+    <button type="submit">Add</button>
+  </form>
 
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search products..." />
-    </div>
-
-    <table id="inventoryTable">
-      <thead>
-        <tr>
-          <th>Product Name</th>
-          <th>Product Code</th>
-          <th>Quantity</th>
-          <th>Price (IQD)</th>
-          <th>Total Value (IQD)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <!-- Products will appear here -->
-      </tbody>
-    </table>
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search product..." />
   </div>
 
-  <script>
-    const form = document.getElementById('inventory-form');
-    const productNameInput = document.getElementById('productName');
-    const productCodeInput = document.getElementById('productCode');
-    const quantityInput = document.getElementById('quantity');
-    const priceInput = document.getElementById('price');
-    const inventoryTableBody = document.querySelector('#inventoryTable tbody');
-    const searchInput = document.getElementById('searchInput');
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Qty</th>
+        <th>Price</th>
+        <th>Total</th>
+        <th>Action</th>
+      </tr>
+    </thead>
+    <tbody id="inventoryList"></tbody>
+  </table>
+</div>
 
-    let products = [];
+<script>
+  const form = document.getElementById("inventoryForm");
+  const searchInput = document.getElementById("searchInput");
+  const inventoryList = document.getElementById("inventoryList");
 
-    // Add product event
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+  let products = [];
+  let editIndex = -1;
 
-      const productName = productNameInput.value.trim();
-      const productCode = productCodeInput.value.trim();
-      const quantity = parseInt(quantityInput.value);
-      const price = parseFloat(priceInput.value);
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
 
-      // Basic validation
-      if (!productName || !productCode || quantity < 0 || price < 0) {
-        alert('Please enter valid product details.');
-        return;
-      }
+    const name = document.getElementById("name").value.trim();
+    const code = document.getElementById("code").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const price = parseFloat(document.getElementById("price").value);
 
-      // Check if productCode already exists
-      const existingIndex = products.findIndex(p => p.productCode === productCode);
-      if (existingIndex !== -1) {
-        // Update existing product quantity and price
-        products[existingIndex].quantity += quantity;
-        products[existingIndex].price = price;
-      } else {
-        products.push({ productName, productCode, quantity, price });
-      }
-
-      renderTable(products);
-
-      form.reset();
-      productNameInput.focus();
-    });
-
-    // Render table
-    function renderTable(data) {
-      inventoryTableBody.innerHTML = '';
-
-      if (data.length === 0) {
-        inventoryTableBody.innerHTML = '<tr><td colspan="5" style="text-align:center; color: #999;">No products found.</td></tr>';
-        return;
-      }
-
-      data.forEach(product => {
-        const totalValue = (product.quantity * product.price).toFixed(2);
-        const tr = document.createElement('tr');
-
-        tr.innerHTML = `
-          <td>${product.productName}</td>
-          <td>${product.productCode}</td>
-          <td>${product.quantity}</td>
-          <td>${product.price.toFixed(2)}</td>
-          <td>${totalValue}</td>
-        `;
-
-        inventoryTableBody.appendChild(tr);
-      });
+    if (editIndex > -1) {
+      products[editIndex] = { name, code, quantity, price };
+      editIndex = -1;
+    } else {
+      products.push({ name, code, quantity, price });
     }
 
-    // Search filter
-    searchInput.addEventListener('input', function() {
-      const term = this.value.trim().toLowerCase();
+    form.reset();
+    updateTable(products);
+  });
 
-      const filtered = products.filter(product =>
-        product.productName.toLowerCase().includes(term) ||
-        product.productCode.toLowerCase().includes(term)
-      );
+  function updateTable(data) {
+    inventoryList.innerHTML = "";
 
-      renderTable(filtered);
+    if (data.length === 0) {
+      inventoryList.innerHTML = `<tr><td colspan="6" style="text-align:center;">No products</td></tr>`;
+      return;
+    }
+
+    data.forEach((item, index) => {
+      const row = `
+        <tr>
+          <td data-label="Name">${item.name}</td>
+          <td data-label="Code">${item.code}</td>
+          <td data-label="Qty">${item.quantity}</td>
+          <td data-label="Price">${item.price.toLocaleString()}</td>
+          <td data-label="Total">${(item.quantity * item.price).toLocaleString()}</td>
+          <td data-label="Action">
+            <button class="action-btn" onclick="editItem(${index})">✏️</button>
+            <button class="action-btn" onclick="deleteItem(${index})">🗑️</button>
+          </td>
+        </tr>`;
+      inventoryList.innerHTML += row;
     });
+  }
 
-    // Initial render
-    renderTable(products);
-  </script>
+  function editItem(index) {
+    const item = products[index];
+    document.getElementById("name").value = item.name;
+    document.getElementById("code").value = item.code;
+    document.getElementById("quantity").value = item.quantity;
+    document.getElementById("price").value = item.price;
+    editIndex = index;
+  }
+
+  function deleteItem(index) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      products.splice(index, 1);
+      updateTable(products);
+    }
+  }
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    const filtered = products.filter(p =>
+      p.name.toLowerCase().includes(query) ||
+      p.code.toLowerCase().includes(query)
+    );
+    updateTable(filtered);
+  });
+
+  updateTable(products);
+</script>
+
 </body>
 </html>
