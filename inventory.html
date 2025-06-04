@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Inventory Form</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: 'Segoe UI', sans-serif;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 600px;
+      background-color: #fff;
+      margin: auto;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #333;
+    }
+
+    form label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      color: #444;
+    }
+
+    form input, form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    form button {
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    form button:hover {
+      background-color: #218838;
+    }
+
+    @media (max-width: 500px) {
+      .container {
+        padding: 15px;
+      }
+
+      form input, form button {
+        font-size: 13px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h2>Inventory Entry Form</h2>
+    <form onsubmit="handleSubmit(event)">
+      <label for="itemName">Item Name</label>
+      <input type="text" id="itemName" name="itemName" required />
+
+      <label for="barcode">Barcode</label>
+      <input type="text" id="barcode" name="barcode" required />
+
+      <label for="quantity">Quantity</label>
+      <input type="number" id="quantity" name="quantity" required />
+
+      <label for="unitPrice">Unit Price (IQD)</label>
+      <input type="number" id="unitPrice" name="unitPrice" required />
+
+      <label for="date">Entry Date</label>
+      <input type="date" id="date" name="date" required />
+
+      <button type="submit">Add to Inventory</button>
+    </form>
+  </div>
+
+  <script>
+    function handleSubmit(event) {
+      event.preventDefault();
+      const name = document.getElementById("itemName").value;
+      const barcode = document.getElementById("barcode").value;
+      const quantity = document.getElementById("quantity").value;
+      const price = document.getElementById("unitPrice").value;
+      const date = document.getElementById("date").value;
+
+      alert(`✔️ Added:\nItem: ${name}\nBarcode: ${barcode}\nQuantity: ${quantity}\nPrice: IQD ${price}\nDate: ${date}`);
+      event.target.reset(); // Reset form after submission
+    }
+  </script>
+
+</body>
+</html>
