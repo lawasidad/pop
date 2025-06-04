@@ -149,7 +149,7 @@
 <body>
     <div class="dashboard">
         <h1>Dashboard</h1>
-        
+
         <h2>Live Location</h2>
         <div class="menu">
             <div class="menu-item" onclick="window.location.href='inventory.html'">Inventory</div>
@@ -160,9 +160,9 @@
             <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
             <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
         </div>
-        
+
         <div class="divider"></div>
-        
+
         <div class="stats-container">
             <div class="stat-box">
                 <div class="stat-title">Order</div>
@@ -179,9 +179,9 @@
                 <div class="stat-value">Visited 435</div>
             </div>
         </div>
-        
+
         <div class="divider"></div>
-        
+
         <div class="quick-stats">
             <h2>Quick Statistics</h2>
             <div class="quick-stats-grid">
@@ -211,17 +211,25 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="divider"></div>
-        
+
         <div class="footer">
             <h2>lawa bradostily</h2>
             <div>Settings</div>
             <div>7502020061</div>
-            <button class="logout-btn" onclick="window.location.href='login.html'">Log out</button>
+            <button class="logout-btn" onclick="logout()">Log out</button>
         </div>
-        
+
         <input type="text" class="search-bar" placeholder="Type here to search">
     </div>
+
+    <script>
+        function logout() {
+            // لێرە دەتوانیت session/localStorage پاک بکەیت ئەگەر پێویستت بوو
+            // localStorage.clear();
+            window.location.replace('login.html');
+        }
+    </script>
 </body>
 </html>
