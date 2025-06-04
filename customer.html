@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #f0f2f5;
+            padding: 10px;
+        }
+        .dashboard {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 15px;
+        }
+        h1 {
+            font-size: 22px;
+            color: #333;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        h2 {
+            font-size: 16px;
+            color: #444;
+            margin: 15px 0 10px;
+        }
+        .search-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .filter-item {
+            flex: 1;
+            min-width: 150px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        .results-count {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        .customer-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .customer-table th {
+            background-color: #f5f5f5;
+            padding: 10px;
+            text-align: right;
+            font-size: 14px;
+            border-bottom: 1px solid #ddd;
+        }
+        .customer-table td {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+        .customer-table tr:hover {
+            background-color: #f9f9f9;
+        }
+        .seo-status {
+            color: green;
+            font-weight: bold;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 5px;
+        }
+        .page-btn {
+            padding: 5px 10px;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        .page-btn:hover {
+            background-color: #f0f0f0;
+        }
+
+        /* ریسپۆنسیڤ بۆ مۆبایل */
+        @media (max-width: 600px) {
+            .customer-table {
+                font-size: 12px;
+            }
+            .customer-table th, 
+            .customer-table td {
+                padding: 6px 4px;
+            }
+            .filter-item {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <h1>Customer</h1>
+        
+        <h2>Search</h2>
+        <div class="search-filters">
+            <select class="filter-item">
+                <option>Select Region</option>
+                <option>Region 1</option>
+                <option>Region 2</option>
+            </select>
+            <select class="filter-item">
+                <option>Select City</option>
+                <option>City 1</option>
+                <option>City 2</option>
+            </select>
+            <select class="filter-item">
+                <option>Select Route</option>
+                <option>Route 1</option>
+                <option>Route 2</option>
+            </select>
+            <select class="filter-item">
+                <option>Select Group</option>
+                <option>Group A</option>
+                <option>Group B</option>
+            </select>
+        </div>
+        
+        <div class="results-count">1-30 of 0822</div>
+        
+        <table class="customer-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Party Code</th>
+                    <th>Mobile</th>
+                    <th>Balance</th>
+                    <th>Geo Location</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr onclick="viewCustomer('770044')">
+                    <td>770044</td>
+                    <td>Market Rikan</td>
+                    <td>750787433</td>
+                    <td>IQD 12000</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('762925')">
+                    <td>762925</td>
+                    <td>Polka Zenera Lawan</td>
+                    <td>7504675327</td>
+                    <td>IQD 268250</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('929359')">
+                    <td>929359</td>
+                    <td>Sumer Abu Zeed Teerawa</td>
+                    <td>7704083038</td>
+                    <td>IQD 30000</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('819969')">
+                    <td>819969</td>
+                    <td>Alaban E Kak Danar Hovidan</td>
+                    <td>758079597</td>
+                    <td>IQD 124500</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('773829')">
+                    <td>773829</td>
+                    <td>Kogee Jehan</td>
+                    <td>7517305400</td>
+                    <td>IQD 1359500</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('781248')">
+                    <td>781248</td>
+                    <td>Kogee Sartom</td>
+                    <td>7504455838</td>
+                    <td>IQD 59500</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('883753')">
+                    <td>883753</td>
+                    <td>Madrid Shop Mosel</td>
+                    <td>7507654133</td>
+                    <td>IQD 36000</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+                <tr onclick="viewCustomer('763273')">
+                    <td>763273</td>
+                    <td>Market Abu Ali</td>
+                    <td>7504658895</td>
+                    <td>IQD 24000</td>
+                    <td class="seo-status">✅</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="pagination">
+            <button class="page-btn">Previous</button>
+            <button class="page-btn">1</button>
+            <button class="page-btn">2</button>
+            <button class="page-btn">Next</button>
+        </div>
+    </div>
+
+    <script>
+        function viewCustomer(customerId) {
+            alert(ئێستا پەڕەی کڕیار دەکەیتەوە بۆ ID: ${customerId});
+            // وێنە: window.location.href = customer-details.html?id=${customerId};
+        }
+    </script>
+</body>
+</html>
