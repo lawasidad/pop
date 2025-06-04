@@ -77,6 +77,47 @@
       height: 500px;
       border: none;
     }
+
+    /* ✅ Responsive table styles for mobile */
+    @media (max-width: 768px) {
+      .customer-table thead {
+        display: none;
+      }
+
+      .customer-table, .customer-table tbody, .customer-table tr, .customer-table td {
+        display: block;
+        width: 100%;
+      }
+
+      .customer-table tr {
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+        border-radius: 10px;
+        padding: 10px;
+        background-color: #fff;
+      }
+
+      .customer-table td {
+        text-align: right;
+        padding: 8px 10px;
+        position: relative;
+      }
+
+      .customer-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        top: 8px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .new-customer-btn {
+        width: 100%;
+        margin-bottom: 15px;
+        float: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -124,11 +165,11 @@
       data.forEach(c => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td>${c.code}</td>
-          <td>${c.name}</td>
-          <td>${c.mobile}</td>
-          <td>IQD ${c.balance}</td>
-          <td>
+          <td data-label="Code">${c.code}</td>
+          <td data-label="Name">${c.name}</td>
+          <td data-label="Mobile">${c.mobile}</td>
+          <td data-label="Balance">IQD ${c.balance}</td>
+          <td data-label="GPS Location">
             ${
               c.location
                 ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>`
