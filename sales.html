@@ -6,44 +6,32 @@
 <title>Sales Invoice - Select & Print</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
 <style>
-  body { padding: 20px; background: #f8f9fa; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
-  .table-responsive { max-height: 450px; overflow-y: auto; background: white; border-radius: 8px; box-shadow: 0 0 8px rgba(0,0,0,0.1);}
+  body { padding: 20px; background: #f8f9fa; }
+  .table-responsive { max-height: 500px; overflow-y: auto; background: white; border-radius: 8px; }
   .table thead th {
     position: sticky;
     top: 0;
-    background: #0d6efd;
+    background: #343a40;
     color: white;
-    user-select: none;
   }
-  tbody tr:hover { background-color: #e9f5ff; transition: background-color 0.25s ease; }
-  .form-control, .form-select { box-shadow: none; }
-  #totalSelected { font-weight: 700; font-size: 1.1rem; color: #0d6efd; }
+  tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
+  .print-area { display: none; }
 
-  /* Print styles */
   @media print {
-    body * { visibility: hidden; }
-    #printArea, #printArea * { visibility: visible; }
+    body * {
+      visibility: hidden !important;
+    }
+    #printArea, #printArea * {
+      visibility: visible !important;
+    }
     #printArea {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      font-size: 13px;
-      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-    }
-    #printArea table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    #printArea th, #printArea td {
-      border: 1px solid #444;
-      padding: 6px 10px;
-      text-align: left;
-    }
-    #printArea thead th {
-      background-color: #0d6efd;
-      color: white;
-      -webkit-print-color-adjust: exact;
+      position: absolute !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      background: white !important;
+      padding: 20px;
+      font-size: 14px;
     }
   }
 </style>
@@ -77,12 +65,12 @@
     <table class="table table-bordered table-hover align-middle" id="invoiceTable">
       <thead>
         <tr>
-          <th style="width: 40px;"><input type="checkbox" id="selectAll" title="Select All"/></th>
+          <th><input type="checkbox" id="selectAll" title="Select All"/></th>
           <th>Date</th>
           <th>Transaction No.</th>
           <th>Party Name</th>
-          <th class="text-end">Amount (IQD)</th>
-          <th class="text-end">Due (IQD)</th>
+          <th>Amount (IQD)</th>
+          <th>Due (IQD)</th>
           <th>Status</th>
           <th>Created By</th>
         </tr>
@@ -98,7 +86,7 @@
 </div>
 
 <!-- Print Area -->
-<div id="printArea" style="display:none;"></div>
+<div class="print-area" id="printArea"></div>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
@@ -107,7 +95,6 @@
     {date:'2025-06-04 13:44', trans:'DST/9068/INV-4769', party:'M.Shaz', amount:36000, due:36000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
     {date:'2025-06-04 13:41', trans:'DST/2002/INV-4771', party:'Kogae hoshmand', amount:57500, due:57500, status:'Due', createdBy:'Zaman A13'},
     {date:'2025-06-04 13:40', trans:'DST/9068/INV-4768', party:'M.7ama', amount:12000, due:12000, status:'Due', createdBy:'SHKAR SLIMANY-S2'},
-    // زیاد بکە ئەویش...
   ];
 
   let filteredInvoices = invoices;
@@ -178,15 +165,15 @@
     }
 
     let html = `
-      <h2 style="text-align:center; margin-bottom:20px;">Selected Sales Invoices</h2>
-      <table>
-        <thead>
+      <h2 style="text-align:center;">Selected Sales Invoices</h2>
+      <table border="1" cellspacing="0" cellpadding="8" style="width: 100%; border-collapse: collapse;">
+        <thead style="background: #ddd;">
           <tr>
             <th>Date</th>
             <th>Transaction No.</th>
             <th>Party Name</th>
-            <th style="text-align:right;">Amount (IQD)</th>
-            <th style="text-align:right;">Due (IQD)</th>
+            <th>Amount (IQD)</th>
+            <th>Due (IQD)</th>
             <th>Status</th>
             <th>Created By</th>
           </tr>
@@ -212,7 +199,11 @@
     html += `</tbody></table>`;
 
     $('#printArea').html(html);
-    window.print();
+
+    // Wait a bit to render then print
+    setTimeout(() => {
+      window.print();
+    }, 200);
   }
 
   $(document).ready(function(){
