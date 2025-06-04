@@ -1,178 +1,84 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Sales Form</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sales Invoice Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Segoe UI', sans-serif;
-    }
-
-    body {
-      background-color: #f7fafc;
-      margin: 0;
-      padding: 20px;
-    }
-
-    .container {
-      background: #ffffff;
-      max-width: 750px;
-      margin: auto;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-    }
-
-    h2 {
-      margin-bottom: 20px;
-      color: #2d3748;
-      font-size: 24px;
-      text-align: center;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 6px;
-      color: #4a5568;
-      font-weight: 500;
-    }
-
-    input, select {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e0;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-
-    button {
-      background-color: #3182ce;
-      color: white;
-      padding: 10px 20px;
-      font-size: 14px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 10px;
-    }
-
-    button:hover {
-      background-color: #2b6cb0;
-    }
-
-    .btn-print {
-      background-color: #38a169;
-      margin-left: 10px;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border: 1px solid #e2e8f0;
-    }
-
-    th {
-      background-color: #edf2f7;
-      font-weight: 600;
-    }
-
-    @media print {
-      button, select, input {
-        display: none;
-      }
-    }
+    body { background-color: #f8f9fa; }
+    .invoice-row:hover { background-color: #eef2f7; }
+    .status-due { color: red; font-weight: bold; }
+    .status-paid { color: green; font-weight: bold; }
   </style>
 </head>
 <body>
+  <div class="container-fluid p-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h2>Sales Invoices</h2>
+      <h5>Total: <strong>IQD 9,034,750</strong></h5>
+    </div>
 
-<div class="container">
-  <h2>Sales Form</h2>
+    <div class="row g-3 mb-4">
+      <div class="col-md-4">
+        <input type="text" class="form-control" placeholder="Search Invoice or Party Name">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control">
+      </div>
+      <div class="col-md-3">
+        <input type="date" class="form-control">
+      </div>
+      <div class="col-md-2">
+        <select class="form-select">
+          <option selected>Select User</option>
+          <option>HOSHMAND H1</option>
+          <option>Zaman A13</option>
+        </select>
+      </div>
+    </div>
 
-  <div class="form-group">
-    <label for="userSelect">Select User</label>
-    <select id="userSelect">
-      <option value="">-- Choose a user --</option>
-      <option value="User A">User A</option>
-      <option value="User B">User B</option>
-      <option value="User C">User C</option>
-    </select>
+    <div class="table-responsive">
+      <table class="table table-striped table-bordered align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Date</th>
+            <th>Invoice No.</th>
+            <th>Party Name</th>
+            <th>Amount</th>
+            <th>Due</th>
+            <th>Created By</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="invoice-row">
+            <td>2025-06-04 13:55</td>
+            <td>DST/9931/INV-3481</td>
+            <td>Kogay Hana</td>
+            <td>IQD 172,500</td>
+            <td>IQD 172,500</td>
+            <td>MANSUR RANYA-R3</td>
+            <td class="status-due">Due</td>
+            <td>
+              <button class="btn btn-sm btn-outline-primary">View</button>
+              <button class="btn btn-sm btn-outline-success">Print</button>
+            </td>
+          </tr>
+          <!-- More rows can be added here -->
+        </tbody>
+      </table>
+    </div>
+
+    <nav>
+      <ul class="pagination justify-content-end">
+        <li class="page-item disabled"><a class="page-link">Previous</a></li>
+        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">Next</a></li>
+      </ul>
+    </nav>
   </div>
-
-  <div class="form-group">
-    <label for="product">Product Name</label>
-    <input type="text" id="product" placeholder="Enter product name">
-  </div>
-
-  <div class="form-group">
-    <label for="price">Unit Price (IQD)</label>
-    <input type="number" id="price" placeholder="Enter price">
-  </div>
-
-  <div class="form-group">
-    <label for="quantity">Quantity</label>
-    <input type="number" id="quantity" placeholder="Enter quantity">
-  </div>
-
-  <button onclick="addSale()">Add Sale</button>
-  <button class="btn-print" onclick="window.print()">Print Receipt</button>
-
-  <table id="salesTable">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Product</th>
-        <th>Unit Price</th>
-        <th>Quantity</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-</div>
-
-<script>
-  function addSale() {
-    const user = document.getElementById('userSelect').value;
-    const product = document.getElementById('product').value.trim();
-    const price = parseFloat(document.getElementById('price').value);
-    const quantity = parseInt(document.getElementById('quantity').value);
-
-    if (!user || !product || isNaN(price) || isNaN(quantity) || price <= 0 || quantity <= 0) {
-      alert('Please fill all fields correctly.');
-      return;
-    }
-
-    const total = price * quantity;
-    const table = document.getElementById('salesTable').querySelector('tbody');
-
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${user}</td>
-      <td>${product}</td>
-      <td>${price.toLocaleString()}</td>
-      <td>${quantity}</td>
-      <td>${total.toLocaleString()}</td>
-    `;
-
-    table.appendChild(row);
-
-    document.getElementById('product').value = '';
-    document.getElementById('price').value = '';
-    document.getElementById('quantity').value = '';
-  }
-</script>
-
 </body>
 </html>
