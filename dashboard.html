@@ -2,228 +2,285 @@
 <html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Dashboard</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>داشبۆردی کریار</title>
   <style>
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
+
     body {
-      background-color: #f0f2f5;
-      padding: 10px;
+      background: #f4f6f9;
+      padding: 20px;
     }
+
     .dashboard {
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      background: #fff;
       max-width: 1000px;
-      margin: 0 auto;
-      padding: 15px;
+      margin: auto;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
+
     h1 {
-      font-size: 22px;
-      color: #333;
-      margin-bottom: 15px;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #e0e0e0;
-      text-align: right;
-    }
-    h2 {
-      font-size: 16px;
-      color: #444;
-      margin: 15px 0 10px;
-      text-align: right;
-    }
-    .menu {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 15px;
-      justify-content: flex-end;
-    }
-    .menu-item {
-      background: #f5f5f5;
-      padding: 8px 12px;
-      border-radius: 5px;
-      font-size: 14px;
-      color: #555;
-      cursor: pointer;
-      transition: all 0.3s;
-    }
-    .menu-item:hover {
-      background: #e0e0e0;
-      transform: translateY(-2px);
-    }
-    .divider {
-      height: 1px;
-      background: #e0e0e0;
-      margin: 15px 0;
-    }
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    .stat-box {
-      background: #f9f9f9;
-      padding: 12px;
-      border-radius: 5px;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-      text-align: right;
-    }
-    .stat-title {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 8px;
-    }
-    .stat-value {
-      font-size: 16px;
+      font-size: 28px;
       color: #222;
-      font-weight: bold;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .quick-stats {
-      margin: 20px 0;
-    }
-    .quick-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-    }
-    .quick-stat-item {
-      background: #f0f8ff;
-      padding: 10px;
-      border-radius: 5px;
-      font-size: 14px;
-      text-align: right;
-    }
-    .quick-stat-item div:last-child {
-      font-weight: bold;
-      margin-top: 5px;
-      font-size: 15px;
-    }
-    .footer {
-      text-align: center;
-      margin-top: 20px;
-      color: #777;
-      font-size: 14px;
-    }
-    .search-bar {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin-top: 15px;
-      font-size: 14px;
-      text-align: right;
-    }
-    .logout-btn {
-      margin-top: 15px;
-      padding: 10px 20px;
-      background-color: #dc3545;
+
+    /* دوگمەی New Customer */
+    .new-customer-btn {
+      background-color: #007bff;
       color: white;
       border: none;
-      border-radius: 5px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+      box-shadow: 0 3px 7px rgba(0,123,255,0.5);
+    }
+
+    .new-customer-btn:hover {
+      background-color: #0056b3;
+    }
+
+    h2 {
+      font-size: 18px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .search-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .filter-item {
+      flex: 1;
+      min-width: 160px;
+      padding: 10px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fafafa;
+      transition: border-color 0.3s ease;
+    }
+
+    .filter-item:focus {
+      border-color: #007bff;
+      outline: none;
+      background-color: #fff;
+    }
+
+    .results-count {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 10px;
+    }
+
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
       font-size: 14px;
     }
-    .logout-btn:hover {
-      background-color: #c82333;
+
+    .customer-table th,
+    .customer-table td {
+      text-align: right;
+      padding: 12px 10px;
     }
+
+    .customer-table th {
+      background-color: #f1f1f1;
+      color: #555;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .customer-table td {
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+
+    .customer-table tr:hover {
+      background-color: #f9f9f9;
+      cursor: pointer;
+    }
+
+    .seo-status {
+      color: green;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    .pagination {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 20px;
+    }
+
+    .page-btn {
+      padding: 6px 14px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background-color: white;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .page-btn:hover {
+      background-color: #eee;
+    }
+
     @media (max-width: 600px) {
-      .stats-container {
-        grid-template-columns: 1fr;
+      .customer-table th,
+      .customer-table td {
+        font-size: 12px;
+        padding: 8px 6px;
       }
-      .quick-stats-grid {
-        grid-template-columns: 1fr 1fr;
+
+      .filter-item {
+        min-width: 100%;
+      }
+
+      h1 {
+        flex-direction: column;
+        gap: 10px;
       }
     }
   </style>
 </head>
 <body>
   <div class="dashboard">
-    <h1>Dashboard</h1>
+    <h1>
+      داشبۆردی کریار
+      <button class="new-customer-btn" onclick="window.location.href='new-customer.html'">New Customer</button>
+    </h1>
 
-    <h2>Live Location</h2>
-    <div class="menu">
-      <div class="menu-item" onclick="window.location.href='inventory.html'">Inventory</div>
-      <div class="menu-item" onclick="window.location.href='customer.html'">Parties</div>
-      <div class="menu-item" onclick="window.location.href='sales.html'">Sales</div>
-      <div class="menu-item" onclick="window.location.href='purchase.html'">Purchase</div>
-      <div class="menu-item" onclick="window.location.href='van-sale.html'">Van Sale</div>
-      <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
-      <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
+    <h2>پشکنینی گەڕان</h2>
+    <div class="search-filters">
+      <select class="filter-item" aria-label="Select Region">
+        <option selected disabled>هەڵبژاردنی ناوچە</option>
+        <option>ناوچە ١</option>
+        <option>ناوچە ٢</option>
+      </select>
+      <select class="filter-item" aria-label="Select City">
+        <option selected disabled>هەڵبژاردنی شار</option>
+        <option>شار ١</option>
+        <option>شار ٢</option>
+      </select>
+      <select class="filter-item" aria-label="Select Route">
+        <option selected disabled>هەڵبژاردنی ڕێگێ</option>
+        <option>ڕێگێ ١</option>
+        <option>ڕێگێ ٢</option>
+      </select>
+      <select class="filter-item" aria-label="Select Group">
+        <option selected disabled>هەڵبژاردنی گرووپ</option>
+        <option>گرووپ A</option>
+        <option>گرووپ B</option>
+      </select>
     </div>
 
-    <div class="divider"></div>
+    <div class="results-count">1-30 لە 822</div>
 
-    <div class="stats-container">
-      <div class="stat-box">
-        <div class="stat-title">Order</div>
-        <div class="stat-value">IQD 0</div>
-        <div class="stat-value">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">Invoice</div>
-        <div class="stat-value">IQD 17,277,500.00</div>
-        <div class="stat-value">291 units</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">03/06/2025 - 03/06/2021</div>
-        <div class="stat-value">Visited 435</div>
-      </div>
+    <table class="customer-table" role="grid" aria-label="Customer List">
+      <thead>
+        <tr>
+          <th>کۆدی کریار</th>
+          <th>ناو</th>
+          <th>مۆبایل</th>
+          <th>بالانس</th>
+          <th>ناونیشانی جۆگرافی</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr onclick="viewCustomer('770044')" tabindex="0" role="row">
+          <td>770044</td>
+          <td>بازاڕی ریکان</td>
+          <td>750787433</td>
+          <td>IQD 12,000</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('762925')" tabindex="0" role="row">
+          <td>762925</td>
+          <td>پۆڵکا ژێنەرا لەوان</td>
+          <td>7504675327</td>
+          <td>IQD 268,250</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('929359')" tabindex="0" role="row">
+          <td>929359</td>
+          <td>سومەر عەبوو زید تیرەوا</td>
+          <td>7704083038</td>
+          <td>IQD 30,000</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('819969')" tabindex="0" role="row">
+          <td>819969</td>
+          <td>ئالبان ئێ کاک دانار هۆڤیدان</td>
+          <td>758079597</td>
+          <td>IQD 124,500</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('773829')" tabindex="0" role="row">
+          <td>773829</td>
+          <td>کۆگیی ژێهان</td>
+          <td>7517305400</td>
+          <td>IQD 1,359,500</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('781248')" tabindex="0" role="row">
+          <td>781248</td>
+          <td>کۆگیی سارتۆم</td>
+          <td>7504455838</td>
+          <td>IQD 59,500</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('883753')" tabindex="0" role="row">
+          <td>883753</td>
+          <td>بازاڕی مەدرید موسێل</td>
+          <td>7507654133</td>
+          <td>IQD 36,000</td>
+          <td class="seo-status">✅</td>
+        </tr>
+        <tr onclick="viewCustomer('763273')" tabindex="0" role="row">
+          <td>763273</td>
+          <td>بازاڕی عەبوو عەلی</td>
+          <td>7504658895</td>
+          <td>IQD 24,000</td>
+          <td class="seo-status">✅</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="pagination" role="navigation" aria-label="Pagination Navigation">
+      <button class="page-btn" aria-label="Previous Page">Previous</button>
+      <button class="page-btn" aria-label="Page 1">1</button>
+      <button class="page-btn" aria-label="Page 2">2</button>
+      <button class="page-btn" aria-label="Next Page">Next</button>
     </div>
-
-    <div class="divider"></div>
-
-    <div class="quick-stats">
-      <h2>Quick Statistics</h2>
-      <div class="quick-stats-grid">
-        <div class="quick-stat-item">
-          <div>To collect:</div>
-          <div>1103828500</div>
-        </div>
-        <div class="quick-stat-item">
-          <div>To pay:</div>
-          <div>0</div>
-        </div>
-        <div class="quick-stat-item">
-          <div>Low Stock Count:</div>
-          <div>0</div>
-        </div>
-        <div class="quick-stat-item">
-          <div>Stock Value:</div>
-          <div>0</div>
-        </div>
-        <div class="quick-stat-item">
-          <div>Product Count:</div>
-          <div>20</div>
-        </div>
-        <div class="quick-stat-item">
-          <div>Party Count:</div>
-          <div>6139</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="footer">
-      <h2>lawa bradosti</h2>
-      <div>Settings</div>
-      <div>7502020061</div>
-      <button class="logout-btn" onclick="logout()">Log out</button>
-    </div>
-
-    <input type="text" class="search-bar" placeholder="Type here to search">
   </div>
 
   <script>
-    function logout() {
-      window.location.href = './index.html';
+    function viewCustomer(customerId) {
+      alert(`Opening customer page for ID: ${customerId}`);
+      // لەوێ دەتوانیت بڕۆیت بۆ پەڕەی وردەکاری کریار بە بەرزکردنەوەی customerId
+      // وێبسايت یان ڕیکوئێستی ڕاستەوخۆ بەکارهێنە
+      // window.location.href = `customer-details.html?id=${customerId}`;
     }
   </script>
 </body>
