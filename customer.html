@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Customer Dashboard</title>
+  <title>سەرەکییەکانی کڕیار</title>
   <style>
     body {
       background: #f4f6f9;
@@ -81,17 +81,17 @@
 </head>
 <body>
   <div class="dashboard">
-    <h1>Customer Dashboard</h1>
-    <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
+    <h1>سەرەکییەکانی کڕیار</h1>
+    <button class="new-customer-btn" onclick="addNewCustomer()">زیادکردنی کڕیار</button>
 
     <table class="customer-table">
       <thead>
         <tr>
-          <th>Customer Code</th>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Balance</th>
-          <th>Geo Location</th>
+          <th>کۆد</th>
+          <th>ناو</th>
+          <th>مۆبایل</th>
+          <th>مانای کڕیار</th>
+          <th>ناونیشانی GPS</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -123,13 +123,13 @@
 
       data.forEach(c => {
         const tr = document.createElement("tr");
-        tr.innerHTML = 
+        tr.innerHTML = `
           <td>${c.code}</td>
           <td>${c.name}</td>
           <td>${c.mobile}</td>
           <td>IQD ${c.balance}</td>
-          <td class="seo-status">✅</td>
-        ;
+          <td>${c.location || '<span class="seo-status">❌</span>'}</td>
+        `;
         tbody.appendChild(tr);
       });
     }
