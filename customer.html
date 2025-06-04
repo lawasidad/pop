@@ -1,22 +1,15 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Customer Dashboard</title>
   <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
-
     body {
       background: #f4f6f9;
       padding: 20px;
+      font-family: sans-serif;
     }
-
     .dashboard {
       background: #fff;
       max-width: 1000px;
@@ -25,40 +18,12 @@
       border-radius: 12px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
-
     h1 {
       font-size: 24px;
-      color: #222;
       margin-bottom: 20px;
       border-bottom: 2px solid #eee;
       padding-bottom: 10px;
     }
-
-    h2 {
-      font-size: 18px;
-      color: #444;
-      margin-bottom: 10px;
-    }
-
-    .search-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 20px;
-      justify-content: flex-end;
-      align-items: center;
-    }
-
-    .filter-item {
-      flex: 1;
-      min-width: 160px;
-      padding: 10px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      background-color: #fafafa;
-    }
-
     .new-customer-btn {
       padding: 10px 18px;
       background-color: #007bff;
@@ -67,94 +32,22 @@
       border-radius: 6px;
       font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      white-space: nowrap;
+      float: left;
     }
-
-    .new-customer-btn:hover {
-      background-color: #0056b3;
-    }
-
-    .results-count {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 10px;
-      text-align: right;
-    }
-
     .customer-table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 20px;
     }
-
-    .customer-table th,
-    .customer-table td {
+    .customer-table th, .customer-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
       text-align: right;
-      padding: 12px 10px;
-      font-size: 14px;
     }
-
-    .customer-table th {
-      background-color: #f1f1f1;
-      color: #555;
-      border-bottom: 2px solid #ddd;
-    }
-
-    .customer-table td {
-      border-bottom: 1px solid #eee;
-      color: #333;
-    }
-
-    .customer-table tr:hover {
-      background-color: #f9f9f9;
-      cursor: pointer;
-    }
-
     .seo-status {
       color: green;
       font-weight: bold;
-      font-size: 16px;
     }
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 6px;
-      margin-top: 20px;
-    }
-
-    .page-btn {
-      padding: 6px 14px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: white;
-      cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .page-btn:hover {
-      background-color: #eee;
-    }
-
-    @media (max-width: 600px) {
-      .customer-table th,
-      .customer-table td {
-        font-size: 12px;
-        padding: 8px 6px;
-      }
-
-      .filter-item {
-        min-width: 100%;
-      }
-
-      .search-filters {
-        justify-content: center;
-      }
-    }
-
-    /* Modal Styles */
     #customerModal {
       display: none;
       position: fixed;
@@ -164,7 +57,6 @@
       justify-content: center;
       align-items: center;
     }
-
     #customerModal .modal-content {
       background: white;
       padding: 20px;
@@ -173,19 +65,16 @@
       width: 90%;
       position: relative;
     }
-
-    #customerModal .close-btn {
+    .close-btn {
       position: absolute;
       top: 10px;
       left: 15px;
-      cursor: pointer;
       font-size: 24px;
-      color: #555;
+      cursor: pointer;
     }
-
     iframe {
       width: 100%;
-      height: 600px;
+      height: 500px;
       border: none;
     }
   </style>
@@ -193,33 +82,7 @@
 <body>
   <div class="dashboard">
     <h1>Customer Dashboard</h1>
-
-    <h2>Search Filters</h2>
-    <div class="search-filters">
-      <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
-      <select class="filter-item">
-        <option>Select Region</option>
-        <option>Region 1</option>
-        <option>Region 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select City</option>
-        <option>City 1</option>
-        <option>City 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select Route</option>
-        <option>Route 1</option>
-        <option>Route 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select Group</option>
-        <option>Group A</option>
-        <option>Group B</option>
-      </select>
-    </div>
-
-    <div class="results-count">1-30 of 822</div>
+    <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
 
     <table class="customer-table">
       <thead>
@@ -231,75 +94,11 @@
           <th>Geo Location</th>
         </tr>
       </thead>
-      <tbody>
-        <tr onclick="viewCustomer('770044')">
-          <td>770044</td>
-          <td>Market Rikan</td>
-          <td>750787433</td>
-          <td>IQD 12,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('762925')">
-          <td>762925</td>
-          <td>Polka Zenera Lawan</td>
-          <td>7504675327</td>
-          <td>IQD 268,250</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('929359')">
-          <td>929359</td>
-          <td>Sumer Abu Zeed Teerawa</td>
-          <td>7704083038</td>
-          <td>IQD 30,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('819969')">
-          <td>819969</td>
-          <td>Alaban E Kak Danar Hovidan</td>
-          <td>758079597</td>
-          <td>IQD 124,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('773829')">
-          <td>773829</td>
-          <td>Kogee Jehan</td>
-          <td>7517305400</td>
-          <td>IQD 1,359,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('781248')">
-          <td>781248</td>
-          <td>Kogee Sartom</td>
-          <td>7504455838</td>
-          <td>IQD 59,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('883753')">
-          <td>883753</td>
-          <td>Madrid Shop Mosel</td>
-          <td>7507654133</td>
-          <td>IQD 36,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('763273')">
-          <td>763273</td>
-          <td>Market Abu Ali</td>
-          <td>7504658895</td>
-          <td>IQD 24,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-      </tbody>
+      <tbody></tbody>
     </table>
-
-    <div class="pagination">
-      <button class="page-btn">Previous</button>
-      <button class="page-btn">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn">Next</button>
-    </div>
   </div>
 
-  <!-- Modal HTML -->
+  <!-- Modal -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -308,10 +107,6 @@
   </div>
 
   <script>
-    function viewCustomer(customerId) {
-      alert(`Opening customer page for ID: ${customerId}`);
-    }
-
     function addNewCustomer() {
       document.getElementById('customerModal').style.display = 'flex';
     }
@@ -319,6 +114,34 @@
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
     }
+
+    function loadCustomerList() {
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+      const tbody = document.querySelector(".customer-table tbody");
+      tbody.innerHTML = "";
+
+      data.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td>${c.code}</td>
+          <td>${c.name}</td>
+          <td>${c.mobile}</td>
+          <td>IQD ${c.balance}</td>
+          <td class="seo-status">✅</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.onload = loadCustomerList;
+
+    window.addEventListener("message", function(e) {
+      if (e.data === "customer-added") {
+        closeModal();
+        loadCustomerList();
+      }
+    });
   </script>
 </body>
 </html>
