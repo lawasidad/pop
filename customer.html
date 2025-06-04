@@ -1,177 +1,143 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Customer Form</title>
+  <title>زیادکردنی کڕیار</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #f0f4f8;
-      margin: 0; padding: 20px;
+      background: #e9f0fb;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
     }
-    form {
+    .form-card {
       background: white;
-      padding: 30px 40px;
-      border-radius: 10px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      padding: 30px 25px;
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
       width: 100%;
       max-width: 420px;
-      box-sizing: border-box;
     }
     h2 {
+      margin-bottom: 25px;
+      color: #2c3e50;
       text-align: center;
-      margin-bottom: 24px;
-      color: #333;
+      font-weight: 700;
     }
     label {
       display: block;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
+      color: #34495e;
       font-weight: 600;
-      color: #555;
     }
     input[type="text"],
     input[type="number"] {
       width: 100%;
-      padding: 10px 12px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
+      padding: 10px 14px;
+      border: 2px solid #ccc;
+      border-radius: 8px;
       font-size: 16px;
-      box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
     input[type="text"]:focus,
     input[type="number"]:focus {
-      border-color: #007bff;
+      border-color: #3498db;
       outline: none;
     }
-    .location-wrapper {
-      margin-bottom: 18px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    #location {
-      flex: 1;
-      background: #e9ecef;
-    }
     button {
-      background-color: #007bff;
-      border: none;
-      color: white;
-      font-weight: 600;
-      font-size: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      cursor: pointer;
+      margin-top: 20px;
       width: 100%;
+      padding: 12px;
+      background-color: #2980b9;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
       transition: background-color 0.3s ease;
     }
     button:hover {
-      background-color: #0056b3;
+      background-color: #1c5980;
     }
-    .get-location-btn {
-      background: #28a745;
-      padding: 10px 15px;
-      font-size: 14px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      border: none;
-      transition: background-color 0.3s ease;
-    }
-    .get-location-btn:hover {
-      background-color: #1e7e34;
-    }
-    .message {
-      margin-top: 16px;
+    .gps-status {
+      margin-top: 15px;
       font-weight: 600;
-      color: green;
+      color: #27ae60;
+      min-height: 24px;
       text-align: center;
+    }
+    .gps-error {
+      color: #e74c3c;
     }
   </style>
 </head>
 <body>
-  <form id="customerForm" novalidate>
-    <h2>Add New Customer</h2>
+  <div class="form-card">
+    <h2>زیادکردنی کڕیار</h2>
+    <form id="customerForm">
+      <label for="code">کۆدی کڕیار:</label>
+      <input type="text" id="code" required />
 
-    <label for="code">Customer Code</label>
-    <input type="text" id="code" name="code" required autocomplete="off" />
+      <label for="name">ناو:</label>
+      <input type="text" id="name" required />
 
-    <label for="name">Name</label>
-    <input type="text" id="name" name="name" required autocomplete="off" />
+      <label for="mobile">مۆبایل:</label>
+      <input type="text" id="mobile" required />
 
-    <label for="mobile">Mobile</label>
-    <input type="text" id="mobile" name="mobile" required autocomplete="off" />
+      <label for="balance">مانای کڕیار (IQD):</label>
+      <input type="number" id="balance" required min="0" step="any" />
 
-    <label for="balance">Balance</label>
-    <input type="number" id="balance" name="balance" required min="0" step="any" />
-
-    <div class="location-wrapper">
-      <input type="text" id="location" name="location" placeholder="GPS Location (latitude,longitude)" readonly required />
-      <button type="button" class="get-location-btn" onclick="getLocation()">Get GPS</button>
-    </div>
-
-    <button type="submit">Add Customer</button>
-
-    <div class="message" id="message"></div>
-  </form>
+      <button type="submit">زیادکردنی کڕیار</button>
+    </form>
+    <div class="gps-status" id="gpsStatus">ناونیشانی GPS نێردراو نیە.</div>
+  </div>
 
   <script>
-    function getLocation() {
-      const locationInput = document.getElementById('location');
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
-        return;
-      }
-      navigator.geolocation.getCurrentPosition(
-        position => {
-          const lat = position.coords.latitude.toFixed(6);
-          const lon = position.coords.longitude.toFixed(6);
-          locationInput.value = `${lat},${lon}`;
-        },
-        error => {
-          alert("Unable to retrieve your location. Please allow GPS access.");
-        }
-      );
-    }
+    const form = document.getElementById('customerForm');
+    const gpsStatus = document.getElementById('gpsStatus');
 
-    document.getElementById('customerForm').addEventListener('submit', function(e) {
+    form.addEventListener('submit', function(e) {
       e.preventDefault();
-      const code = this.code.value.trim();
-      const name = this.name.value.trim();
-      const mobile = this.mobile.value.trim();
-      const balance = this.balance.value.trim();
-      const location = this.location.value.trim();
 
-      if (!code || !name || !mobile || !balance || !location) {
-        alert("Please fill out all fields including GPS location.");
+      const code = document.getElementById('code').value.trim();
+      const name = document.getElementById('name').value.trim();
+      const mobile = document.getElementById('mobile').value.trim();
+      const balance = parseFloat(document.getElementById('balance').value);
+
+      if (!navigator.geolocation) {
+        gpsStatus.textContent = "گرتنی ناونیشانی GPS لە ئامرازەکەتەوە بەردەست نیە.";
+        gpsStatus.classList.add('gps-error');
         return;
       }
 
-      const customer = { code, name, mobile, balance, location };
+      gpsStatus.textContent = "لە کاتی گرتنی ناونیشانی GPS...";
+      gpsStatus.classList.remove('gps-error');
 
-      // Clear previous customers and add only the new one
-      localStorage.removeItem('customers');
-      localStorage.setItem('customers', JSON.stringify([customer]));
+      navigator.geolocation.getCurrentPosition(position => {
+        const latitude = position.coords.latitude.toFixed(6);
+        const longitude = position.coords.longitude.toFixed(6);
+        const location = `${latitude}, ${longitude}`;
 
-      // Notify parent window (dashboard) to refresh data
-      window.parent.postMessage('customer-added', '*');
+        let customers = JSON.parse(localStorage.getItem('customers') || '[]');
+        customers.push({ code, name, mobile, balance, location });
+        localStorage.setItem('customers', JSON.stringify(customers));
 
-      // Reset form
-      this.reset();
-      document.getElementById('location').value = '';
-      
-      const message = document.getElementById('message');
-      message.textContent = 'Customer added successfully!';
-      
-      setTimeout(() => {
-        message.textContent = '';
-      }, 4000);
+        gpsStatus.textContent = `ناونیشانی GPS: ${location} نیشانکرا.`;
+
+        window.parent.postMessage('customer-added', '*');
+
+        form.reset();
+      }, error => {
+        gpsStatus.textContent = `هەڵەیەک ڕویدا: ${error.message}`;
+        gpsStatus.classList.add('gps-error');
+      }, { enableHighAccuracy: true, timeout: 10000 });
     });
   </script>
 </body>
