@@ -2,142 +2,145 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>زیادکردنی کڕیار</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Customer Dashboard</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #e9f0fb;
-      display: flex;
+      background: #f4f6f9;
+      padding: 20px;
+      font-family: sans-serif;
+    }
+    .dashboard {
+      background: #fff;
+      max-width: 1000px;
+      margin: auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+    }
+    h1 {
+      font-size: 24px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+    .new-customer-btn {
+      padding: 10px 18px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      float: left;
+    }
+    .customer-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .customer-table th, .customer-table td {
+      border: 1px solid #ccc;
+      padding: 10px;
+      text-align: right;
+    }
+    .seo-status {
+      color: green;
+      font-weight: bold;
+    }
+    #customerModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 9999;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      margin: 0;
-      padding: 20px;
     }
-    .form-card {
+    #customerModal .modal-content {
       background: white;
-      padding: 30px 25px;
-      border-radius: 15px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 420px;
-    }
-    h2 {
-      margin-bottom: 25px;
-      color: #2c3e50;
-      text-align: center;
-      font-weight: 700;
-    }
-    label {
-      display: block;
-      margin-bottom: 12px;
-      color: #34495e;
-      font-weight: 600;
-    }
-    input[type="text"],
-    input[type="number"] {
-      width: 100%;
-      padding: 10px 14px;
-      border: 2px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus,
-    input[type="number"]:focus {
-      border-color: #3498db;
-      outline: none;
-    }
-    button {
-      margin-top: 20px;
-      width: 100%;
-      padding: 12px;
-      background-color: #2980b9;
-      border: none;
+      padding: 20px;
       border-radius: 10px;
-      color: white;
-      font-size: 18px;
-      font-weight: 700;
+      max-width: 600px;
+      width: 90%;
+      position: relative;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      left: 15px;
+      font-size: 24px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(41, 128, 185, 0.4);
-      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #1c5980;
-    }
-    .gps-status {
-      margin-top: 15px;
-      font-weight: 600;
-      color: #27ae60;
-      min-height: 24px;
-      text-align: center;
-    }
-    .gps-error {
-      color: #e74c3c;
+    iframe {
+      width: 100%;
+      height: 500px;
+      border: none;
     }
   </style>
 </head>
 <body>
-  <div class="form-card">
-    <h2>زیادکردنی کڕیار</h2>
-    <form id="customerForm">
-      <label for="code">کۆدی کڕیار:</label>
-      <input type="text" id="code" required />
+  <div class="dashboard">
+    <h1>Customer Dashboard</h1>
+    <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
 
-      <label for="name">ناو:</label>
-      <input type="text" id="name" required />
+    <table class="customer-table">
+      <thead>
+        <tr>
+          <th>Customer Code</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Balance</th>
+          <th>Geo Location</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
 
-      <label for="mobile">مۆبایل:</label>
-      <input type="text" id="mobile" required />
-
-      <label for="balance">مانای کڕیار (IQD):</label>
-      <input type="number" id="balance" required min="0" step="any" />
-
-      <button type="submit">زیادکردنی کڕیار</button>
-    </form>
-    <div class="gps-status" id="gpsStatus">ناونیشانی GPS نێردراو نیە.</div>
+  <!-- Modal -->
+  <div id="customerModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <iframe src="new-customer.html"></iframe>
+    </div>
   </div>
 
   <script>
-    const form = document.getElementById('customerForm');
-    const gpsStatus = document.getElementById('gpsStatus');
+    function addNewCustomer() {
+      document.getElementById('customerModal').style.display = 'flex';
+    }
 
-    form.addEventListener('submit', function(e) {
-      e.preventDefault();
+    function closeModal() {
+      document.getElementById('customerModal').style.display = 'none';
+    }
 
-      const code = document.getElementById('code').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
-      const balance = parseFloat(document.getElementById('balance').value);
+    function loadCustomerList() {
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+      const tbody = document.querySelector(".customer-table tbody");
+      tbody.innerHTML = "";
 
-      if (!navigator.geolocation) {
-        gpsStatus.textContent = "گرتنی ناونیشانی GPS لە ئامرازەکەتەوە بەردەست نیە.";
-        gpsStatus.classList.add('gps-error');
-        return;
+      data.forEach(c => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = 
+          <td>${c.code}</td>
+          <td>${c.name}</td>
+          <td>${c.mobile}</td>
+          <td>IQD ${c.balance}</td>
+          <td class="seo-status">✅</td>
+        ;
+        tbody.appendChild(tr);
+      });
+    }
+
+    window.onload = loadCustomerList;
+
+    window.addEventListener("message", function(e) {
+      if (e.data === "customer-added") {
+        closeModal();
+        loadCustomerList();
       }
-
-      gpsStatus.textContent = "لە کاتی گرتنی ناونیشانی GPS...";
-      gpsStatus.classList.remove('gps-error');
-
-      navigator.geolocation.getCurrentPosition(position => {
-        const latitude = position.coords.latitude.toFixed(6);
-        const longitude = position.coords.longitude.toFixed(6);
-        const location = `${latitude}, ${longitude}`;
-
-        let customers = JSON.parse(localStorage.getItem('customers') || '[]');
-        customers.push({ code, name, mobile, balance, location });
-        localStorage.setItem('customers', JSON.stringify(customers));
-
-        gpsStatus.textContent = `ناونیشانی GPS: ${location} نیشانکرا.`;
-
-        window.parent.postMessage('customer-added', '*');
-
-        form.reset();
-      }, error => {
-        gpsStatus.textContent = `هەڵەیەک ڕویدا: ${error.message}`;
-        gpsStatus.classList.add('gps-error');
-      }, { enableHighAccuracy: true, timeout: 10000 });
     });
   </script>
 </body>
