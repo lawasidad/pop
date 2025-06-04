@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -7,8 +7,6 @@
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
@@ -32,12 +30,6 @@
       margin-bottom: 20px;
       border-bottom: 2px solid #eee;
       padding-bottom: 10px;
-    }
-
-    h2 {
-      font-size: 18px;
-      color: #444;
-      margin-bottom: 10px;
     }
 
     .search-filters {
@@ -67,8 +59,6 @@
       border-radius: 6px;
       font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
-      white-space: nowrap;
     }
 
     .new-customer-btn:hover {
@@ -117,161 +107,122 @@
       font-size: 16px;
     }
 
-    .pagination {
-      display: flex;
+    /* Modal */
+    #customerModal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
       justify-content: center;
-      gap: 6px;
-      margin-top: 20px;
+      align-items: center;
+      z-index: 1000;
     }
 
-    .page-btn {
-      padding: 6px 14px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      background-color: white;
+    #customerModal .modal-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+    }
+
+    #customerModal .modal-content h2 {
+      margin-bottom: 15px;
+    }
+
+    #customerModal .close {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 24px;
       cursor: pointer;
-      transition: background 0.2s ease;
-    }
-
-    .page-btn:hover {
-      background-color: #eee;
-    }
-
-    @media (max-width: 600px) {
-      .customer-table th,
-      .customer-table td {
-        font-size: 12px;
-        padding: 8px 6px;
-      }
-
-      .filter-item {
-        min-width: 100%;
-      }
-
-      .search-filters {
-        justify-content: center;
-      }
     }
   </style>
 </head>
 <body>
   <div class="dashboard">
-    <h1>Customer Dashboard</h1>
+    <h1>Dashboard کڕیار</h1>
 
-    <h2>Search Filters</h2>
     <div class="search-filters">
-      <button class="new-customer-btn" onclick="addNewCustomer()">New Customer</button>
-      <select class="filter-item">
-        <option>Select Region</option>
-        <option>Region 1</option>
-        <option>Region 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select City</option>
-        <option>City 1</option>
-        <option>City 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select Route</option>
-        <option>Route 1</option>
-        <option>Route 2</option>
-      </select>
-      <select class="filter-item">
-        <option>Select Group</option>
-        <option>Group A</option>
-        <option>Group B</option>
-      </select>
+      <button class="new-customer-btn" onclick="addNewCustomer()">زیادکردنی کڕیار</button>
     </div>
 
-    <div class="results-count">1-30 of 822</div>
+    <div class="results-count">1-30</div>
 
     <table class="customer-table">
       <thead>
         <tr>
-          <th>Customer Code</th>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Balance</th>
-          <th>Geo Location</th>
+          <th>کۆد</th>
+          <th>ناو</th>
+          <th>مۆبایل</th>
+          <th>قەرز</th>
+          <th>نیشانی جۆگرافی</th>
         </tr>
       </thead>
-      <tbody>
-        <tr onclick="viewCustomer('770044')">
-          <td>770044</td>
-          <td>Market Rikan</td>
-          <td>750787433</td>
-          <td>IQD 12,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('762925')">
-          <td>762925</td>
-          <td>Polka Zenera Lawan</td>
-          <td>7504675327</td>
-          <td>IQD 268,250</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('929359')">
-          <td>929359</td>
-          <td>Sumer Abu Zeed Teerawa</td>
-          <td>7704083038</td>
-          <td>IQD 30,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('819969')">
-          <td>819969</td>
-          <td>Alaban E Kak Danar Hovidan</td>
-          <td>758079597</td>
-          <td>IQD 124,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('773829')">
-          <td>773829</td>
-          <td>Kogee Jehan</td>
-          <td>7517305400</td>
-          <td>IQD 1,359,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('781248')">
-          <td>781248</td>
-          <td>Kogee Sartom</td>
-          <td>7504455838</td>
-          <td>IQD 59,500</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('883753')">
-          <td>883753</td>
-          <td>Madrid Shop Mosel</td>
-          <td>7507654133</td>
-          <td>IQD 36,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
-        <tr onclick="viewCustomer('763273')">
-          <td>763273</td>
-          <td>Market Abu Ali</td>
-          <td>7504658895</td>
-          <td>IQD 24,000</td>
-          <td class="seo-status">✅</td>
-        </tr>
+      <tbody id="customerList">
+        <!-- Customers will be listed here -->
       </tbody>
     </table>
+  </div>
 
-    <div class="pagination">
-      <button class="page-btn">Previous</button>
-      <button class="page-btn">1</button>
-      <button class="page-btn">2</button>
-      <button class="page-btn">Next</button>
+  <!-- Modal Form -->
+  <div id="customerModal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>زیادکردنی کڕیار</h2>
+      <form id="customerForm" onsubmit="submitCustomerForm(event)">
+        <input id="code" class="filter-item" placeholder="کۆد" required />
+        <input id="name" class="filter-item" placeholder="ناو" required />
+        <input id="mobile" class="filter-item" placeholder="مۆبایل" required />
+        <input id="balance" class="filter-item" placeholder="قەرز" required />
+        <select id="geo" class="filter-item">
+          <option value="✅">✅</option>
+          <option value="❌">❌</option>
+        </select>
+        <button type="submit" class="new-customer-btn" style="margin-top:10px;">زیادکردن</button>
+      </form>
     </div>
   </div>
 
   <script>
-    function viewCustomer(customerId) {
-      alert(`Opening customer page for ID: ${customerId}`);
-      // window.location.href = `customer-details.html?id=${customerId}`;
+    function addNewCustomer() {
+      document.getElementById('customerModal').style.display = 'flex';
     }
 
-    function addNewCustomer() {
-      window.location.href = 'new-customer.html';
+    function closeModal() {
+      document.getElementById('customerModal').style.display = 'none';
+    }
+
+    function submitCustomerForm(e) {
+      e.preventDefault();
+
+      const code = document.getElementById('code').value;
+      const name = document.getElementById('name').value;
+      const mobile = document.getElementById('mobile').value;
+      const balance = document.getElementById('balance').value;
+      const geo = document.getElementById('geo').value;
+
+      const tbody = document.getElementById('customerList');
+
+      const tr = document.createElement('tr');
+      tr.setAttribute("onclick", `viewCustomer('${code}')`);
+      tr.innerHTML = `
+        <td>${code}</td>
+        <td>${name}</td>
+        <td>${mobile}</td>
+        <td>${balance}</td>
+        <td class="seo-status">${geo}</td>
+      `;
+
+      tbody.prepend(tr);
+
+      document.getElementById('customerForm').reset();
+      closeModal();
+    }
+
+    function viewCustomer(customerId) {
+      alert(`پیشاندانی زانیارییەکانی کڕیار بە ID: ${customerId}`);
     }
   </script>
 </body>
