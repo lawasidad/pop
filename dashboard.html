@@ -43,6 +43,7 @@
       gap: 8px;
       margin-bottom: 15px;
       justify-content: flex-end;
+      align-items: center;
     }
     .menu-item {
       background: #f5f5f5;
@@ -52,10 +53,26 @@
       color: #555;
       cursor: pointer;
       transition: all 0.3s;
+      user-select: none;
     }
     .menu-item:hover {
       background: #e0e0e0;
       transform: translateY(-2px);
+    }
+    .new-customer-btn {
+      background-color: #28a745;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: auto;
+      user-select: none;
+    }
+    .new-customer-btn:hover {
+      background-color: #218838;
     }
     .divider {
       height: 1px;
@@ -140,6 +157,13 @@
       .quick-stats-grid {
         grid-template-columns: 1fr 1fr;
       }
+      .menu {
+        justify-content: center;
+      }
+      .new-customer-btn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -156,6 +180,8 @@
       <div class="menu-item" onclick="window.location.href='van-sale.html'">Van Sale</div>
       <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
       <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
+      <!-- New Customer Button -->
+      <button class="new-customer-btn" onclick="window.location.href='new-customer.html'">New Customer</button>
     </div>
 
     <div class="divider"></div>
