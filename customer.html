@@ -1,163 +1,175 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>لیستی کڕیاران</title>
+  <title>Customer Dashboard</title>
   <style>
     * {
       box-sizing: border-box;
-      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     }
 
     body {
-      background-color: #eef1f5;
-      margin: 0;
-      padding: 15px;
+      background: #f4f6f9;
+      padding: 20px;
     }
 
-    .container {
-      max-width: 1100px;
+    .dashboard {
+      background: #fff;
+      max-width: 1000px;
       margin: auto;
-      background: white;
       padding: 20px;
-      border-radius: 15px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
     }
 
     h1 {
       font-size: 24px;
-      color: #2c3e50;
+      color: #222;
       margin-bottom: 20px;
-      border-bottom: 2px solid #3498db;
+      border-bottom: 2px solid #eee;
       padding-bottom: 10px;
     }
 
-    .filters {
+    h2 {
+      font-size: 18px;
+      color: #444;
+      margin-bottom: 10px;
+    }
+
+    .search-filters {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       margin-bottom: 20px;
     }
 
-    .filters select {
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+    .filter-item {
       flex: 1;
       min-width: 160px;
-      background: #f8f9fa;
+      padding: 10px;
       font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: #fafafa;
     }
 
     .results-count {
       font-size: 14px;
-      color: #777;
+      color: #666;
       margin-bottom: 10px;
     }
 
-    table {
+    .customer-table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
 
-    thead {
-      background-color: #3498db;
-      color: white;
-    }
-
-    th, td {
-      padding: 12px;
+    .customer-table th,
+    .customer-table td {
       text-align: right;
+      padding: 12px 10px;
       font-size: 14px;
-      border-bottom: 1px solid #ddd;
     }
 
-    tr:hover {
-      background-color: #f0f8ff;
+    .customer-table th {
+      background-color: #f1f1f1;
+      color: #555;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .customer-table td {
+      border-bottom: 1px solid #eee;
+      color: #333;
+    }
+
+    .customer-table tr:hover {
+      background-color: #f9f9f9;
       cursor: pointer;
     }
 
     .seo-status {
       color: green;
       font-weight: bold;
+      font-size: 16px;
     }
 
     .pagination {
       display: flex;
       justify-content: center;
-      gap: 8px;
-      margin-top: 25px;
+      gap: 6px;
+      margin-top: 20px;
     }
 
     .page-btn {
-      background: white;
+      padding: 6px 14px;
+      font-size: 14px;
       border: 1px solid #ccc;
-      padding: 6px 12px;
-      border-radius: 5px;
+      border-radius: 4px;
+      background-color: white;
       cursor: pointer;
-      transition: 0.3s;
+      transition: background 0.2s ease;
     }
 
     .page-btn:hover {
-      background: #3498db;
-      color: white;
-      border-color: #2980b9;
+      background-color: #eee;
     }
 
     @media (max-width: 600px) {
-      .filters select {
-        min-width: 100%;
-      }
-
-      table {
+      .customer-table th,
+      .customer-table td {
         font-size: 12px;
+        padding: 8px 6px;
       }
 
-      th, td {
-        padding: 8px;
+      .filter-item {
+        min-width: 100%;
       }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>لیستی کڕیاران</h1>
+  <div class="dashboard">
+    <h1>Customer Dashboard</h1>
 
-    <div class="filters">
-      <select>
-        <option>هەرێم هەلبژێرە</option>
+    <h2>Search Filters</h2>
+    <div class="search-filters">
+      <select class="filter-item">
+        <option>Select Region</option>
         <option>Region 1</option>
         <option>Region 2</option>
       </select>
-      <select>
-        <option>شار هەلبژێرە</option>
+      <select class="filter-item">
+        <option>Select City</option>
         <option>City 1</option>
         <option>City 2</option>
       </select>
-      <select>
-        <option>ڕووت هەلبژێرە</option>
+      <select class="filter-item">
+        <option>Select Route</option>
         <option>Route 1</option>
         <option>Route 2</option>
       </select>
-      <select>
-        <option>گرووپ هەلبژێرە</option>
+      <select class="filter-item">
+        <option>Select Group</option>
         <option>Group A</option>
         <option>Group B</option>
       </select>
     </div>
 
-    <div class="results-count">1-30 / 822</div>
+    <div class="results-count">1-30 of 822</div>
 
-    <table>
+    <table class="customer-table">
       <thead>
         <tr>
-          <th>کۆدی کڕیار</th>
-          <th>ناوی فرۆشگا</th>
-          <th>ژ.مۆبایل</th>
-          <th>بەقی</th>
-          <th>شوێن</th>
+          <th>Customer Code</th>
+          <th>Name</th>
+          <th>Mobile</th>
+          <th>Balance</th>
+          <th>Geo Location</th>
         </tr>
       </thead>
       <tbody>
@@ -165,73 +177,73 @@
           <td>770044</td>
           <td>Market Rikan</td>
           <td>750787433</td>
-          <td>IQD 12000</td>
+          <td>IQD 12,000</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('762925')">
           <td>762925</td>
           <td>Polka Zenera Lawan</td>
           <td>7504675327</td>
-          <td>IQD 268250</td>
+          <td>IQD 268,250</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('929359')">
           <td>929359</td>
           <td>Sumer Abu Zeed Teerawa</td>
           <td>7704083038</td>
-          <td>IQD 30000</td>
+          <td>IQD 30,000</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('819969')">
           <td>819969</td>
           <td>Alaban E Kak Danar Hovidan</td>
           <td>758079597</td>
-          <td>IQD 124500</td>
+          <td>IQD 124,500</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('773829')">
           <td>773829</td>
           <td>Kogee Jehan</td>
           <td>7517305400</td>
-          <td>IQD 1359500</td>
+          <td>IQD 1,359,500</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('781248')">
           <td>781248</td>
           <td>Kogee Sartom</td>
           <td>7504455838</td>
-          <td>IQD 59500</td>
+          <td>IQD 59,500</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('883753')">
           <td>883753</td>
           <td>Madrid Shop Mosel</td>
           <td>7507654133</td>
-          <td>IQD 36000</td>
+          <td>IQD 36,000</td>
           <td class="seo-status">✅</td>
         </tr>
         <tr onclick="viewCustomer('763273')">
           <td>763273</td>
           <td>Market Abu Ali</td>
           <td>7504658895</td>
-          <td>IQD 24000</td>
+          <td>IQD 24,000</td>
           <td class="seo-status">✅</td>
         </tr>
       </tbody>
     </table>
 
     <div class="pagination">
-      <button class="page-btn">پێشتر</button>
+      <button class="page-btn">Previous</button>
       <button class="page-btn">1</button>
       <button class="page-btn">2</button>
-      <button class="page-btn">دواتر</button>
+      <button class="page-btn">Next</button>
     </div>
   </div>
 
   <script>
     function viewCustomer(customerId) {
-      alert(`ئێستا پەڕەی کڕیار دەکەیتەوە بۆ ID: ${customerId}`);
-      // window.location.href = `customer-details.html?id=${customerId}`;
+      alert(`Opening customer page for ID: ${customerId}`);
+      // Example: window.location.href = `customer-details.html?id=${customerId}`;
     }
   </script>
 </body>
