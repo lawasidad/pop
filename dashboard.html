@@ -2,258 +2,130 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>داشبۆرد</title>
   <style>
-    /* --- CSS هەمانەی پێشووتر --- */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: Tahoma, sans-serif;
-    }
-
     body {
-      background-color: #f0f2f5;
-      padding: 15px;
+      font-family: Tahoma, sans-serif;
       direction: rtl;
+      background: #f7f9fc;
+      margin: 0; padding: 20px;
     }
-
     .dashboard {
-      max-width: 1000px;
+      max-width: 900px;
       margin: auto;
-      background: #fff;
-      border-radius: 10px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 0 10px #ccc;
       padding: 20px;
     }
-
-    h1, h2 {
+    h1 {
       text-align: right;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
       color: #333;
     }
-
-    h1 {
-      font-size: 24px;
-      border-bottom: 1px solid #ddd;
-      padding-bottom: 10px;
-    }
-
     .menu {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-end;
       gap: 10px;
-      margin: 15px 0;
+      justify-content: flex-end;
+      margin-bottom: 20px;
     }
-
-    .menu-item {
-      background-color: #eee;
-      padding: 8px 14px;
+    .menu-item, .new-customer-btn {
+      background: #eee;
+      padding: 10px 15px;
       border-radius: 6px;
-      font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s;
       user-select: none;
+      font-weight: 600;
+      transition: background-color 0.3s;
     }
-
-    .menu-item:hover {
-      background-color: #ddd;
+    .menu-item:hover, .new-customer-btn:hover {
+      background: #d0d0d0;
     }
-
     .new-customer-btn {
-      background-color: #28a745;
-      color: #fff;
-      padding: 8px 16px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-      user-select: none;
-      transition: background-color 0.3s;
+      background: #28a745;
+      color: white;
     }
-
     .new-customer-btn:hover {
-      background-color: #218838;
+      background: #1e7e34;
     }
-
-    .divider {
-      height: 1px;
-      background-color: #e0e0e0;
-      margin: 20px 0;
-    }
-
-    .stats-container {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-      gap: 15px;
-    }
-
-    .stat-box {
-      background-color: #fafafa;
-      padding: 15px;
-      border-radius: 6px;
-      text-align: right;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-    }
-
-    .stat-title {
-      font-size: 14px;
-      color: #666;
-      margin-bottom: 6px;
-      user-select: none;
-    }
-
-    .stat-value {
-      font-size: 16px;
-      font-weight: bold;
-      color: #222;
-      user-select: none;
-    }
-
-    .quick-stats-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 12px;
-    }
-
-    .quick-stat-item {
-      background: #e8f4ff;
-      padding: 12px;
-      border-radius: 6px;
-      text-align: right;
-      font-size: 14px;
-      user-select: none;
-    }
-
-    .quick-stat-item div:last-child {
-      margin-top: 5px;
-      font-weight: bold;
-      font-size: 15px;
-    }
-
     .footer {
+      margin-top: 40px;
       text-align: center;
-      margin-top: 30px;
-      color: #777;
-      font-size: 14px;
+      color: #666;
       user-select: none;
     }
-
     .logout-btn {
       margin-top: 10px;
-      padding: 8px 20px;
       background: #dc3545;
       color: white;
       border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      transition: background-color 0.3s;
-      user-select: none;
-    }
-
-    .logout-btn:hover {
-      background-color: #c82333;
-    }
-
-    .search-bar {
-      margin-top: 20px;
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
+      padding: 8px 18px;
       border-radius: 6px;
-      text-align: right;
-      font-size: 15px;
+      cursor: pointer;
+      font-weight: 600;
+      transition: background-color 0.3s;
     }
-
-    @media (max-width: 600px) {
-      .quick-stats-grid, .stats-container {
-        grid-template-columns: 1fr;
-      }
-      .menu {
-        justify-content: center;
-      }
+    .logout-btn:hover {
+      background: #c82333;
     }
   </style>
 </head>
 <body>
 
-  <div class="dashboard">
-    <h1>داشبۆرد</h1>
+<div class="dashboard" role="main" aria-label="داشبۆردی کۆمپانیا">
 
-    <div class="menu" id="menu">
-      <div class="menu-item" data-url="inventory.html">کۆگا</div>
-      <div class="menu-item" data-url="customer.html">کڕیارەکان</div>
-      <div class="menu-item" data-url="sales.html">فرۆشتن</div>
-      <div class="menu-item" data-url="purchase.html">کڕین</div>
-      <div class="menu-item" data-url="van-sale.html">فرۆشتنی ڤەن</div>
-      <div class="menu-item" data-url="finance.html">دارایی</div>
-      <div class="menu-item" data-url="routes.html">ڕێچکەکان</div>
-      <button class="new-customer-btn" data-url="new-customer.html">زیادکردنی کڕیار</button>
-    </div>
+  <h1>داشبۆرد</h1>
 
-    <div class="divider"></div>
-
-    <div class="stats-container" aria-label="ئاماری گشتی">
-      <div class="stat-box">
-        <div class="stat-title">داواکاری</div>
-        <div class="stat-value" id="demand-amount">IQD 0</div>
-        <div class="stat-value" id="demand-count">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">وەسڵ</div>
-        <div class="stat-value" id="voucher-amount">IQD 17,277,500</div>
-        <div class="stat-value" id="voucher-count">291 یەکە</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">03/06/2025 - 03/06/2021</div>
-        <div class="stat-value" id="visits-count">سەردانکراو 435</div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <h2>ئاماری خێرا</h2>
-    <div class="quick-stats-grid" aria-label="ئاماری خێرا">
-      <div class="quick-stat-item">
-        <div>قەرز بۆ وەرگرتن</div>
-        <div id="debt-receivable">1,103,828,500</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>بۆ پارەدان</div>
-        <div id="debt-payable">0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>کەمبونی کاڵا</div>
-        <div id="stock-deficit">0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>نرخی ستۆک</div>
-        <div id="stock-value">0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>ژمارەی کاڵا</div>
-        <div id="product-count">20</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>ژمارەی کڕیار</div>
-        <div id="party-count">6,139</div>
-      </div>
-    </div>
-
-    <div class="divider"></div>
-
-    <div class="footer" role="contentinfo">
-      <h2>lawa bradosti</h2>
-      <div>ڕێکخستن</div>
-      <div>7502020061</div>
-      <button class="logout-btn" id="logout-btn">چوونە دەرەوە</button>
-    </div>
-
-    <input type="text" class="search-bar" placeholder="گەڕان..." aria-label="گەڕان لەناو داشبۆرد"/>
+  <div class="menu" id="menu">
+    <div class="menu-item" data-url="inventory.html">کۆگا</div>
+    <div class="menu-item" data-url="customer.html">کڕیارەکان</div>
+    <div class="menu-item" data-url="sales.html">فرۆشتن</div>
+    <div class="menu-item" data-url="purchase.html">کڕین</div>
+    <div class="menu-item" data-url="van-sale.html">فرۆشتنی ڤەن</div>
+    <div class="menu-item" data-url="finance.html">دارایی</div>
+    <div class="menu-item" data-url="routes.html">ڕێچکەکان</div>
+    <button class="new-customer-btn" data-url="new-customer.html" type="button">زیادکردنی کڕیار</button>
   </div>
 
-  <script>
-    // دڵنیابوونەوە لە کلیلکردنی هەموو مێنیو بەتنەکان یان دیڤەکان بەکارهێنانی event delegation
-    document.getElementById('menu').addEventListener
+  <div class="footer" role="contentinfo">
+    <div>lawa bradosti</div>
+    <div>ڕێکخستن: 7502020061</div>
+    <button class="logout-btn" id="logout-btn" type="button">چوونە دەرەوە</button>
+  </div>
+
+</div>
+
+<script>
+  // ئەم کۆدە هەموو کلیلەکان دەگەڕێتەوە بۆ ناو 'data-url' کە هەر ئەوەندە بکات بە پەڕەیەکی نوێ
+
+  // کلیل بۆ هەموو بەتنەکان یان دیڤەکان لە ناو منیو
+  document.getElementById('menu').addEventListener('click', function(event) {
+    // ئەو کلیلە لەسەر کۆمۆننتێک کە داری data-url هەیە
+    let target = event.target;
+    // ئەگەر لەسەر بەتنەکە یان دیڤەکەی منیو کلیل کرا
+    while (target && target !== this) {
+      if (target.dataset && target.dataset.url) {
+        // وەرگرتنی ناونیشانی URL
+        const url = target.dataset.url;
+        alert('گواستنەوە بۆ: ' + url);
+        // ئەم کۆدێ ئەنجام بدە بۆ گواستنەوە
+        // بۆ تاقیکردنەوە، alert هەبووە، دەتوانیت ئەمە بە ئەم کۆدە عوض بکەیت:
+        // window.location.href = url;
+        return;
+      }
+      target = target.parentNode;
+    }
+  });
+
+  // کلیل بۆ دوگمەی چوونە دەرەوە
+  document.getElementById('logout-btn').addEventListener('click', function() {
+    alert('چوونە دەرەوە');
+    // بۆ چوونە دەرەوە ئەم کۆدێ هەبێت لە دڵنیابوون
+    // window.location.href = 'login.html';  // یان ئەو پەڕەی کە دەتەوێ چوونە دەرەوە بکەیت
+  });
+</script>
+
+</body>
+</html>
