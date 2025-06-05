@@ -1,131 +1,281 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>داشبۆرد</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard</title>
   <style>
+    /* ===== Basic Styling ===== */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: Arial, sans-serif;
+    }
     body {
-      font-family: Tahoma, sans-serif;
-      direction: rtl;
-      background: #f7f9fc;
-      margin: 0; padding: 20px;
+      background-color: #f0f2f5;
+      padding: 10px;
     }
     .dashboard {
-      max-width: 900px;
-      margin: auto;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #ccc;
-      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 15px;
+    }
+
+    h1, h2 {
+      text-align: right;
     }
     h1 {
-      text-align: right;
-      margin-bottom: 15px;
+      font-size: 22px;
       color: #333;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #e0e0e0;
     }
+    h2 {
+      font-size: 16px;
+      color: #444;
+      margin: 15px 0 10px;
+    }
+
     .menu {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
+      margin-bottom: 15px;
       justify-content: flex-end;
-      margin-bottom: 20px;
+      align-items: center;
     }
-    .menu-item, .new-customer-btn {
-      background: #eee;
-      padding: 10px 15px;
-      border-radius: 6px;
+    .menu-item {
+      background: #f5f5f5;
+      padding: 8px 12px;
+      border-radius: 5px;
+      font-size: 14px;
+      color: #555;
       cursor: pointer;
+      transition: all 0.3s;
       user-select: none;
-      font-weight: 600;
-      transition: background-color 0.3s;
     }
-    .menu-item:hover, .new-customer-btn:hover {
-      background: #d0d0d0;
+    .menu-item:hover {
+      background: #e0e0e0;
+      transform: translateY(-2px);
     }
     .new-customer-btn {
-      background: #28a745;
+      background-color: #28a745;
       color: white;
-    }
-    .new-customer-btn:hover {
-      background: #1e7e34;
-    }
-    .footer {
-      margin-top: 40px;
-      text-align: center;
-      color: #666;
+      padding: 8px 16px;
+      border-radius: 5px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      margin-left: auto;
       user-select: none;
     }
+    .new-customer-btn:hover {
+      background-color: #218838;
+    }
+
+    .divider {
+      height: 1px;
+      background: #e0e0e0;
+      margin: 15px 0;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .stat-box {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      text-align: right;
+    }
+    .stat-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+    .stat-value {
+      font-size: 16px;
+      color: #222;
+      font-weight: bold;
+    }
+
+    .quick-stats {
+      margin: 20px 0;
+    }
+    .quick-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .quick-stat-item {
+      background: #f0f8ff;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: right;
+    }
+    .quick-stat-item div:last-child {
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 15px;
+    }
+
+    .footer {
+      text-align: center;
+      margin-top: 20px;
+      color: #777;
+      font-size: 14px;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 14px;
+      text-align: right;
+    }
+
     .logout-btn {
-      margin-top: 10px;
-      background: #dc3545;
+      margin-top: 15px;
+      padding: 10px 20px;
+      background-color: #dc3545;
       color: white;
       border: none;
-      padding: 8px 18px;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      font-weight: 600;
-      transition: background-color 0.3s;
+      font-size: 14px;
     }
     .logout-btn:hover {
-      background: #c82333;
+      background-color: #c82333;
+    }
+
+    @media (max-width: 600px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+      .quick-stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+      .menu {
+        justify-content: center;
+      }
+      .new-customer-btn {
+        margin-left: 0;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="dashboard">
+    <h1>Dashboard</h1>
 
-<div class="dashboard" role="main" aria-label="داشبۆردی کۆمپانیا">
+    <h2>Live Location</h2>
+    <div class="menu">
+      <div class="menu-item" onclick="window.location.href='inventory.html'">Inventory</div>
+      <div class="menu-item" onclick="window.location.href='customer.html'">Parties</div>
+      <div class="menu-item" onclick="window.location.href='sales.html'">Sales</div>
+      <div class="menu-item" onclick="window.location.href='purchase.html'">Purchase</div>
+      <div class="menu-item" onclick="window.location.href='van-sale.html'">Van Sale</div>
+      <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
+      <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
+      <button class="new-customer-btn" onclick="window.location.href='new-customer.html'">New Customer</button>
+    </div>
 
-  <h1>داشبۆرد</h1>
+    <div class="divider"></div>
 
-  <div class="menu" id="menu">
-    <div class="menu-item" data-url="inventory.html">کۆگا</div>
-    <div class="menu-item" data-url="customer.html">کڕیارەکان</div>
-    <div class="menu-item" data-url="sales.html">فرۆشتن</div>
-    <div class="menu-item" data-url="purchase.html">کڕین</div>
-    <div class="menu-item" data-url="van-sale.html">فرۆشتنی ڤەن</div>
-    <div class="menu-item" data-url="finance.html">دارایی</div>
-    <div class="menu-item" data-url="routes.html">ڕێچکەکان</div>
-    <button class="new-customer-btn" data-url="new-customer.html" type="button">زیادکردنی کڕیار</button>
+    <div class="stats-container">
+      <div class="stat-box">
+        <div class="stat-title">Order</div>
+        <div class="stat-value">IQD 0</div>
+        <div class="stat-value">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Invoice</div>
+        <div class="stat-value">IQD 17,277,500.00</div>
+        <div class="stat-value">291 units</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">03/06/2025 - 03/06/2021</div>
+        <div class="stat-value">Visited 435</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="quick-stats">
+      <h2>Quick Statistics</h2>
+      <div class="quick-stats-grid">
+        <div class="quick-stat-item">
+          <div>To collect:</div>
+          <div>1103828500</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>To pay:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Low Stock Count:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Stock Value:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Product Count:</div>
+          <div>20</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Party Count:</div>
+          <div>6139</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="footer">
+      <h2>lawa bradosti</h2>
+      <div>Settings</div>
+      <div>7502020061</div>
+      <button class="logout-btn" onclick="logout()">Log out</button>
+    </div>
+
+    <input type="text" class="search-bar" placeholder="Type here to search">
   </div>
 
-  <div class="footer" role="contentinfo">
-    <div>lawa bradosti</div>
-    <div>ڕێکخستن: 7502020061</div>
-    <button class="logout-btn" id="logout-btn" type="button">چوونە دەرەوە</button>
-  </div>
-
-</div>
-
-<script>
-  // ئەم کۆدە هەموو کلیلەکان دەگەڕێتەوە بۆ ناو 'data-url' کە هەر ئەوەندە بکات بە پەڕەیەکی نوێ
-
-  // کلیل بۆ هەموو بەتنەکان یان دیڤەکان لە ناو منیو
-  document.getElementById('menu').addEventListener('click', function(event) {
-    // ئەو کلیلە لەسەر کۆمۆننتێک کە داری data-url هەیە
-    let target = event.target;
-    // ئەگەر لەسەر بەتنەکە یان دیڤەکەی منیو کلیل کرا
-    while (target && target !== this) {
-      if (target.dataset && target.dataset.url) {
-        // وەرگرتنی ناونیشانی URL
-        const url = target.dataset.url;
-        alert('گواستنەوە بۆ: ' + url);
-        // ئەم کۆدێ ئەنجام بدە بۆ گواستنەوە
-        // بۆ تاقیکردنەوە، alert هەبووە، دەتوانیت ئەمە بە ئەم کۆدە عوض بکەیت:
-        // window.location.href = url;
-        return;
-      }
-      target = target.parentNode;
+  <script>
+    function logout() {
+      window.location.href = './index.html';
     }
-  });
 
-  // کلیل بۆ دوگمەی چوونە دەرەوە
-  document.getElementById('logout-btn').addEventListener('click', function() {
-    alert('چوونە دەرەوە');
-    // بۆ چوونە دەرەوە ئەم کۆدێ هەبێت لە دڵنیابوون
-    // window.location.href = 'login.html';  // یان ئەو پەڕەی کە دەتەوێ چوونە دەرەوە بکەیت
-  });
-</script>
+    // ✅ گوێگرتنەوەی پیام لە new-customer.html
+    window.addEventListener("message", function(e) {
+      if (e.data === "customer-added") {
+        updatePartyCount();
+      }
+    });
 
+    function updatePartyCount() {
+      const div = document.querySelector(".quick-stat-item:nth-child(6) div:last-child");
+      if (div) {
+        const current = parseInt(div.textContent.replace(/,/g, ""));
+        div.textContent = (current + 1).toLocaleString();
+      }
+    }
+  </script>
 </body>
 </html>
