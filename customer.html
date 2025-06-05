@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Customer Dashboard</title>
   <style>
-    /* 👉 Styles here – your CSS is unchanged from before (clean and responsive) */
     body {
       background: #f4f6f9;
       padding: 20px;
@@ -170,7 +169,9 @@
           <th>Mobile</th>
           <th>Balance</th>
           <th>GPS Location</th>
-          <th>Route</th>
+          <th>Country</th>
+          <th>City</th>
+          <th>Area</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -212,7 +213,9 @@
           <td data-label="GPS Location">
             ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
           </td>
-          <td data-label="Route">${c.country || ''}, ${c.city || ''}, ${c.area || ''}</td>
+          <td data-label="Country">${c.country || ''}</td>
+          <td data-label="City">${c.city || ''}</td>
+          <td data-label="Area">${c.area || ''}</td>
           <td data-label="Actions">
             <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
             <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
@@ -271,7 +274,6 @@
 
     window.onload = loadCustomerList;
 
-    // Handle customer-added message from iframe
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
