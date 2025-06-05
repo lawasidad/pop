@@ -15,51 +15,64 @@
     }
     .form-box {
       background: white;
-      padding: 20px;
+      padding: 20px 25px;
       border-radius: 12px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
     h2 {
       text-align: center;
-      margin-bottom: 20px;
-      font-size: 22px;
+      margin-bottom: 25px;
+      font-size: 24px;
       direction: ltr;
+      color: #333;
     }
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: bold;
       direction: ltr;
       text-align: right;
+      color: #444;
     }
     input {
       width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
+      padding: 12px 10px;
+      margin-bottom: 18px;
       border-radius: 6px;
-      border: 1px solid #ccc;
+      border: 1.5px solid #ccc;
       font-size: 16px;
       direction: ltr;
       text-align: left;
+      transition: border-color 0.3s ease;
+    }
+    input:focus {
+      border-color: #007bff;
+      outline: none;
+      box-shadow: 0 0 6px rgba(0,123,255,0.3);
     }
     .gps-group {
       display: flex;
       align-items: center;
       direction: ltr;
+      margin-bottom: 18px;
     }
     .gps-group input {
       flex: 1;
+      border-radius: 6px 0 0 6px;
+      border-right: none;
     }
     .gps-btn {
-      margin-left: 10px;
+      margin-left: 0;
       background: #007bff;
       color: white;
       border: none;
-      padding: 10px;
-      border-radius: 6px;
+      padding: 12px 15px;
+      border-radius: 0 6px 6px 0;
       cursor: pointer;
       user-select: none;
+      font-size: 18px;
       transition: background-color 0.3s ease;
+      border-left: 1.5px solid #0056b3;
     }
     .gps-btn:hover {
       background-color: #0056b3;
@@ -69,80 +82,87 @@
       background: #28a745;
       color: white;
       border: none;
-      padding: 12px;
-      font-size: 16px;
+      padding: 14px;
+      font-size: 18px;
       border-radius: 6px;
       cursor: pointer;
       user-select: none;
       transition: background-color 0.3s ease;
+      font-weight: 600;
+      box-shadow: 0 5px 10px rgba(40,167,69,0.3);
     }
     .submit-btn:hover {
       background: #218838;
+      box-shadow: 0 7px 15px rgba(33,136,56,0.6);
     }
   </style>
 </head>
 <body>
 
-<div class="form-box" dir="ltr">
-  <h2>Add New Customer</h2>
+<div class="form-box" dir="ltr" role="form" aria-label="Add new customer form">
+  <h2>افزودن مشتری جدید</h2>
 
-  <label for="code">Customer Code <span style="color:red">*</span></label>
-  <input type="text" id="code" placeholder="Enter customer code" required autocomplete="off" />
-
-  <label for="name">Full Name <span style="color:red">*</span></label>
-  <input type="text" id="name" placeholder="Enter full name" required autocomplete="off" />
-
-  <label for="mobile">Mobile Number <span style="color:red">*</span></label>
-  <input type="tel" id="mobile" placeholder="Enter mobile number" required autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="Please enter a valid mobile number" />
-
-  <label for="balance">Balance</label>
-  <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
-
-  <label for="route">Route</label>
-  <input type="text" id="route" placeholder="Enter route name" autocomplete="off" />
-
-  <label for="city">City</label>
-  <input type="text" id="city" placeholder="Enter city name" autocomplete="off" />
-
-  <label for="area">Area</label>
-  <input type="text" id="area" placeholder="Enter area name" autocomplete="off" />
-
-  <label for="location">Location (GPS)</label>
+  <label for="code">کد مشتری <span style="color:red">*</span></label>
+  <input type="text" id="code" placeholder="کد مشتری را وارد کنید" required autocomplete="off" aria-required="true" aria-describedby="codeHelp" />
+  
+  <label for="name">نام کامل <span style="color:red">*</span></label>
+  <input type="text" id="name" placeholder="نام کامل را وارد کنید" required autocomplete="off" aria-required="true" />
+  
+  <label for="mobile">شماره موبایل <span style="color:red">*</span></label>
+  <input type="tel" id="mobile" placeholder="شماره موبایل را وارد کنید" required autocomplete="off" pattern="^[0-9+\-\s]{7,15}$" title="لطفاً شماره موبایل معتبر وارد کنید" aria-required="true" />
+  
+  <label for="balance">مانده حساب</label>
+  <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" aria-describedby="balanceHelp" />
+  
+  <label for="route">مسیر</label>
+  <input type="text" id="route" placeholder="نام مسیر را وارد کنید" autocomplete="off" />
+  
+  <label for="city">شهر</label>
+  <input type="text" id="city" placeholder="نام شهر را وارد کنید" autocomplete="off" />
+  
+  <label for="area">منطقه</label>
+  <input type="text" id="area" placeholder="نام منطقه را وارد کنید" autocomplete="off" />
+  
+  <label for="location">موقعیت جغرافیایی (GPS)</label>
   <div class="gps-group">
-    <input type="text" id="location" placeholder="Click to get GPS location" readonly />
-    <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
+    <input type="text" id="location" placeholder="برای دریافت موقعیت کلیک کنید" readonly aria-readonly="true" aria-label="موقعیت GPS" />
+    <button class="gps-btn" type="button" onclick="getLocation()" aria-label="دریافت موقعیت GPS">📍</button>
   </div>
-
-  <button class="submit-btn" type="button" onclick="saveCustomer()">Save Customer</button>
+  
+  <button class="submit-btn" type="button" onclick="saveCustomer()" aria-live="polite" aria-atomic="true">ذخیره مشتری</button>
 </div>
 
 <script>
   function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
+    if (!navigator.geolocation) {
+      alert("مرورگر شما از موقعیت‌یابی پشتیبانی نمی‌کند.");
+      return;
+    }
+    navigator.geolocation.getCurrentPosition(
+      position => {
         const lat = position.coords.latitude.toFixed(5);
         const lon = position.coords.longitude.toFixed(5);
-        document.getElementById("location").value = lat + ", " + lon;
+        const locationInput = document.getElementById("location");
+        locationInput.value = `${lat}, ${lon}`;
         window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
-      }, function(error) {
+      },
+      error => {
         switch(error.code) {
           case error.PERMISSION_DENIED:
-            alert("User denied the request for Geolocation.");
+            alert("دسترسی به موقعیت مکانی رد شد.");
             break;
           case error.POSITION_UNAVAILABLE:
-            alert("Location information is unavailable.");
+            alert("اطلاعات موقعیت مکانی در دسترس نیست.");
             break;
           case error.TIMEOUT:
-            alert("The request to get user location timed out.");
+            alert("درخواست دریافت موقعیت مکانی زمان‌بر شد.");
             break;
           default:
-            alert("An unknown error occurred while fetching location.");
+            alert("خطای ناشناخته در دریافت موقعیت مکانی رخ داد.");
             break;
         }
-      });
-    } else {
-      alert("Geolocation is not supported by this browser.");
-    }
+      }
+    );
   }
 
   function saveCustomer() {
@@ -157,29 +177,30 @@
     const location = document.getElementById("location").value.trim();
 
     if (!code || !name || !mobile) {
-      alert("Please fill in all required fields (marked with *).");
+      alert("لطفاً تمام فیلدهای ضروری (*) را پر کنید.");
       return;
     }
 
     const mobilePattern = /^[0-9+\-\s]{7,15}$/;
     if (!mobilePattern.test(mobile)) {
-      alert("Please enter a valid mobile number.");
+      alert("لطفاً شماره موبایل معتبر وارد کنید.");
       return;
     }
 
     let customers = [];
-    const stored = localStorage.getItem("customers");
-    if (stored) {
-      try {
+    try {
+      const stored = localStorage.getItem("customers");
+      if (stored) {
         customers = JSON.parse(stored);
-      } catch {
-        customers = [];
       }
+    } catch {
+      customers = [];
     }
 
+    // بررسی تکراری بودن کد مشتری (بزرگ/کوچک بودن حروف نادیده گرفته شده)
     const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
     if (duplicate) {
-      alert("This customer code is already used. Please choose a different code.");
+      alert("کد مشتری وارد شده قبلاً استفاده شده است. لطفاً کد متفاوت وارد کنید.");
       return;
     }
 
@@ -192,9 +213,9 @@
       window.opener.postMessage("customer-added", "*");
     }
 
-    alert("Customer saved successfully!");
+    alert("مشتری با موفقیت ذخیره شد!");
 
-    // Clear the form to allow adding another customer easily
+    // پاک کردن فرم برای افزودن مشتری جدید به راحتی
     document.getElementById("code").value = "";
     document.getElementById("name").value = "";
     document.getElementById("mobile").value = "";
