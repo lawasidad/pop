@@ -32,7 +32,7 @@
       direction: ltr;
       text-align: right;
     }
-    input {
+    input, select {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -102,10 +102,23 @@
   <input type="text" id="route" placeholder="Enter route name" autocomplete="off" />
 
   <label for="city">City</label>
-  <input type="text" id="city" placeholder="Enter city name" autocomplete="off" />
+  <select id="city" >
+    <option value="" selected disabled>Select city</option>
+    <option value="Tehran">Tehran</option>
+    <option value="Mashhad">Mashhad</option>
+    <option value="Isfahan">Isfahan</option>
+    <option value="Tabriz">Tabriz</option>
+    <option value="Shiraz">Shiraz</option>
+  </select>
 
   <label for="area">Area</label>
-  <input type="text" id="area" placeholder="Enter area name" autocomplete="off" />
+  <select id="area" >
+    <option value="" selected disabled>Select area</option>
+    <option value="Area 1">Area 1</option>
+    <option value="Area 2">Area 2</option>
+    <option value="Area 3">Area 3</option>
+    <option value="Area 4">Area 4</option>
+  </select>
 
   <label for="location">Location (GPS)</label>
   <div class="gps-group">
@@ -123,7 +136,7 @@
         const lat = position.coords.latitude.toFixed(5);
         const lon = position.coords.longitude.toFixed(5);
         document.getElementById("location").value = lat + ", " + lon;
-        window.open(https://maps.google.com/?q=${lat},${lon}, "_blank");
+        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function(error) {
         switch(error.code) {
           case error.PERMISSION_DENIED:
@@ -152,8 +165,8 @@
     const balanceInput = document.getElementById("balance").value.trim();
     const balance = balanceInput === "" ? 0 : parseFloat(balanceInput);
     const route = document.getElementById("route").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const area = document.getElementById("area").value.trim();
+    const city = document.getElementById("city").value;
+    const area = document.getElementById("area").value;
     const location = document.getElementById("location").value.trim();
 
     if (!code || !name || !mobile) {
