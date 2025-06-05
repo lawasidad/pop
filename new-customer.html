@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -74,25 +74,25 @@
 <div class="form-box">
   <h2>زیادکردنی کڕیار نوە</h2>
 
-  <label for="code">کڷدی کڕیار</label>
-  <input type="text" id="code" placeholder="کڷد بنوسە" required />
+  <label for="code">کۆدی کڕیار</label>
+  <input type="text" id="code" placeholder="کۆد بنوسە" required />
 
   <label for="name">ناو</label>
   <input type="text" id="name" placeholder="ناوی تەواو بنوسە" required />
 
-  <label for="mobile">مۘوبایل</label>
-  <input type="text" id="mobile" placeholder="ژمارەی مۘوبایل بنوسە" required />
+  <label for="mobile">مۆبایل</label>
+  <input type="text" id="mobile" placeholder="ژمارەی مۆبایل بنوسە" required />
 
   <label for="balance">بالانس</label>
   <input type="number" id="balance" placeholder="0" value="0" required />
 
-  <label for="location">شوەین (GPS)</label>
+  <label for="location">شوێن (GPS)</label>
   <div class="gps-group">
-    <input type="text" id="location" placeholder="کلیل بکە بۘۆ وەرگرتنی GPS" readonly />
-    <button class="gps-btn" onclick="getLocation()">📍</button>
+    <input type="text" id="location" placeholder="کلیل بکە بۆ وەرگرتنی GPS" readonly />
+    <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
   </div>
 
-  <button class="submit-btn" onclick="saveCustomer()">پاشەکەوتکردنی کڕیار</button>
+  <button class="submit-btn" type="button" onclick="saveCustomer()">پاشەکەوتکردنی کڕیار</button>
 </div>
 
 <script>
@@ -101,13 +101,13 @@
       navigator.geolocation.getCurrentPosition(function(position) {
         const lat = position.coords.latitude.toFixed(5);
         const lon = position.coords.longitude.toFixed(5);
-        document.getElementById("location").value = ${lat}, ${lon};
-        window.open(https://maps.google.com/?q=${lat},${lon}, "_blank");
+        document.getElementById("location").value = lat + ", " + lon;
+        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function() {
-        alert("ناتوانرەت شوینەکەت بدۆزرەتەوە.");
+        alert("ناتوانرێت شوێنەکەت بدۆزرێتەوە.");
       });
     } else {
-      alert("Geolocation پشتیوانی ناکرەت.");
+      alert("پەشتیوانی ناكرێت لە Geolocation.");
     }
   }
 
@@ -119,18 +119,25 @@
     const location = document.getElementById("location").value.trim();
 
     if (!code || !name || !mobile) {
-      alert("تکایە ھموو خانە گرینگەکان پڕبکەوە.");
+      alert("تکایە هەموو خانە گرینگەکان پڕبکەوە.");
       return;
     }
 
     const newCustomer = { code, name, mobile, balance, location };
 
+    let customers = [];
     const stored = localStorage.getItem("customers");
-    const customers = stored ? JSON.parse(stored) : [];
+    if (stored) {
+      try {
+        customers = JSON.parse(stored);
+      } catch {
+        customers = [];
+      }
+    }
 
     const duplicate = customers.find(c => c.code === code);
     if (duplicate) {
-      alert("ئەم کۆدەکە پەشتر بەکار هاتووە، تکایە کۆدەیکی جیاواز ھڵبژەرە.");
+      alert("ئەم کۆدە پێشتر بەکار هاتووە، تکایە کۆدەکی جیاواز هەڵبژێرە.");
       return;
     }
 
@@ -138,7 +145,6 @@
     localStorage.setItem("customers", JSON.stringify(customers));
 
     if (window.opener) {
-      console.log("ناردنی پەیام بۆ dashboard");
       window.opener.postMessage("customer-added", "*");
     }
 
