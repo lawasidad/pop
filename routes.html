@@ -45,6 +45,12 @@
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      transition: border-color 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      border-color: #007bff;
+      outline: none;
     }
 
     .submit-btn {
@@ -55,6 +61,7 @@
       border-radius: 5px;
       font-size: 14px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     .submit-btn:hover {
@@ -82,7 +89,7 @@
       margin-bottom: 10px;
       border-radius: 5px;
       background-color: #f9f9f9;
-      white-space: pre-line; /* گرینگە بۆ نیشاندانی خەتە نوێکان */
+      white-space: pre-line; /* بۆ نیشاندانی خەت نوێ */
     }
   </style>
 </head>
@@ -116,24 +123,30 @@
   document.getElementById("routeForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const country = document.getElementById("country").value.trim();
-    const city = document.getElementById("city").value.trim();
-    const area = document.getElementById("area").value.trim();
+    const countryInput = document.getElementById("country");
+    const cityInput = document.getElementById("city");
+    const areaInput = document.getElementById("area");
 
+    const country = countryInput.value.trim();
+    const city = cityInput.value.trim();
+    const area = areaInput.value.trim();
+
+    // ئەگەر هەر خانەیەک خالی بێت
     if (!country || !city || !area) {
       alert("Please fill in all fields.");
       return;
     }
 
+    // زیادکردنی تێکست بە خەتە نوێکان بۆ جیاکردن
     const li = document.createElement("li");
-    // جیاکردن بە خەت نوێ (line breaks)
     li.textContent = `Country: ${country}\nCity: ${city}\nArea: ${area}`;
     document.getElementById("routesUl").appendChild(li);
 
-    // Clear inputs
-    document.getElementById("country").value = "";
-    document.getElementById("city").value = "";
-    document.getElementById("area").value = "";
+    // clear کردن input ـەکان و دەسکاری (focus لە سەر یەکەم خانە بکە)
+    countryInput.value = "";
+    cityInput.value = "";
+    areaInput.value = "";
+    countryInput.focus();
   });
 </script>
 
