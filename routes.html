@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>فۆرمی ڕووت</title>
+    <title>Route Form</title>
     <style>
         body {
             background-color: #f0f2f5;
@@ -21,7 +21,7 @@
         }
 
         h1 {
-            text-align: right;
+            text-align: left;
             font-size: 22px;
             color: #333;
             margin-bottom: 20px;
@@ -29,7 +29,7 @@
 
         .form-group {
             margin-bottom: 15px;
-            text-align: right;
+            text-align: left;
         }
 
         label {
@@ -65,21 +65,21 @@
 <body>
 
 <div class="route-form-container">
-    <h1>زیادکردنی ڕووت</h1>
+    <h1>Add Route</h1>
     <form id="routeForm">
         <div class="form-group">
-            <label for="country">ولات</label>
-            <input type="text" id="country" name="country" placeholder="ناوی ولات بنووسە">
+            <label for="country">Country</label>
+            <input type="text" id="country" name="country" placeholder="Enter country name">
         </div>
         <div class="form-group">
-            <label for="city">شار</label>
-            <input type="text" id="city" name="city" placeholder="ناوی شار بنووسە">
+            <label for="city">City</label>
+            <input type="text" id="city" name="city" placeholder="Enter city name">
         </div>
         <div class="form-group">
-            <label for="area">ناوچە</label>
-            <input type="text" id="area" name="area" placeholder="ناوی ناوچە بنووسە">
+            <label for="area">Area</label>
+            <input type="text" id="area" name="area" placeholder="Enter area name">
         </div>
-        <button type="submit" class="submit-btn">زیادکردن</button>
+        <button type="submit" class="submit-btn">Add</button>
     </form>
 </div>
 
@@ -91,11 +91,15 @@
         const city = document.getElementById("city").value;
         const area = document.getElementById("area").value;
 
-        alert(`ڕووت زیادکرا:\nولات: ${country}\nشار: ${city}\nناوچە: ${area}`);
+        alert(`Route Added:\nCountry: ${country}\nCity: ${city}\nArea: ${area}`);
 
-        // لێرەدا دەتوانیت بەکارهێنە بۆ ناردنی زانیاریەکان بۆ سێرڤەر یان هێنانیان ناو دیتابەیس
-        // نموونە:
-        // fetch('/api/routes', { method: 'POST', body: JSON.stringify({ country, city, area }) });
+        // You can send this data to your server or store it in a database
+        // Example:
+        // fetch('/api/routes', {
+        //     method: 'POST',
+        //     headers: { 'Content-Type': 'application/json' },
+        //     body: JSON.stringify({ country, city, area })
+        // });
     });
 </script>
 
