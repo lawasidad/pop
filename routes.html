@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -22,7 +22,6 @@
     }
     h1, h2 {
       color: #333;
-      margin-bottom: 15px;
     }
     .form-group {
       margin-bottom: 15px;
@@ -50,8 +49,6 @@
       font-size: 14px;
       cursor: pointer;
       transition: background-color 0.3s ease;
-      width: 100%;
-      margin-top: 10px;
     }
     .submit-btn:hover {
       background-color: #0056b3;
@@ -83,7 +80,6 @@
     .route-text {
       line-height: 1.4;
       flex-grow: 1;
-      user-select: none;
     }
     .route-text span {
       display: block;
@@ -102,7 +98,6 @@
       color: white;
       font-weight: 600;
       transition: background-color 0.3s ease;
-      min-width: 60px;
     }
     .btn-group button:hover {
       background-color: rgba(255,255,255,0.45);
@@ -118,139 +113,139 @@
 <body>
 
 <div class="route-form-container">
-  <h1>زیادکردنی رێگەت</h1>
-  <form id="routeForm" autocomplete="off" spellcheck="false">
+  <h1>Add Route</h1>
+  <form id="routeForm">
     <div class="form-group">
-      <label for="country">وڵات</label>
-      <input type="text" id="country" name="country" placeholder="ناوی وڵات بنوسە" />
+      <label for="country">Country</label>
+      <input type="text" id="country" name="country" placeholder="Enter country name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="city">شاری</label>
-      <input type="text" id="city" name="city" placeholder="ناوی شار بنوسە" />
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" placeholder="Enter city name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="area">ناوچە</label>
-      <input type="text" id="area" name="area" placeholder="ناوی ناوچە بنوسە" />
+      <label for="area">Area</label>
+      <input type="text" id="area" name="area" placeholder="Enter area name" autocomplete="off" />
     </div>
-    <button type="submit" class="submit-btn">زیادکردن</button>
+    <button type="submit" class="submit-btn">Add</button>
   </form>
 </div>
 
 <div>
-  <h2>لیستی ڕێگەکان</h2>
+  <h2>Routes List</h2>
   <ul id="routesUl"></ul>
 </div>
 
 <script>
-  // DOM Elements
-  const form = document.getElementById('routeForm');
-  const countryInput = document.getElementById('country');
-  const cityInput = document.getElementById('city');
-  const areaInput = document.getElementById('area');
-  const routesUl = document.getElementById('routesUl');
+  // Elements
+  const form = document.getElementById("routeForm");
+  const countryInput = document.getElementById("country");
+  const cityInput = document.getElementById("city");
+  const areaInput = document.getElementById("area");
+  const routesUl = document.getElementById("routesUl");
 
-  // State
-  let routes = JSON.parse(localStorage.getItem('routes')) || [];
+  // Variables
+  let routes = [];
   let editMode = false;
   let editingIndex = null;
 
-  // Render the routes list
-  function renderRoutes() {
-    routesUl.innerHTML = '';
-
-    if (routes.length === 0) {
-      routesUl.innerHTML = '<li style="color:#666; text-align:center; padding: 15px;">هیچ ڕێگەیەک نەدۆزرایەوە</li>';
-      return;
+  // Load routes from localStorage
+  function loadRoutes() {
+    const storedRoutes = localStorage.getItem("routes");
+    if (storedRoutes) {
+      routes = JSON.parse(storedRoutes);
     }
+  }
+
+  // Save routes to localStorage
+  function saveRoutes() {
+    localStorage.setItem("routes", JSON.stringify(routes));
+  }
+
+  // Clear input fields
+  function clearForm() {
+    countryInput.value = "";
+    cityInput.value = "";
+    areaInput.value = "";
+  }
+
+  // Exit edit mode: reset form button and variables
+  function exitEditMode() {
+    editMode = false;
+    editingIndex = null;
+    form.querySelector(".submit-btn").textContent = "Add";
+    clearForm();
+  }
+
+  // Render the list of routes on the page
+  function renderRoutes() {
+    routesUl.innerHTML = "";
 
     routes.forEach((route, index) => {
-      const li = document.createElement('li');
+      const li = document.createElement("li");
 
-      const textSpan = document.createElement('span');
-      textSpan.className = 'route-text';
-      textSpan.innerHTML = `
-        <span><strong>وڵات:</strong> ${route.country}</span>
-        <span><strong>شار:</strong> ${route.city}</span>
-        <span><strong>ناوچە:</strong> ${route.area}</span>
-      `;
-
+      const textSpan = document.createElement("span");
+      textSpan.className = "route-text";
+      textSpan.innerHTML = 
+        <span><strong>Country:</strong> ${route.country}</span>
+        <span><strong>City:</strong> ${route.city}</span>
+        <span><strong>Area:</strong> ${route.area}</span>
+      ;
       li.appendChild(textSpan);
 
-      const btnGroup = document.createElement('div');
-      btnGroup.className = 'btn-group';
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
 
       // Edit button
-      const editBtn = document.createElement('button');
-      editBtn.className = 'btn-edit';
-      editBtn.textContent = 'دەستکاری';
-      editBtn.type = 'button';
-      editBtn.addEventListener('click', () => startEdit(index));
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-edit";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => startEdit(index));
 
       // Delete button
-      const deleteBtn = document.createElement('button');
-      deleteBtn.className = 'btn-delete';
-      deleteBtn.textContent = 'سڕینەوە';
-      deleteBtn.type = 'button';
-      deleteBtn.addEventListener('click', () => {
-        if (confirm('دڵنیایت دەتەوێت ئەم ڕێگەیە بسڕیتەوە؟')) {
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to delete this route?")) {
           deleteRoute(index);
         }
       });
 
       btnGroup.appendChild(editBtn);
       btnGroup.appendChild(deleteBtn);
-      li.appendChild(btnGroup);
 
+      li.appendChild(btnGroup);
       routesUl.appendChild(li);
     });
   }
 
-  // Save routes to localStorage
-  function saveRoutes() {
-    localStorage.setItem('routes', JSON.stringify(routes));
-  }
-
-  // Clear form inputs
-  function clearForm() {
-    countryInput.value = '';
-    cityInput.value = '';
-    areaInput.value = '';
-  }
-
-  // Exit edit mode and reset form button
-  function exitEditMode() {
-    editMode = false;
-    editingIndex = null;
-    form.querySelector('button[type="submit"]').textContent = 'زیادکردن';
-    clearForm();
-  }
-
-  // Add route
+  // Add a new route to array and save
   function addRoute(route) {
     routes.push(route);
     saveRoutes();
     renderRoutes();
   }
 
-  // Update route
+  // Update a route at specific index
   function updateRoute(index, route) {
     routes[index] = route;
     saveRoutes();
     renderRoutes();
   }
 
-  // Delete route
+  // Delete a route at specific index
   function deleteRoute(index) {
     routes.splice(index, 1);
     saveRoutes();
     renderRoutes();
-
+    // If deleting the route currently being edited, exit edit mode
     if (editMode && editingIndex === index) {
       exitEditMode();
     }
   }
 
-  // Start edit
+  // Start editing a route: populate form and change button text
   function startEdit(index) {
     editMode = true;
     editingIndex = index;
@@ -258,12 +253,12 @@
     countryInput.value = route.country;
     cityInput.value = route.city;
     areaInput.value = route.area;
-    form.querySelector('button[type="submit"]').textContent = 'نوێکردنەوە';
+    form.querySelector(".submit-btn").textContent = "Update";
     countryInput.focus();
   }
 
-  // Form submit handler
-  form.addEventListener('submit', e => {
+  // Handle form submission
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
 
     const country = countryInput.value.trim();
@@ -271,25 +266,25 @@
     const area = areaInput.value.trim();
 
     if (!country || !city || !area) {
-      alert('تکایە هەموو خانەکان پڕبکەوە.');
+      alert("Please fill in all fields.");
       return;
     }
 
-    // Duplicate check (ignore current editing index)
+    // Check for duplicate route (except when editing the same index)
     const duplicateIndex = routes.findIndex(
-      r => r.country === country && r.city === city && r.area === area
+      (r) => r.country === country && r.city === city && r.area === area
     );
 
     if (editMode) {
       if (duplicateIndex !== -1 && duplicateIndex !== editingIndex) {
-        alert('ئەم ڕێگەیە پێشتر هەیە.');
+        alert("This route already exists.");
         return;
       }
       updateRoute(editingIndex, { country, city, area });
       exitEditMode();
     } else {
       if (duplicateIndex !== -1) {
-        alert('ئەم ڕێگەیە پێشتر هەیە.');
+        alert("This route already exists.");
         return;
       }
       addRoute({ country, city, area });
@@ -297,7 +292,8 @@
     }
   });
 
-  // Initial render
+  // Initialize
+  loadRoutes();
   renderRoutes();
 </script>
 
