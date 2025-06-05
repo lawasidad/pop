@@ -1,106 +1,138 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Route Form</title>
-    <style>
-        body {
-            background-color: #f0f2f5;
-            font-family: Arial, sans-serif;
-            padding: 20px;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Route Form</title>
+  <style>
+    body {
+      background-color: #f0f2f5;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
 
-        .route-form-container {
-            background: white;
-            max-width: 600px;
-            margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-        }
+    .route-form-container {
+      background: white;
+      max-width: 600px;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
 
-        h1 {
-            text-align: left;
-            font-size: 22px;
-            color: #333;
-            margin-bottom: 20px;
-        }
+    h1 {
+      text-align: left;
+      font-size: 22px;
+      color: #333;
+      margin-bottom: 20px;
+    }
 
-        .form-group {
-            margin-bottom: 15px;
-            text-align: left;
-        }
+    .form-group {
+      margin-bottom: 15px;
+      text-align: left;
+    }
 
-        label {
-            display: block;
-            margin-bottom: 5px;
-            color: #444;
-            font-size: 14px;
-        }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      color: #444;
+      font-size: 14px;
+    }
 
-        input[type="text"] {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 14px;
-        }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 14px;
+    }
 
-        .submit-btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px 18px;
-            border-radius: 5px;
-            font-size: 14px;
-            cursor: pointer;
-        }
+    .submit-btn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+    }
 
-        .submit-btn:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    .submit-btn:hover {
+      background-color: #0056b3;
+    }
+
+    #routeList {
+      max-width: 600px;
+      margin: 30px auto 0 auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+    }
+
+    #routeList h2 {
+      font-size: 20px;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    #routesUl li {
+      padding: 10px;
+      border: 1px solid #ccc;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      background-color: #f9f9f9;
+    }
+  </style>
 </head>
 <body>
 
 <div class="route-form-container">
-    <h1>Add Route</h1>
-    <form id="routeForm">
-        <div class="form-group">
-            <label for="country">Country</label>
-            <input type="text" id="country" name="country" placeholder="Enter country name">
-        </div>
-        <div class="form-group">
-            <label for="city">City</label>
-            <input type="text" id="city" name="city" placeholder="Enter city name">
-        </div>
-        <div class="form-group">
-            <label for="area">Area</label>
-            <input type="text" id="area" name="area" placeholder="Enter area name">
-        </div>
-        <button type="submit" class="submit-btn">Add</button>
-    </form>
+  <h1>Add Route</h1>
+  <form id="routeForm">
+    <div class="form-group">
+      <label for="country">Country</label>
+      <input type="text" id="country" name="country" placeholder="Enter country name">
+    </div>
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" placeholder="Enter city name">
+    </div>
+    <div class="form-group">
+      <label for="area">Area</label>
+      <input type="text" id="area" name="area" placeholder="Enter area name">
+    </div>
+    <button type="submit" class="submit-btn">Add</button>
+  </form>
+</div>
+
+<div id="routeList">
+  <h2>All Routes</h2>
+  <ul id="routesUl" style="list-style: none; padding: 0;"></ul>
 </div>
 
 <script>
-    document.getElementById("routeForm").addEventListener("submit", function(e) {
-        e.preventDefault();
+  document.getElementById("routeForm").addEventListener("submit", function (e) {
+    e.preventDefault();
 
-        const country = document.getElementById("country").value;
-        const city = document.getElementById("city").value;
-        const area = document.getElementById("area").value;
+    const country = document.getElementById("country").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const area = document.getElementById("area").value.trim();
 
-        alert(`Route Added:\nCountry: ${country}\nCity: ${city}\nArea: ${area}`);
+    if (!country || !city || !area) {
+      alert("Please fill in all fields.");
+      return;
+    }
 
-        // You can send this data to your server or store it in a database
-        // Example:
-        // fetch('/api/routes', {
-        //     method: 'POST',
-        //     headers: { 'Content-Type': 'application/json' },
-        //     body: JSON.stringify({ country, city, area })
-        // });
-    });
+    const li = document.createElement("li");
+    li.textContent = `Country: ${country} | City: ${city} | Area: ${area}`;
+    document.getElementById("routesUl").appendChild(li);
+
+    // Clear inputs after adding
+    document.getElementById("country").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("area").value = "";
+  });
 </script>
 
 </body>
