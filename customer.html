@@ -205,22 +205,22 @@
 
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = 
+        tr.innerHTML = `
           <td data-label="Code">${c.code}</td>
           <td data-label="Name">${c.name}</td>
           <td data-label="Mobile">${c.mobile}</td>
           <td data-label="Balance">IQD ${c.balance}</td>
           <td data-label="GPS Location">
-            ${c.location ? <a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a> : '<span class="seo-status">❌</span>'}
+            ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
           </td>
-          <td data-label="Country">${c.country || ''}</td>
+          <td data-label="Route">${c.Route || ''}</td>
           <td data-label="City">${c.city || ''}</td>
           <td data-label="Area">${c.area || ''}</td>
           <td data-label="Actions">
             <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
             <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
           </td>
-        ;
+        `;
         tbody.appendChild(tr);
       });
     }
@@ -240,8 +240,8 @@
       if (newBalance === null) return;
       const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
       if (newLocation === null) return;
-      const newCountry = prompt("Enter country:", c.country || "");
-      if (newCountry === null) return;
+      const newCountry = prompt("Enter Route:", c.country || "");
+      if (newRoute === null) return;
       const newCity = prompt("Enter city:", c.city || "");
       if (newCity === null) return;
       const newArea = prompt("Enter area:", c.area || "");
@@ -253,7 +253,7 @@
         mobile: newMobile.trim(),
         balance: parseFloat(newBalance) || 0,
         location: newLocation.trim(),
-        country: newCountry.trim(),
+        Route: newRoute.trim(),
         city: newCity.trim(),
         area: newArea.trim()
       };
