@@ -23,6 +23,7 @@
       margin-bottom: 20px;
       border-bottom: 2px solid #eee;
       padding-bottom: 10px;
+      overflow: hidden;
     }
     .new-customer-btn {
       padding: 10px 18px;
@@ -33,6 +34,10 @@
       font-size: 14px;
       cursor: pointer;
       float: right;
+      transition: background-color 0.3s ease;
+    }
+    .new-customer-btn:hover {
+      background-color: #0056b3;
     }
     .customer-table {
       width: 100%;
@@ -64,6 +69,7 @@
       max-width: 600px;
       width: 90%;
       position: relative;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .close-btn {
       position: absolute;
@@ -71,24 +77,27 @@
       right: 15px;
       font-size: 24px;
       cursor: pointer;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+    .close-btn:hover {
+      color: #007bff;
     }
     iframe {
       width: 100%;
       height: 500px;
       border: none;
+      border-radius: 8px;
     }
-
-    /* ✅ Responsive table styles for mobile */
+    /* Responsive styles for mobile */
     @media (max-width: 768px) {
       .customer-table thead {
         display: none;
       }
-
       .customer-table, .customer-table tbody, .customer-table tr, .customer-table td {
         display: block;
         width: 100%;
       }
-
       .customer-table tr {
         margin-bottom: 15px;
         border: 1px solid #ddd;
@@ -96,13 +105,11 @@
         padding: 10px;
         background-color: #fff;
       }
-
       .customer-table td {
         text-align: right;
         padding: 8px 10px;
         position: relative;
       }
-
       .customer-table td::before {
         content: attr(data-label);
         position: absolute;
@@ -111,19 +118,44 @@
         font-weight: bold;
         color: #555;
       }
-
       .new-customer-btn {
         width: 100%;
         margin-bottom: 15px;
         float: none;
       }
     }
+    /* Actions buttons */
+    button.action-btn {
+      padding: 6px 10px;
+      font-size: 13px;
+      border-radius: 5px;
+      border: none;
+      cursor: pointer;
+      margin-right: 5px;
+      transition: background-color 0.3s ease;
+    }
+    button.edit-btn {
+      background-color: #ffc107;
+      color: #212529;
+    }
+    button.edit-btn:hover {
+      background-color: #e0a800;
+    }
+    button.delete-btn {
+      background-color: #dc3545;
+      color: white;
+    }
+    button.delete-btn:hover {
+      background-color: #bb2d3b;
+    }
   </style>
 </head>
 <body>
   <div class="dashboard">
-    <h1>Customer Management</h1>
-    <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
+    <h1>
+      Customer Management
+      <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
+    </h1>
 
     <table class="customer-table">
       <thead>
@@ -133,10 +165,15 @@
           <th>Mobile</th>
           <th>Balance</th>
           <th>GPS Location</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
+
+    <div style="margin-top: 20px; font-weight: bold; font-size: 18px;">
+      Total Customers: <span id="totalCustomers">0</span>
+    </div>
   </div>
 
   <!-- Modal -->
@@ -162,7 +199,9 @@
       const tbody = document.querySelector(".customer-table tbody");
       tbody.innerHTML = "";
 
-      data.forEach(c => {
+      const totalCustomers = data.length;
+
+      data.forEach((c, index) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
           <td data-label="Code">${c.code}</td>
@@ -176,9 +215,58 @@
                 : '<span class="seo-status">❌</span>'
             }
           </td>
+          <td data-label="Actions">
+            <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
+            <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
+          </td>
         `;
         tbody.appendChild(tr);
       });
+
+      document.getElementById('totalCustomers').textContent = totalCustomers;
+    }
+
+    function editCustomer(index) {
+      const stored = localStorage.getItem("customers");
+      if (!stored) return alert("No customers found.");
+      const data = JSON.parse(stored);
+      const c = data[index];
+      if (!c) return alert("Customer not found.");
+
+      // For simplicity, prompt for new name and mobile; in practice use a modal or form
+      const newName = prompt("Enter new name:", c.name);
+      if (newName === null) return; // canceled
+      const newMobile = prompt("Enter new mobile:", c.mobile);
+      if (newMobile === null) return;
+
+      // Optionally edit balance and location too:
+      const newBalance = prompt("Enter new balance (IQD):", c.balance);
+      if (newBalance === null) return;
+      const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
+
+      // Update
+      data[index] = {
+        ...c,
+        name: newName.trim(),
+        mobile: newMobile.trim(),
+        balance: parseFloat(newBalance) || 0,
+        location: newLocation.trim()
+      };
+
+      localStorage.setItem("customers", JSON.stringify(data));
+      loadCustomerList();
+    }
+
+    function deleteCustomer(index) {
+      if (!confirm("Are you sure you want to delete this customer?")) return;
+
+      const stored = localStorage.getItem("customers");
+      if (!stored) return alert("No customers found.");
+      const data = JSON.parse(stored);
+
+      data.splice(index, 1);
+      localStorage.setItem("customers", JSON.stringify(data));
+      loadCustomerList();
     }
 
     window.onload = loadCustomerList;
