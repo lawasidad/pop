@@ -181,15 +181,15 @@
   <div class="dashboard">
     <h1>داشبۆرد</h1>
 
-    <div class="menu">
-      <div class="menu-item" onclick="navigateTo('inventory.html')">کۆگا</div>
-      <div class="menu-item" onclick="navigateTo('customer.html')">کڕیارەکان</div>
-      <div class="menu-item" onclick="navigateTo('sales.html')">فرۆشتن</div>
-      <div class="menu-item" onclick="navigateTo('purchase.html')">کڕین</div>
-      <div class="menu-item" onclick="navigateTo('van-sale.html')">فرۆشتنی ڤەن</div>
-      <div class="menu-item" onclick="navigateTo('finance.html')">دارایی</div>
-      <div class="menu-item" onclick="navigateTo('routes.html')">ڕێچکەکان</div>
-      <button class="new-customer-btn" onclick="navigateTo('new-customer.html')">زیادکردنی کڕیار</button>
+    <div class="menu" id="menu">
+      <div class="menu-item" data-url="inventory.html">کۆگا</div>
+      <div class="menu-item" data-url="customer.html">کڕیارەکان</div>
+      <div class="menu-item" data-url="sales.html">فرۆشتن</div>
+      <div class="menu-item" data-url="purchase.html">کڕین</div>
+      <div class="menu-item" data-url="van-sale.html">فرۆشتنی ڤەن</div>
+      <div class="menu-item" data-url="finance.html">دارایی</div>
+      <div class="menu-item" data-url="routes.html">ڕێچکەکان</div>
+      <button class="new-customer-btn" data-url="new-customer.html">زیادکردنی کڕیار</button>
     </div>
 
     <div class="divider"></div>
@@ -197,17 +197,17 @@
     <div class="stats-container" aria-label="ئاماری گشتی">
       <div class="stat-box">
         <div class="stat-title">داواکاری</div>
-        <div class="stat-value" aria-live="polite" id="demand-amount">IQD 0</div>
-        <div class="stat-value" aria-live="polite" id="demand-count">0</div>
+        <div class="stat-value" id="demand-amount">IQD 0</div>
+        <div class="stat-value" id="demand-count">0</div>
       </div>
       <div class="stat-box">
         <div class="stat-title">وەسڵ</div>
-        <div class="stat-value" aria-live="polite" id="voucher-amount">IQD 17,277,500</div>
-        <div class="stat-value" aria-live="polite" id="voucher-count">291 یەکە</div>
+        <div class="stat-value" id="voucher-amount">IQD 17,277,500</div>
+        <div class="stat-value" id="voucher-count">291 یەکە</div>
       </div>
       <div class="stat-box">
         <div class="stat-title">03/06/2025 - 03/06/2021</div>
-        <div class="stat-value" aria-live="polite" id="visits-count">سەردانکراو 435</div>
+        <div class="stat-value" id="visits-count">سەردانکراو 435</div>
       </div>
     </div>
 
@@ -217,27 +217,27 @@
     <div class="quick-stats-grid" aria-label="ئاماری خێرا">
       <div class="quick-stat-item">
         <div>قەرز بۆ وەرگرتن</div>
-        <div id="debt-receivable" aria-live="polite">1,103,828,500</div>
+        <div id="debt-receivable">1,103,828,500</div>
       </div>
       <div class="quick-stat-item">
         <div>بۆ پارەدان</div>
-        <div id="debt-payable" aria-live="polite">0</div>
+        <div id="debt-payable">0</div>
       </div>
       <div class="quick-stat-item">
         <div>کەمبونی کاڵا</div>
-        <div id="stock-deficit" aria-live="polite">0</div>
+        <div id="stock-deficit">0</div>
       </div>
       <div class="quick-stat-item">
         <div>نرخی ستۆک</div>
-        <div id="stock-value" aria-live="polite">0</div>
+        <div id="stock-value">0</div>
       </div>
       <div class="quick-stat-item">
         <div>ژمارەی کاڵا</div>
-        <div id="product-count" aria-live="polite">20</div>
+        <div id="product-count">20</div>
       </div>
       <div class="quick-stat-item">
         <div>ژمارەی کڕیار</div>
-        <div id="party-count" aria-live="polite">6,139</div>
+        <div id="party-count">6,139</div>
       </div>
     </div>
 
@@ -247,19 +247,11 @@
       <h2>lawa bradosti</h2>
       <div>ڕێکخستن</div>
       <div>7502020061</div>
-      <button class="logout-btn" onclick="logout()">چوونە دەرەوە</button>
+      <button class="logout-btn" id="logout-btn">چوونە دەرەوە</button>
     </div>
 
     <input type="text" class="search-bar" placeholder="گەڕان..." aria-label="گەڕان لەناو داشبۆرد"/>
   </div>
 
   <script>
-    // نوسین فانکشنی گشتی بۆ گواستنەوەی پەڕەکان
-    function navigateTo(url) {
-      location.href = url;
-    }
-
-    // بەڕێوەبردنی زیادکردنی کڕیار (ناردنی پەیام و نوێکردن)
-    window.addEventListener("message", function(event) {
-      if (event.data === "customer-added") {
-        console.log("✅ کڕیار زیادکرا. نوێکردنەوەی ژمارەی ک
+    // بەکارهێنانی event delegation بۆ
