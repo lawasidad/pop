@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Route Manager</title>
+  <title>Route Form with Edit & Delete & Persistence</title>
   <style>
     body {
       background-color: #f0f2f5;
@@ -11,40 +11,35 @@
       padding: 20px;
       direction: rtl;
     }
-
     .route-form-container {
       background: white;
       max-width: 600px;
-      margin: 0 auto 20px;
+      margin: 0 auto 20px auto;
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 20px;
       text-align: right;
     }
-
     h1, h2 {
       color: #333;
     }
-
     .form-group {
       margin-bottom: 15px;
     }
-
     label {
       display: block;
       margin-bottom: 5px;
       color: #444;
       font-size: 14px;
     }
-
     input[type="text"] {
       width: 100%;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 14px;
+      box-sizing: border-box;
     }
-
     .submit-btn {
       background-color: #007bff;
       color: white;
@@ -53,37 +48,45 @@
       border-radius: 5px;
       font-size: 14px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-
     .submit-btn:hover {
       background-color: #0056b3;
     }
-
     ul#routesUl {
       list-style: none;
       padding: 0;
       max-width: 600px;
       margin: 0 auto;
     }
-
     ul#routesUl li {
       background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
       color: white;
       margin-bottom: 12px;
       padding: 15px 20px;
       border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(38, 52, 92, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
       font-size: 15px;
+      white-space: pre-line;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-
+    ul#routesUl li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(38, 52, 92, 0.35);
+    }
+    .route-text {
+      line-height: 1.4;
+      flex-grow: 1;
+    }
     .route-text span {
       display: block;
       font-weight: 600;
       font-size: 14px;
+      opacity: 0.85;
     }
-
     .btn-group button {
       margin-left: 10px;
       background-color: rgba(255,255,255,0.25);
@@ -94,16 +97,14 @@
       font-size: 14px;
       color: white;
       font-weight: 600;
+      transition: background-color 0.3s ease;
     }
-
     .btn-group button:hover {
       background-color: rgba(255,255,255,0.45);
     }
-
     .btn-edit {
       color: #ffd700;
     }
-
     .btn-delete {
       color: #ff6b6b;
     }
@@ -112,147 +113,185 @@
 <body>
 
 <div class="route-form-container">
-  <h1>زیادکردنی ڕووت</h1>
+  <h1>Add Route</h1>
   <form id="routeForm">
     <div class="form-group">
-      <label for="country">وڵات</label>
-      <input type="text" id="country" placeholder="ناوی وڵات" autocomplete="off" />
+      <label for="country">Country</label>
+      <input type="text" id="country" name="country" placeholder="Enter country name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="city">شار</label>
-      <input type="text" id="city" placeholder="ناوی شار" autocomplete="off" />
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" placeholder="Enter city name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="area">ناحیە</label>
-      <input type="text" id="area" placeholder="ناوی ناحیە" autocomplete="off" />
+      <label for="area">Area</label>
+      <input type="text" id="area" name="area" placeholder="Enter area name" autocomplete="off" />
     </div>
-    <button type="submit" class="submit-btn">زیادکردن</button>
+    <button type="submit" class="submit-btn">Add</button>
   </form>
 </div>
 
 <div>
-  <h2>لیستی ڕووتەکان</h2>
+  <h2>Routes List</h2>
   <ul id="routesUl"></ul>
 </div>
 
 <script>
+  // Elements
   const form = document.getElementById("routeForm");
   const countryInput = document.getElementById("country");
   const cityInput = document.getElementById("city");
   const areaInput = document.getElementById("area");
   const routesUl = document.getElementById("routesUl");
 
+  // Variables
   let routes = [];
   let editMode = false;
   let editingIndex = null;
 
+  // Load routes from localStorage
   function loadRoutes() {
-    const stored = localStorage.getItem("routes");
-    if (stored) {
-      routes = JSON.parse(stored);
+    const storedRoutes = localStorage.getItem("routes");
+    if (storedRoutes) {
+      routes = JSON.parse(storedRoutes);
     }
   }
 
+  // Save routes to localStorage
   function saveRoutes() {
     localStorage.setItem("routes", JSON.stringify(routes));
   }
 
+  // Clear input fields
   function clearForm() {
     countryInput.value = "";
     cityInput.value = "";
     areaInput.value = "";
   }
 
+  // Exit edit mode: reset form button and variables
   function exitEditMode() {
     editMode = false;
     editingIndex = null;
-    form.querySelector(".submit-btn").textContent = "زیادکردن";
+    form.querySelector(".submit-btn").textContent = "Add";
     clearForm();
   }
 
+  // Render the list of routes on the page
   function renderRoutes() {
     routesUl.innerHTML = "";
+
     routes.forEach((route, index) => {
       const li = document.createElement("li");
 
       const textSpan = document.createElement("span");
       textSpan.className = "route-text";
-      textSpan.innerHTML = `
-        <span><strong>وڵات:</strong> ${route.country}</span>
-        <span><strong>شار:</strong> ${route.city}</span>
-        <span><strong>ناحیە:</strong> ${route.area}</span>
-      `;
+      textSpan.innerHTML = 
+        <span><strong>Country:</strong> ${route.country}</span>
+         <span><strong>City:</strong> ${route.city}</span>
+         <span><strong>Area:</strong> ${route.area}</span>;
       li.appendChild(textSpan);
 
       const btnGroup = document.createElement("div");
       btnGroup.className = "btn-group";
 
+      // Edit button
       const editBtn = document.createElement("button");
       editBtn.className = "btn-edit";
-      editBtn.textContent = "دەستکاریکردن";
-      editBtn.onclick = () => {
-        editMode = true;
-        editingIndex = index;
-        countryInput.value = route.country;
-        cityInput.value = route.city;
-        areaInput.value = route.area;
-        form.querySelector(".submit-btn").textContent = "نوێکردنەوە";
-      };
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => startEdit(index));
 
+      // Delete button
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn-delete";
-      deleteBtn.textContent = "سڕینەوە";
-      deleteBtn.onclick = () => {
-        if (confirm("دڵنیایت لە سڕینەوەی ئەم ڕووتە؟")) {
-          routes.splice(index, 1);
-          saveRoutes();
-          renderRoutes();
-          if (editMode && editingIndex === index) exitEditMode();
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to delete this route?")) {
+          deleteRoute(index);
         }
-      };
+      });
 
       btnGroup.appendChild(editBtn);
       btnGroup.appendChild(deleteBtn);
+
       li.appendChild(btnGroup);
       routesUl.appendChild(li);
     });
   }
 
-  form.onsubmit = (e) => {
+  // Add a new route to array and save
+  function addRoute(route) {
+    routes.push(route);
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // Update a route at specific index
+  function updateRoute(index, route) {
+    routes[index] = route;
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // Delete a route at specific index
+  function deleteRoute(index) {
+    routes.splice(index, 1);
+    saveRoutes();
+    renderRoutes();
+    // If deleting the route currently being edited, exit edit mode
+    if (editMode && editingIndex === index) {
+      exitEditMode();
+    }
+  }
+
+  // Start editing a route: populate form and change button text
+  function startEdit(index) {
+    editMode = true;
+    editingIndex = index;
+    const route = routes[index];
+    countryInput.value = route.country;
+    cityInput.value = route.city;
+    areaInput.value = route.area;
+    form.querySelector(".submit-btn").textContent = "Update";
+    countryInput.focus();
+  }
+
+  // Handle form submission
+  form.addEventListener("submit", function (e) {
     e.preventDefault();
+
     const country = countryInput.value.trim();
     const city = cityInput.value.trim();
     const area = areaInput.value.trim();
 
     if (!country || !city || !area) {
-      alert("تکایە هەموو خانەکان پڕبکەوە.");
+      alert("Please fill in all fields.");
       return;
     }
 
+    // Check for duplicate route (except when editing the same index)
     const duplicateIndex = routes.findIndex(
-      r => r.country === country && r.city === city && r.area === area
+      (r) => r.country === country && r.city === city && r.area === area
     );
 
     if (editMode) {
       if (duplicateIndex !== -1 && duplicateIndex !== editingIndex) {
-        alert("ئەم ڕووتە پێشتر تۆمارکراوە.");
+        alert("This route already exists.");
         return;
       }
-      routes[editingIndex] = { country, city, area };
+      updateRoute(editingIndex, { country, city, area });
       exitEditMode();
     } else {
       if (duplicateIndex !== -1) {
-        alert("ئەم ڕووتە پێشتر تۆمارکراوە.");
+        alert("This route already exists.");
         return;
       }
-      routes.push({ country, city, area });
+      addRoute({ country, city, area });
+      clearForm();
     }
+  });
 
-    saveRoutes();
-    renderRoutes();
-    clearForm();
-  };
-
+  // Initialize
   loadRoutes();
   renderRoutes();
 </script>
