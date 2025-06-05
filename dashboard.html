@@ -223,7 +223,7 @@
       </div>
       <div class="quick-stat-item">
         <div>ژمارەی کڕیار</div>
-        <div id="party-count">6,139</div>
+        <div id="party-count">0</div>
       </div>
     </div>
 
@@ -244,14 +244,25 @@
       window.location.href = './index.html';
     }
 
-    // فانکشنی نوێکردنەوەی ژمارەی کڕیار بە وردەکاری لە localStorage
+    // ڕاستکردنەوەی ژمارەی کڕیار لە localStorage
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (!div) return;
 
-      // وەرگرتنی لیستی کڕیارەکان لە localStorage
       const stored = localStorage.getItem("customers");
       const customers = stored ? JSON.parse(stored) : [];
+      div.textContent = customers.length.toLocaleString();
+    }
 
-      // نوێکردنەوەی ژمارەی کڕیار بە شێوەی گونجاو و سەرنجڕاکێش
-      div.textContent = customers.length.toLocale
+    // وەرگرتنی پەیامی زیادکردنی کڕیار
+    window.addEventListener("message", function(event) {
+      if (event.data === "customer-added") {
+        updatePartyCount();
+      }
+    });
+
+    // باری یەکەم کات کە پەڕە بارکرا ژمارەی کڕیار نوێ دەکات
+    updatePartyCount();
+  </script>
+</body>
+</html>
