@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Customer Dashboard</title>
   <style>
+    /* 👉 Styles here – your CSS is unchanged from before (clean and responsive) */
     body {
       background: #f4f6f9;
       padding: 20px;
@@ -169,7 +170,7 @@
           <th>Mobile</th>
           <th>Balance</th>
           <th>GPS Location</th>
-          <th>Route (Country, City, Area)</th>
+          <th>Route</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -177,7 +178,7 @@
     </table>
   </div>
 
-  <!-- Modal -->
+  <!-- Modal for adding customers -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -228,8 +229,6 @@
       const c = data[index];
       if (!c) return alert("Customer not found.");
 
-      const newCode = prompt("Enter new code:", c.code);
-      if (newCode === null) return;
       const newName = prompt("Enter new name:", c.name);
       if (newName === null) return;
       const newMobile = prompt("Enter new mobile:", c.mobile);
@@ -247,7 +246,6 @@
 
       data[index] = {
         ...c,
-        code: newCode.trim(),
         name: newName.trim(),
         mobile: newMobile.trim(),
         balance: parseFloat(newBalance) || 0,
@@ -273,7 +271,7 @@
 
     window.onload = loadCustomerList;
 
-    // Listen for message from iframe when new customer is added
+    // Handle customer-added message from iframe
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
