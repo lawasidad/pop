@@ -98,16 +98,18 @@
   <label for="balance">Balance</label>
   <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
 
-  <label for="route">Route</label>
-  <input type="text" id="route" placeholder="Enter route name" autocomplete="off" />
+  <label for="route">Country</label>
+  <select id="route">
+    <option value="" selected disabled>Select country</option>
+  </select>
 
   <label for="city">City</label>
-  <select id="city" >
+  <select id="city">
     <option value="" selected disabled>Select city</option>
   </select>
 
   <label for="area">Area</label>
-  <select id="area" >
+  <select id="area">
     <option value="" selected disabled>Select area</option>
   </select>
 
@@ -129,33 +131,61 @@
         document.getElementById("location").value = lat + ", " + lon;
         window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function(error) {
-        switch(error.code) {
-          case error.PERMISSION_DENIED:
-            alert("User denied the request for Geolocation.");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            alert("Location information is unavailable.");
-            break;
-          case error.TIMEOUT:
-            alert("The request to get user location timed out.");
-            break;
-          default:
-            alert("An unknown error occurred while fetching location.");
-            break;
-        }
+        alert("Error fetching location: " + error.message);
       });
     } else {
       alert("Geolocation is not supported by this browser.");
     }
   }
 
+  function loadRouteData() {
+    const routeSelect = document.getElementById("route");
+    const citySelect = document.getElementById("city");
+    const areaSelect = document.getElementById("area");
+
+    const routes = JSON.parse(localStorage.getItem("routes") || "[]");
+    const countries = [...new Set(routes.map(r => r.country))];
+
+    countries.forEach(c => {
+      const option = document.createElement("option");
+      option.value = c;
+      option.textContent = c;
+      routeSelect.appendChild(option);
+    });
+
+    routeSelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const cities = [...new Set(routes.filter(r => r.country === selectedCountry).map(r => r.city))];
+      citySelect.innerHTML = `<option value="" selected disabled>Select city</option>`;
+      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
+      cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+    });
+
+    citySelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const selectedCity = citySelect.value;
+      const areas = routes.filter(r => r.country === selectedCountry && r.city === selectedCity).map(r => r.area);
+      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
+      areas.forEach(area => {
+        const option = document.createElement("option");
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+      });
+    });
+  }
+
   function saveCustomer() {
     const code = document.getElementById("code").value.trim();
     const name = document.getElementById("name").value.trim();
     const mobile = document.getElementById("mobile").value.trim();
-    const balanceInput = document.getElementById("balance").value.trim();
-    const balance = balanceInput === "" ? 0 : parseFloat(balanceInput);
-    const route = document.getElementById("route").value.trim();
+    const balance = parseFloat(document.getElementById("balance").value.trim() || "0");
+    const route = document.getElementById("route").value;
     const city = document.getElementById("city").value;
     const area = document.getElementById("area").value;
     const location = document.getElementById("location").value.trim();
@@ -183,18 +213,13 @@
 
     const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
     if (duplicate) {
-      alert("This customer code is already used. Please choose a different code.");
+      alert("This customer code is already used.");
       return;
     }
 
     const newCustomer = { code, name, mobile, balance, route, city, area, location };
-
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
-
-    if (window.opener) {
-      window.opener.postMessage("customer-added", "*");
-    }
 
     alert("Customer saved successfully!");
 
@@ -208,6 +233,9 @@
     document.getElementById("location").value = "";
     document.getElementById("code").focus();
   }
+
+  // Call on load
+  loadRouteData();
 </script>
 
 </body>
