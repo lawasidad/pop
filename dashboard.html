@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Dashboard</title>
   <style>
+    /* ===== Basic Styling ===== */
     * {
       margin: 0;
       padding: 0;
@@ -23,20 +24,23 @@
       margin: 0 auto;
       padding: 15px;
     }
+
+    h1, h2 {
+      text-align: right;
+    }
     h1 {
       font-size: 22px;
       color: #333;
       margin-bottom: 15px;
       padding-bottom: 8px;
       border-bottom: 1px solid #e0e0e0;
-      text-align: right;
     }
     h2 {
       font-size: 16px;
       color: #444;
       margin: 15px 0 10px;
-      text-align: right;
     }
+
     .menu {
       display: flex;
       flex-wrap: wrap;
@@ -74,11 +78,13 @@
     .new-customer-btn:hover {
       background-color: #218838;
     }
+
     .divider {
       height: 1px;
       background: #e0e0e0;
       margin: 15px 0;
     }
+
     .stats-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
@@ -102,6 +108,7 @@
       color: #222;
       font-weight: bold;
     }
+
     .quick-stats {
       margin: 20px 0;
     }
@@ -122,12 +129,14 @@
       margin-top: 5px;
       font-size: 15px;
     }
+
     .footer {
       text-align: center;
       margin-top: 20px;
       color: #777;
       font-size: 14px;
     }
+
     .search-bar {
       width: 100%;
       padding: 10px;
@@ -137,6 +146,7 @@
       font-size: 14px;
       text-align: right;
     }
+
     .logout-btn {
       margin-top: 15px;
       padding: 10px 20px;
@@ -150,6 +160,7 @@
     .logout-btn:hover {
       background-color: #c82333;
     }
+
     @media (max-width: 600px) {
       .stats-container {
         grid-template-columns: 1fr;
@@ -180,7 +191,6 @@
       <div class="menu-item" onclick="window.location.href='van-sale.html'">Van Sale</div>
       <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
       <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
-      <!-- New Customer Button -->
       <button class="new-customer-btn" onclick="window.location.href='new-customer.html'">New Customer</button>
     </div>
 
@@ -250,6 +260,21 @@
   <script>
     function logout() {
       window.location.href = './index.html';
+    }
+
+    // ✅ گوێگرتنەوەی پیام لە new-customer.html
+    window.addEventListener("message", function(e) {
+      if (e.data === "customer-added") {
+        updatePartyCount();
+      }
+    });
+
+    function updatePartyCount() {
+      const div = document.querySelector(".quick-stat-item:nth-child(6) div:last-child");
+      if (div) {
+        const current = parseInt(div.textContent.replace(/,/g, ""));
+        div.textContent = (current + 1).toLocaleString();
+      }
     }
   </script>
 </body>
