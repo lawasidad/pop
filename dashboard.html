@@ -240,15 +240,15 @@
   </div>
 
   <script>
-    function logout() {
-      window.location.href = './index.html';
-    }
+   window.addEventListener("message", function(event) {
+  if (event.data === "customer-added") {
+    console.log("کڕیار زیادکرا، نوێدەکرێتەوە...");
 
-    // ✅ ناردنی ئەپدەیت بۆ ژمارەی کڕیارەکان لەگەڵ پیامەوە
-    window.addEventListener("message", function(e) {
-      if (e.data === "customer-added") {
-        updatePartyCount();
-      }
+    // ئەمە ئەو فانکشنیەیە کە داتاکان لە localStorage یان API بخوێنێتەوە
+    refreshCustomerList(); 
+  }
+});
+
     });
 
     function updatePartyCount() {
