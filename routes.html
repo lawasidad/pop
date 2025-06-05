@@ -61,7 +61,7 @@
       background-color: #0056b3;
     }
 
-    #routeList {
+    #cityList {
       max-width: 600px;
       margin: 30px auto 0 auto;
       background: white;
@@ -70,13 +70,13 @@
       padding: 20px;
     }
 
-    #routeList h2 {
+    #cityList h2 {
       font-size: 20px;
       margin-bottom: 15px;
       color: #333;
     }
 
-    #routesUl li {
+    #citiesUl li {
       padding: 10px;
       border: 1px solid #ccc;
       margin-bottom: 10px;
@@ -106,31 +106,29 @@
   </form>
 </div>
 
-<div id="routeList">
-  <h2>All Routes</h2>
-  <ul id="routesUl" style="list-style: none; padding: 0;"></ul>
+<div id="cityList">
+  <h2>City List</h2>
+  <ul id="citiesUl" style="list-style: none; padding: 0;"></ul>
 </div>
 
 <script>
   document.getElementById("routeForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
-    const country = document.getElementById("country").value.trim();
     const city = document.getElementById("city").value.trim();
-    const area = document.getElementById("area").value.trim();
 
-    if (!country || !city || !area) {
-      alert("Please fill in all fields.");
+    if (!city) {
+      alert("Please enter a city name.");
       return;
     }
 
     const li = document.createElement("li");
-    li.textContent = `Country: ${country} | City: ${city} | Area: ${area}`;
-    document.getElementById("routesUl").appendChild(li);
+    li.textContent = city;
+    document.getElementById("citiesUl").appendChild(li);
 
-    // Clear inputs after adding
-    document.getElementById("country").value = "";
+    // Clear form fields (or just city if you want)
     document.getElementById("city").value = "";
+    document.getElementById("country").value = "";
     document.getElementById("area").value = "";
   });
 </script>
