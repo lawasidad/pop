@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Route Form</title>
   <style>
     body {
@@ -61,7 +61,7 @@
       background-color: #0056b3;
     }
 
-    #cityList {
+    #routeList {
       max-width: 600px;
       margin: 30px auto 0 auto;
       background: white;
@@ -70,13 +70,13 @@
       padding: 20px;
     }
 
-    #cityList h2 {
+    #routeList h2 {
       font-size: 20px;
       margin-bottom: 15px;
       color: #333;
     }
 
-    #citiesUl li {
+    #routesUl li {
       padding: 10px;
       border: 1px solid #ccc;
       margin-bottom: 10px;
@@ -92,43 +92,45 @@
   <form id="routeForm">
     <div class="form-group">
       <label for="country">Country</label>
-      <input type="text" id="country" name="country" placeholder="Enter country name">
+      <input type="text" id="country" name="country" placeholder="Enter country name" />
     </div>
     <div class="form-group">
       <label for="city">City</label>
-      <input type="text" id="city" name="city" placeholder="Enter city name">
+      <input type="text" id="city" name="city" placeholder="Enter city name" />
     </div>
     <div class="form-group">
       <label for="area">Area</label>
-      <input type="text" id="area" name="area" placeholder="Enter area name">
+      <input type="text" id="area" name="area" placeholder="Enter area name" />
     </div>
     <button type="submit" class="submit-btn">Add</button>
   </form>
 </div>
 
-<div id="cityList">
-  <h2>City List</h2>
-  <ul id="citiesUl" style="list-style: none; padding: 0;"></ul>
+<div id="routeList">
+  <h2>Route List</h2>
+  <ul id="routesUl" style="list-style: none; padding: 0;"></ul>
 </div>
 
 <script>
   document.getElementById("routeForm").addEventListener("submit", function (e) {
     e.preventDefault();
 
+    const country = document.getElementById("country").value.trim();
     const city = document.getElementById("city").value.trim();
+    const area = document.getElementById("area").value.trim();
 
-    if (!city) {
-      alert("Please enter a city name.");
+    if (!country || !city || !area) {
+      alert("Please fill in all fields.");
       return;
     }
 
     const li = document.createElement("li");
-    li.textContent = city;
-    document.getElementById("citiesUl").appendChild(li);
+    li.textContent = `Country: ${country}, City: ${city}, Area: ${area}`;
+    document.getElementById("routesUl").appendChild(li);
 
-    // Clear form fields (or just city if you want)
-    document.getElementById("city").value = "";
+    // ڕەش نەکردنی خانەکان
     document.getElementById("country").value = "";
+    document.getElementById("city").value = "";
     document.getElementById("area").value = "";
   });
 </script>
