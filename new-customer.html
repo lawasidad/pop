@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>زیادکردنی کڕیار</title>
+  <title>Add New Customer</title>
   <style>
     body {
       background: #f4f6f9;
@@ -23,11 +23,14 @@
       text-align: center;
       margin-bottom: 20px;
       font-size: 22px;
+      direction: ltr;
     }
     label {
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
+      direction: ltr;
+      text-align: right;
     }
     input {
       width: 100%;
@@ -36,10 +39,13 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 16px;
+      direction: ltr;
+      text-align: left;
     }
     .gps-group {
       display: flex;
       align-items: center;
+      direction: ltr;
     }
     .gps-group input {
       flex: 1;
@@ -71,28 +77,37 @@
 </head>
 <body>
 
-<div class="form-box">
-  <h2>زیادکردنی کڕیار نوە</h2>
+<div class="form-box" dir="ltr">
+  <h2>Add New Customer</h2>
 
-  <label for="code">کۆدی کڕیار</label>
-  <input type="text" id="code" placeholder="کۆد بنوسە" required />
+  <label for="code">Customer Code</label>
+  <input type="text" id="code" placeholder="Enter customer code" required />
 
-  <label for="name">ناو</label>
-  <input type="text" id="name" placeholder="ناوی تەواو بنوسە" required />
+  <label for="name">Full Name</label>
+  <input type="text" id="name" placeholder="Enter full name" required />
 
-  <label for="mobile">مۆبایل</label>
-  <input type="text" id="mobile" placeholder="ژمارەی مۆبایل بنوسە" required />
+  <label for="mobile">Mobile Number</label>
+  <input type="text" id="mobile" placeholder="Enter mobile number" required />
 
-  <label for="balance">بالانس</label>
+  <label for="balance">Balance</label>
   <input type="number" id="balance" placeholder="0" value="0" required />
 
-  <label for="location">شوێن (GPS)</label>
+  <label for="route">Route</label>
+  <input type="text" id="route" placeholder="Enter route name" />
+
+  <label for="city">City</label>
+  <input type="text" id="city" placeholder="Enter city name" />
+
+  <label for="area">Area</label>
+  <input type="text" id="area" placeholder="Enter area name" />
+
+  <label for="location">Location (GPS)</label>
   <div class="gps-group">
-    <input type="text" id="location" placeholder="کلیل بکە بۆ وەرگرتنی GPS" readonly />
+    <input type="text" id="location" placeholder="Click to get GPS location" readonly />
     <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
   </div>
 
-  <button class="submit-btn" type="button" onclick="saveCustomer()">پاشەکەوتکردنی کڕیار</button>
+  <button class="submit-btn" type="button" onclick="saveCustomer()">Save Customer</button>
 </div>
 
 <script>
@@ -104,10 +119,10 @@
         document.getElementById("location").value = lat + ", " + lon;
         window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function() {
-        alert("ناتوانرێت شوێنەکەت بدۆزرێتەوە.");
+        alert("Unable to retrieve your location.");
       });
     } else {
-      alert("پەشتیوانی ناكرێت لە Geolocation.");
+      alert("Geolocation is not supported by this browser.");
     }
   }
 
@@ -116,14 +131,17 @@
     const name = document.getElementById("name").value.trim();
     const mobile = document.getElementById("mobile").value.trim();
     const balance = parseFloat(document.getElementById("balance").value) || 0;
+    const route = document.getElementById("route").value.trim();
+    const city = document.getElementById("city").value.trim();
+    const area = document.getElementById("area").value.trim();
     const location = document.getElementById("location").value.trim();
 
     if (!code || !name || !mobile) {
-      alert("تکایە هەموو خانە گرینگەکان پڕبکەوە.");
+      alert("Please fill in all required fields.");
       return;
     }
 
-    const newCustomer = { code, name, mobile, balance, location };
+    const newCustomer = { code, name, mobile, balance, route, city, area, location };
 
     let customers = [];
     const stored = localStorage.getItem("customers");
@@ -137,7 +155,7 @@
 
     const duplicate = customers.find(c => c.code === code);
     if (duplicate) {
-      alert("ئەم کۆدە پێشتر بەکار هاتووە، تکایە کۆدەکی جیاواز هەڵبژێرە.");
+      alert("This customer code is already used. Please choose a different code.");
       return;
     }
 
@@ -148,7 +166,7 @@
       window.opener.postMessage("customer-added", "*");
     }
 
-    alert("کڕیار بە سەرکەوتوویی پاشەکەوت کرا!");
+    alert("Customer saved successfully!");
     window.close();
   }
 </script>
