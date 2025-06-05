@@ -123,7 +123,6 @@
         const lat = position.coords.latitude.toFixed(5);
         const lon = position.coords.longitude.toFixed(5);
         document.getElementById("location").value = lat + ", " + lon;
-        // Open Google Maps in a new tab, user can see location on map
         window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function(error) {
         switch(error.code) {
@@ -162,14 +161,11 @@
       return;
     }
 
-    // Simple mobile number validation pattern
     const mobilePattern = /^[0-9+\-\s]{7,15}$/;
     if (!mobilePattern.test(mobile)) {
       alert("Please enter a valid mobile number.");
       return;
     }
-
-    const newCustomer = { code, name, mobile, balance, route, city, area, location };
 
     let customers = [];
     const stored = localStorage.getItem("customers");
@@ -187,6 +183,8 @@
       return;
     }
 
+    const newCustomer = { code, name, mobile, balance, route, city, area, location };
+
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
 
@@ -195,7 +193,17 @@
     }
 
     alert("Customer saved successfully!");
-    window.close();
+
+    // Clear the form to allow adding another customer easily
+    document.getElementById("code").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("balance").value = 0;
+    document.getElementById("route").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("area").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("code").focus();
   }
 </script>
 
