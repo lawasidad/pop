@@ -96,6 +96,11 @@
 </div>
 
 <script>
+  // دوای زیادکردنی کڕیار، ئەم کۆدە بنووسە:
+  window.opener.postMessage("customer-added", "*");
+  window.close();
+
+
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -155,10 +160,5 @@
     document.getElementById("location").value = "";
   }
 </script>
-  // دوای زیادکردنی کڕیار، ئەم کۆدە بنووسە:
-  window.opener.postMessage("customer-added", "*");
-  window.close();
-</script>
-
 </body>
 </html>
