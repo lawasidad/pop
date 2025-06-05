@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -9,14 +9,15 @@
       background: #f4f6f9;
       font-family: sans-serif;
       padding: 20px;
+      direction: rtl;
     }
     .form-box {
       background: white;
       max-width: 500px;
       margin: auto;
-      padding: 20px;
+      padding: 25px;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
     h2 {
       font-size: 22px;
@@ -25,7 +26,7 @@
     }
     label {
       display: block;
-      margin-bottom: 5px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
     input {
@@ -34,6 +35,7 @@
       margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 14px;
     }
     .gps-group {
       display: flex;
@@ -43,13 +45,17 @@
       flex: 1;
     }
     .gps-btn {
-      margin-left: 10px;
+      margin-right: 10px;
       background: #007bff;
       color: white;
       border: none;
-      padding: 10px;
+      padding: 10px 14px;
       border-radius: 6px;
+      font-size: 16px;
       cursor: pointer;
+    }
+    .gps-btn:hover {
+      background: #0056b3;
     }
     .submit-btn {
       width: 100%;
@@ -61,84 +67,86 @@
       border-radius: 6px;
       cursor: pointer;
     }
+    .submit-btn:hover {
+      background: #218838;
+    }
   </style>
 </head>
 <body>
 
-<div class="form-box">
-  <h2>Add New Customer</h2>
+  <div class="form-box">
+    <h2>زیادکردنی کڕیار</h2>
 
-  <label for="code">Customer Code</label>
-  <input type="text" id="code" placeholder="Enter code" required>
+    <label for="code">کۆدی کڕیار</label>
+    <input type="text" id="code" placeholder="کۆد بنوسە" required>
 
-  <label for="name">Name</label>
-  <input type="text" id="name" placeholder="Enter full name" required>
+    <label for="name">ناوی کڕیار</label>
+    <input type="text" id="name" placeholder="ناو بنوسە" required>
 
-  <label for="mobile">Mobile</label>
-  <input type="text" id="mobile" placeholder="Enter mobile number" required>
+    <label for="mobile">ژمارەی مۆبایل</label>
+    <input type="text" id="mobile" placeholder="ژمارەی مۆبایل" required>
 
-  <label for="balance">Balance</label>
-  <input type="number" id="balance" placeholder="0" value="0" required>
+    <label for="balance">قەرز/مانەوە</label>
+    <input type="number" id="balance" placeholder="0" value="0" required>
 
-  <label for="location">Location (GPS)</label>
-  <div class="gps-group">
-    <input type="text" id="location" placeholder="Click 📍 to get GPS" readonly>
-    <button class="gps-btn" onclick="getLocation()">📍</button>
+    <label for="location">شوێن (GPS)</label>
+    <div class="gps-group">
+      <input type="text" id="location" placeholder="کرتە بکە 📍 بۆ وەرگرتنی شوێن" readonly>
+      <button class="gps-btn" onclick="getLocation()">📍</button>
+    </div>
+
+    <button class="submit-btn" onclick="saveCustomer()">پاشەکەوتکردن</button>
   </div>
 
-  <button class="submit-btn" onclick="saveCustomer()">Save Customer</button>
-</div>
-
-<script>
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude.toFixed(5);
-        const lon = position.coords.longitude.toFixed(5);
-        document.getElementById("location").value = `${lat}, ${lon}`;
-        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
-      }, function(error) {
-        alert("Could not retrieve location.");
-      });
-    } else {
-      alert("Geolocation not supported.");
-    }
-  }
-
-  function saveCustomer() {
-    const customer = {
-      code: document.getElementById("code").value.trim(),
-      name: document.getElementById("name").value.trim(),
-      mobile: document.getElementById("mobile").value.trim(),
-      balance: parseFloat(document.getElementById("balance").value) || 0,
-      location: document.getElementById("location").value.trim()
-    };
-
-    if (!customer.code || !customer.name || !customer.mobile) {
-      alert("Please fill in all required fields.");
-      return;
+  <script>
+    function getLocation() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const lat = position.coords.latitude.toFixed(5);
+          const lon = position.coords.longitude.toFixed(5);
+          document.getElementById("location").value = `${lat}, ${lon}`;
+          window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
+        }, function(error) {
+          alert("ناتوانرێت شوێن وەرگیراوە.");
+        });
+      } else {
+        alert("براوزەری تۆ ڕێگە بە GPS نادات.");
+      }
     }
 
-    const stored = localStorage.getItem("customers");
-    const data = stored ? JSON.parse(stored) : [];
-    data.push(customer);
-    localStorage.setItem("customers", JSON.stringify(data));
+    function saveCustomer() {
+      const customer = {
+        code: document.getElementById("code").value.trim(),
+        name: document.getElementById("name").value.trim(),
+        mobile: document.getElementById("mobile").value.trim(),
+        balance: parseFloat(document.getElementById("balance").value) || 0,
+        location: document.getElementById("location").value.trim()
+      };
 
-    // ✅ ناردنی پیام بۆ داشبۆرد لە window opener ـەوە
-    if (window.opener) {
-      window.opener.postMessage("customer-added", "*");
+      if (!customer.code || !customer.name || !customer.mobile) {
+        alert("تکایە هەموو خانە پڕبکە.");
+        return;
+      }
+
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+      data.push(customer);
+      localStorage.setItem("customers", JSON.stringify(data));
+
+      if (window.opener) {
+        window.opener.postMessage("customer-added", "*");
+      }
+
+      alert("کڕیار بەسەرکەوتوویی زیادکرا.");
+
+      // پاککردنی خانەکان
+      document.getElementById("code").value = "";
+      document.getElementById("name").value = "";
+      document.getElementById("mobile").value = "";
+      document.getElementById("balance").value = "0";
+      document.getElementById("location").value = "";
     }
-
-    alert("Customer saved successfully!");
-
-    // پاککردنی خانەکان
-    document.getElementById("code").value = "";
-    document.getElementById("name").value = "";
-    document.getElementById("mobile").value = "";
-    document.getElementById("balance").value = "0";
-    document.getElementById("location").value = "";
-  }
-</script>
+  </script>
 
 </body>
 </html>
