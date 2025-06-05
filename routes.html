@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Route Form with Edit & Delete</title>
+  <title>Route Form with Edit & Delete & Persistence</title>
   <style>
     body {
       background-color: #f0f2f5;
@@ -123,8 +123,112 @@
   const areaInput = document.getElementById("area");
   const routesUl = document.getElementById("routesUl");
 
+  let routes = [];
   let editMode = false;
-  let editingLi = null;
+  let editingIndex = null;
+
+  // لودکردنی داتاکان لە localStorage کاتێک پەڕە دانرا
+  function loadRoutes() {
+    const storedRoutes = localStorage.getItem("routes");
+    if (storedRoutes) {
+      routes = JSON.parse(storedRoutes);
+    }
+  }
+
+  // نیشاندانی routes لە لیستەکە
+  function renderRoutes() {
+    routesUl.innerHTML = "";
+    routes.forEach((route, index) => {
+      const li = document.createElement("li");
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "route-text";
+      textSpan.textContent = `ولات: ${route.country}\nشار: ${route.city}\nناوچە: ${route.area}`;
+      li.appendChild(textSpan);
+
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-edit";
+      editBtn.textContent = "دەسکاریکردن";
+      editBtn.addEventListener("click", () => startEdit(index));
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "سڕینەوە";
+      deleteBtn.addEventListener("click", () => {
+        if(confirm("دڵنیایت لە سڕینەوەی ئەم ڕووتە؟")) {
+          deleteRoute(index);
+        }
+      });
+
+      btnGroup.appendChild(editBtn);
+      btnGroup.appendChild(deleteBtn);
+
+      li.appendChild(btnGroup);
+
+      routesUl.appendChild(li);
+    });
+  }
+
+  // زیادکردنی route بۆ لیست و هەڵگرتنی لە localStorage
+  function addRoute(route) {
+    routes.push(route);
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // نوێکردنەوەی route
+  function updateRoute(index, route) {
+    routes[index] = route;
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // سڕینەوە route
+  function deleteRoute(index) {
+    routes.splice(index, 1);
+    saveRoutes();
+    renderRoutes();
+    if(editMode && editingIndex === index) {
+      exitEditMode();
+    }
+  }
+
+  // هەڵگرتنی routes لە localStorage
+  function saveRoutes() {
+    localStorage.setItem("routes", JSON.stringify(routes));
+  }
+
+  // دەستپێکردنی دەسکاریکردن
+  function startEdit(index) {
+    editMode = true;
+    editingIndex = index;
+
+    const route = routes[index];
+    countryInput.value = route.country;
+    cityInput.value = route.city;
+    areaInput.value = route.area;
+
+    form.querySelector(".submit-btn").textContent = "نوێکردنەوە";
+    countryInput.focus();
+  }
+
+  // دەرچوون لە مودەی دەسکاریکردن
+  function exitEditMode() {
+    editMode = false;
+    editingIndex = null;
+    form.querySelector(".submit-btn").textContent = "زیادکردن";
+    clearForm();
+  }
+
+  // پاککردنی فۆرم
+  function clearForm() {
+    countryInput.value = "";
+    cityInput.value = "";
+    areaInput.value = "";
+  }
 
   form.addEventListener("submit", function(e) {
     e.preventDefault();
@@ -138,79 +242,31 @@
       return;
     }
 
+    // چەککردنی دووبارە نبوونی هەمان route بۆ زیادکردن یان نوێکردن
+    const duplicateIndex = routes.findIndex(r =>
+      r.country === country && r.city === city && r.area === area
+    );
+
     if (editMode) {
-      // Update existing item
-      editingLi.querySelector(".route-text").textContent = `ولات: ${country}\nشار: ${city}\nناوچە: ${area}`;
+      if (duplicateIndex !== -1 && duplicateIndex !== editingIndex) {
+        alert("ئەم ڕووتە هەیە لە لیستەکە.");
+        return;
+      }
+      updateRoute(editingIndex, { country, city, area });
       exitEditMode();
     } else {
-      // Add new item
-      const li = document.createElement("li");
-
-      const textSpan = document.createElement("span");
-      textSpan.className = "route-text";
-      textSpan.textContent = `ولات: ${country}\nشار: ${city}\nناوچە: ${area}`;
-      li.appendChild(textSpan);
-
-      const btnGroup = document.createElement("div");
-      btnGroup.className = "btn-group";
-
-      const editBtn = document.createElement("button");
-      editBtn.className = "btn-edit";
-      editBtn.textContent = "دەسکاریکردن";
-      editBtn.addEventListener("click", () => startEdit(li));
-
-      const deleteBtn = document.createElement("button");
-      deleteBtn.className = "btn-delete";
-      deleteBtn.textContent = "سڕینەوە";
-      deleteBtn.addEventListener("click", () => {
-        if(confirm("دڵنیایت لە سڕینەوەی ئەم ڕووتە؟")) {
-          if(editMode && editingLi === li) {
-            exitEditMode();
-          }
-          routesUl.removeChild(li);
-        }
-      });
-
-      btnGroup.appendChild(editBtn);
-      btnGroup.appendChild(deleteBtn);
-
-      li.appendChild(btnGroup);
-
-      routesUl.appendChild(li);
+      if (duplicateIndex !== -1) {
+        alert("ئەم ڕووتە هەیە لە لیستەکە.");
+        return;
+      }
+      addRoute({ country, city, area });
+      clearForm();
     }
-
-    clearForm();
   });
 
-  function startEdit(li) {
-    editMode = true;
-    editingLi = li;
-
-    const lines = li.querySelector(".route-text").textContent.split("\n");
-    const countryLine = lines[0].replace("ولات: ", "").trim();
-    const cityLine = lines[1].replace("شار: ", "").trim();
-    const areaLine = lines[2].replace("ناوچە: ", "").trim();
-
-    countryInput.value = countryLine;
-    cityInput.value = cityLine;
-    areaInput.value = areaLine;
-
-    form.querySelector(".submit-btn").textContent = "نوێکردنەوە";
-    countryInput.focus();
-  }
-
-  function exitEditMode() {
-    editMode = false;
-    editingLi = null;
-    form.querySelector(".submit-btn").textContent = "زیادکردن";
-    clearForm();
-  }
-
-  function clearForm() {
-    countryInput.value = "";
-    cityInput.value = "";
-    areaInput.value = "";
-  }
+  // لودکردن و نیشاندانی data کاتێک پەڕە دانرا
+  loadRoutes();
+  renderRoutes();
 </script>
 
 </body>
