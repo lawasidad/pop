@@ -213,7 +213,7 @@
           <td data-label="GPS Location">
             ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
           </td>
-          <td data-label="Route">${c.Route || ''}</td>
+          <td data-label="Route">${c.route || ''}</td>
           <td data-label="City">${c.city || ''}</td>
           <td data-label="Area">${c.area || ''}</td>
           <td data-label="Actions">
@@ -240,7 +240,7 @@
       if (newBalance === null) return;
       const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
       if (newLocation === null) return;
-      const newCountry = prompt("Enter Route:", c.country || "");
+      const newRoute = prompt("Enter route:", c.route || "");
       if (newRoute === null) return;
       const newCity = prompt("Enter city:", c.city || "");
       if (newCity === null) return;
@@ -253,7 +253,7 @@
         mobile: newMobile.trim(),
         balance: parseFloat(newBalance) || 0,
         location: newLocation.trim(),
-        Route: newRoute.trim(),
+        route: newRoute.trim(),
         city: newCity.trim(),
         area: newArea.trim()
       };
