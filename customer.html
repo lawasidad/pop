@@ -199,7 +199,7 @@
       const data = stored ? JSON.parse(stored) : [];
       const tbody = document.querySelector(".customer-table tbody");
       tbody.innerHTML = "";
-      const totalCustomers = data.length;
+      document.getElementById('totalCustomers').textContent = data.length;
 
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
@@ -219,8 +219,6 @@
         `;
         tbody.appendChild(tr);
       });
-
-      document.getElementById('totalCustomers').textContent = totalCustomers;
     }
 
     function editCustomer(index) {
