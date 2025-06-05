@@ -187,10 +187,9 @@
       const textSpan = document.createElement("span");
       textSpan.className = "route-text";
       textSpan.innerHTML = 
-        <span><strong>Country:</strong> ${route.country}</span>
-        <span><strong>City:</strong> ${route.city}</span>
-        <span><strong>Area:</strong> ${route.area}</span>
-      ;
+        `<span><strong>Country:</strong> ${route.country}</span>
+         <span><strong>City:</strong> ${route.city}</span>
+         <span><strong>Area:</strong> ${route.area}</span>`;
       li.appendChild(textSpan);
 
       const btnGroup = document.createElement("div");
