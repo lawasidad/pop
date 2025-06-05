@@ -112,26 +112,26 @@
 <body>
 
 <div class="route-form-container">
-  <h1>زیادکردنی ڕووت</h1>
+  <h1>Add Route</h1>
   <form id="routeForm">
     <div class="form-group">
-      <label for="country">وڵات</label>
-      <input type="text" id="country" placeholder="ناوی وڵات" autocomplete="off" />
+      <label for="country">Country</label>
+      <input type="text" id="country" placeholder="Country name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="city">شار</label>
-      <input type="text" id="city" placeholder="ناوی شار" autocomplete="off" />
+      <label for="city">City</label>
+      <input type="text" id="city" placeholder="City name" autocomplete="off" />
     </div>
     <div class="form-group">
-      <label for="area">ناحیە</label>
-      <input type="text" id="area" placeholder="ناوی ناحیە" autocomplete="off" />
+      <label for="area">Area</label>
+      <input type="text" id="area" placeholder="Area name" autocomplete="off" />
     </div>
-    <button type="submit" class="submit-btn">زیادکردن</button>
+    <button type="submit" class="submit-btn">Add</button>
   </form>
 </div>
 
 <div>
-  <h2>لیستی ڕووتەکان</h2>
+  <h2>liste route </h2>
   <ul id="routesUl"></ul>
 </div>
 
@@ -166,7 +166,7 @@
   function exitEditMode() {
     editMode = false;
     editingIndex = null;
-    form.querySelector(".submit-btn").textContent = "زیادکردن";
+    form.querySelector(".submit-btn").textContent = "Add";
     clearForm();
   }
 
@@ -189,19 +189,19 @@
 
       const editBtn = document.createElement("button");
       editBtn.className = "btn-edit";
-      editBtn.textContent = "دەستکاریکردن";
+      editBtn.textContent = " edit";
       editBtn.onclick = () => {
         editMode = true;
         editingIndex = index;
         countryInput.value = route.country;
         cityInput.value = route.city;
         areaInput.value = route.area;
-        form.querySelector(".submit-btn").textContent = "نوێکردنەوە";
+        form.querySelector(".submit-btn").textContent = "Update";
       };
 
       const deleteBtn = document.createElement("button");
       deleteBtn.className = "btn-delete";
-      deleteBtn.textContent = "سڕینەوە";
+      deleteBtn.textContent = "delet";
       deleteBtn.onclick = () => {
         if (confirm("دڵنیایت لە سڕینەوەی ئەم ڕووتە؟")) {
           routes.splice(index, 1);
