@@ -3,82 +3,157 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Customer</title>
+  <title>زیادکردنی کڕیار</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
       background: #f4f6f9;
+      font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 400px;
+      max-width: 500px;
       margin: auto;
       direction: rtl;
     }
-    label, input, button {
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+    label {
       display: block;
-      width: 100%;
-      margin-bottom: 12px;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
     input {
+      width: 100%;
       padding: 10px;
+      margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 16px;
     }
-    button {
-      background-color: #28a745;
+    .gps-group {
+      display: flex;
+      align-items: center;
+    }
+    .gps-group input {
+      flex: 1;
+    }
+    .gps-btn {
+      margin-left: 10px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .submit-btn {
+      width: 100%;
+      background: #28a745;
       color: white;
       border: none;
       padding: 12px;
       font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
+      user-select: none;
     }
-    button:hover {
-      background-color: #218838;
+    .submit-btn:hover {
+      background: #218838;
     }
   </style>
 </head>
 <body>
-  <h2>زیادکردنی کڕیار</h2>
+
+<div class="form-box">
+  <h2>زیادکردنی کڕیار نوێ</h2>
+
+  <label for="code">کۆدی کڕیار</label>
+  <input type="text" id="code" placeholder="کۆد بنوسە" required />
 
   <label for="name">ناو</label>
-  <input type="text" id="name" placeholder="ناوی کڕیار بنوسە" />
+  <input type="text" id="name" placeholder="ناوی تەواو بنوسە" required />
 
   <label for="mobile">مۆبایل</label>
-  <input type="text" id="mobile" placeholder="ژمارەی مۆبایل بنوسە" />
+  <input type="text" id="mobile" placeholder="ژمارەی مۆبایل بنوسە" required />
 
-  <button onclick="addCustomer()">زیادکردن</button>
+  <label for="balance">بالانس</label>
+  <input type="number" id="balance" placeholder="0" value="0" required />
 
-  <script>
-    function addCustomer() {
-      const name = document.getElementById("name").value.trim();
-      const mobile = document.getElementById("mobile").value.trim();
+  <label for="location">شوێن (GPS)</label>
+  <div class="gps-group">
+    <input type="text" id="location" placeholder="کلیل بکە بۆ وەرگرتنی GPS" readonly />
+    <button class="gps-btn" onclick="getLocation()">📍</button>
+  </div>
 
-      if (!name || !mobile) {
-        alert("تکایە هەموو خانەکان پڕبکەوە.");
-        return;
-      }
+  <button class="submit-btn" onclick="saveCustomer()">پاشەکەوتکردنی کڕیار</button>
+</div>
 
-      const newCustomer = { name, mobile };
-
-      // وەرگرتنی داتاکان لە localStorage ـەوە (ئەگەر هەیە)
-      const stored = localStorage.getItem("customers");
-      const customers = stored ? JSON.parse(stored) : [];
-
-      customers.push(newCustomer);
-      localStorage.setItem("customers", JSON.stringify(customers));
-
-      // ناردنی پەیام بۆ dashboard
-      if (window.opener) {
-        window.opener.postMessage("customer-added", "*");
-      }
-
-      alert("کڕیار بە سەرکەوتوویی زیادکرا!");
-
-      // پاککردنی خانەکان
-      document.getElementById("name").value = "";
-      document.getElementById("mobile").value = "";
+<script>
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude.toFixed(5);
+        const lon = position.coords.longitude.toFixed(5);
+        document.getElementById("location").value = `${lat}, ${lon}`;
+        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
+      }, function() {
+        alert("ناتوانرێت شوێنەکەت بدۆزرێتەوە.");
+      });
+    } else {
+      alert("Geolocation پشتیوانی ناکرێت.");
     }
-  </script>
+  }
+
+  function saveCustomer() {
+    const code = document.getElementById("code").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const balance = parseFloat(document.getElementById("balance").value) || 0;
+    const location = document.getElementById("location").value.trim();
+
+    if (!code || !name || !mobile) {
+      alert("تکایە هەموو خانە گرینگەکان پڕبکەوە.");
+      return;
+    }
+
+    const newCustomer = { code, name, mobile, balance, location };
+
+    // وەرگرتنی داتا لە localStorage یان دروستکردنی نوێ
+    const stored = localStorage.getItem("customers");
+    const customers = stored ? JSON.parse(stored) : [];
+
+    // ئەگەر کۆدی کڕیارەکە دووبارە هەیە، ئاگاداری بدە
+    const duplicate = customers.find(c => c.code === code);
+    if (duplicate) {
+      alert("ئەم کۆدەكە پێشتر بەکار هاتووە، تکایە کۆدێکی جیاواز هەڵبژێرە.");
+      return;
+    }
+
+    customers.push(newCustomer);
+    localStorage.setItem("customers", JSON.stringify(customers));
+
+    // ناردنی پەیام بۆ dashboard بۆ نوێکردنەوە
+    if (window.opener) {
+      window.opener.postMessage("customer-added", "*");
+    }
+
+    alert("کڕیار بە سەرکەوتوویی پاشەکەوت کرا!");
+
+    // پاککردنی خانەکان بۆ زیادکردنی کڕیاری تر
+    document.getElementById("code").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("balance").value = "0";
+    document.getElementById("location").value = "";
+  }
+</script>
+
 </body>
 </html>
