@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>داشبۆرد</title>
+  <title>Dashboard</title>
   <style>
     * {
       margin: 0;
@@ -165,64 +165,64 @@
 <body>
 
   <div class="dashboard">
-    <h1>داشبۆرد</h1>
+    <h1>Dashboard</h1>
 
     <div class="menu">
-      <div class="menu-item" onclick="location.href='inventory.html'">کۆگا</div>
-      <div class="menu-item" onclick="location.href='customer.html'">کڕیارەکان</div>
-      <div class="menu-item" onclick="location.href='sales.html'">فرۆشتن</div>
-      <div class="menu-item" onclick="location.href='purchase.html'">کڕین</div>
-      <div class="menu-item" onclick="location.href='van-sale.html'">فرۆشتنی ڤەن</div>
-      <div class="menu-item" onclick="location.href='finance.html'">دارایی</div>
-      <div class="menu-item" onclick="location.href='routes.html'">ڕێچکەکان</div>
-      <button class="new-customer-btn" onclick="location.href='new-customer.html'">زیادکردنی کڕیار</button>
+      <div class="menu-item" onclick="location.href='inventory.html'">Inventory</div>
+      <div class="menu-item" onclick="location.href='customer.html'">Customers</div>
+      <div class="menu-item" onclick="location.href='sales.html'">Sales</div>
+      <div class="menu-item" onclick="location.href='purchase.html'">Purchases</div>
+      <div class="menu-item" onclick="location.href='van-sale.html'">Van Sales</div>
+      <div class="menu-item" onclick="location.href='finance.html'">Finance</div>
+      <div class="menu-item" onclick="location.href='routes.html'">Routes</div>
+      <button class="new-customer-btn" onclick="location.href='new-customer.html'">Add New Customer</button>
     </div>
 
     <div class="divider"></div>
 
     <div class="stats-container">
       <div class="stat-box">
-        <div class="stat-title">داواکاری</div>
+        <div class="stat-title">Requests</div>
         <div class="stat-value">IQD 0</div>
         <div class="stat-value">0</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title">وەسڵ</div>
+        <div class="stat-title">Receipts</div>
         <div class="stat-value">IQD 17,277,500</div>
-        <div class="stat-value">291 یەکە</div>
+        <div class="stat-value">291 Units</div>
       </div>
       <div class="stat-box">
         <div class="stat-title">03/06/2025 - 03/06/2021</div>
-        <div class="stat-value">سەردانکراو 435</div>
+        <div class="stat-value">435 Visits</div>
       </div>
     </div>
 
     <div class="divider"></div>
 
-    <h2>ئاماری خێرا</h2>
+    <h2>Quick Stats</h2>
     <div class="quick-stats-grid">
       <div class="quick-stat-item">
-        <div>قەرز بۆ وەرگرتن</div>
+        <div>Debt to Receive</div>
         <div>1,103,828,500</div>
       </div>
       <div class="quick-stat-item">
-        <div>بۆ پارەدان</div>
+        <div>To Pay</div>
         <div>0</div>
       </div>
       <div class="quick-stat-item">
-        <div>کەمبونی کاڵا</div>
+        <div>Stock Shortage</div>
         <div>0</div>
       </div>
       <div class="quick-stat-item">
-        <div>نرخی ستۆک</div>
+        <div>Stock Value</div>
         <div>0</div>
       </div>
       <div class="quick-stat-item">
-        <div>ژمارەی کاڵا</div>
+        <div>Number of Products</div>
         <div>20</div>
       </div>
       <div class="quick-stat-item">
-        <div>ژمارەی کڕیار</div>
+        <div>Number of Customers</div>
         <div id="party-count">0</div>
       </div>
     </div>
@@ -231,12 +231,12 @@
 
     <div class="footer">
       <h2>lawa bradosti</h2>
-      <div>ڕێکخستن</div>
+      <div>Organization</div>
       <div>7502020061</div>
-      <button class="logout-btn" onclick="logout()">چوونە دەرەوە</button>
+      <button class="logout-btn" onclick="logout()">Logout</button>
     </div>
 
-    <input type="text" class="search-bar" placeholder="گەڕان...">
+    <input type="text" class="search-bar" placeholder="Search...">
   </div>
 
   <script>
@@ -244,7 +244,7 @@
       window.location.href = './index.html';
     }
 
-    // ڕاستکردنەوەی ژمارەی کڕیار لە localStorage
+    // Update customer count from localStorage
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (!div) return;
@@ -254,14 +254,14 @@
       div.textContent = customers.length.toLocaleString();
     }
 
-    // وەرگرتنی پەیامی زیادکردنی کڕیار
+    // Listen for customer added message
     window.addEventListener("message", function(event) {
       if (event.data === "customer-added") {
         updatePartyCount();
       }
     });
 
-    // باری یەکەم کات کە پەڕە بارکرا ژمارەی کڕیار نوێ دەکات
+    // Update customer count on page load
     updatePartyCount();
   </script>
 </body>
