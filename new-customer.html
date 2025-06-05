@@ -125,11 +125,11 @@
 
     const newCustomer = { code, name, mobile, balance, location };
 
-    // وەرگرتنی داتا لە localStorage یان دروستکردنی نوێ
+    // گرتنی داتاکانی پێشوو و زیادکردنی نوێ
     const stored = localStorage.getItem("customers");
     const customers = stored ? JSON.parse(stored) : [];
 
-    // ئەگەر کۆدی کڕیارەکە دووبارە هەیە، ئاگاداری بدە
+    // چاکسازی: پشتڕاستکردنەوەی کۆدی یەکتا
     const duplicate = customers.find(c => c.code === code);
     if (duplicate) {
       alert("ئەم کۆدەكە پێشتر بەکار هاتووە، تکایە کۆدێکی جیاواز هەڵبژێرە.");
@@ -139,14 +139,15 @@
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
 
-    // ناردنی پەیام بۆ dashboard بۆ نوێکردنەوە
+    // ناردنی پەیام بۆ وێبپەیجی داگرتوو (dashboard)
     if (window.opener) {
+      console.log("ناردنی پەیام بۆ dashboard");
       window.opener.postMessage("customer-added", "*");
     }
 
     alert("کڕیار بە سەرکەوتوویی پاشەکەوت کرا!");
 
-    // پاککردنی خانەکان بۆ زیادکردنی کڕیاری تر
+    // پاککردنی فۆرم
     document.getElementById("code").value = "";
     document.getElementById("name").value = "";
     document.getElementById("mobile").value = "";
