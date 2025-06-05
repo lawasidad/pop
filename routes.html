@@ -82,6 +82,7 @@
       margin-bottom: 10px;
       border-radius: 5px;
       background-color: #f9f9f9;
+      white-space: pre-line; /* گرینگە بۆ نیشاندانی خەتە نوێکان */
     }
   </style>
 </head>
@@ -125,10 +126,11 @@
     }
 
     const li = document.createElement("li");
-    li.textContent = `Country: ${country}, City: ${city}, Area: ${area}`;
+    // جیاکردن بە خەت نوێ (line breaks)
+    li.textContent = `Country: ${country}\nCity: ${city}\nArea: ${area}`;
     document.getElementById("routesUl").appendChild(li);
 
-    // ڕەش نەکردنی خانەکان
+    // Clear inputs
     document.getElementById("country").value = "";
     document.getElementById("city").value = "";
     document.getElementById("area").value = "";
