@@ -9,7 +9,7 @@
       background-color: #f0f2f5;
       font-family: Arial, sans-serif;
       padding: 20px;
-      direction: ltr; /* change direction to left-to-right */
+      direction: rtl; /* keep RTL if you want */
     }
     .route-form-container {
       background: white;
@@ -18,7 +18,7 @@
       border-radius: 10px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 20px;
-      text-align: left; /* align text to left */
+      text-align: right;
     }
     h1, h2 {
       color: #333;
@@ -48,6 +48,7 @@
       border-radius: 5px;
       font-size: 14px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
     .submit-btn:hover {
       background-color: #0056b3;
@@ -59,34 +60,53 @@
       margin: 0 auto;
     }
     ul#routesUl li {
-      background: white;
-      margin-bottom: 10px;
-      padding: 10px 15px;
-      border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      margin-bottom: 12px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(38, 52, 92, 0.2);
       display: flex;
       justify-content: space-between;
       align-items: center;
+      font-size: 15px;
+      white-space: pre-line;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    ul#routesUl li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(38, 52, 92, 0.35);
+    }
+    .route-text {
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .route-text span {
+      display: block;
+      font-weight: 600;
       font-size: 14px;
-      white-space: pre-line; /* To respect line breaks */
+      opacity: 0.85;
     }
     .btn-group button {
-      margin-left: 5px;
-      background-color: #eee;
+      margin-left: 10px;
+      background-color: rgba(255,255,255,0.25);
       border: none;
-      padding: 6px 10px;
-      border-radius: 4px;
+      padding: 7px 14px;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 13px;
+      font-size: 14px;
+      color: white;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
     }
     .btn-group button:hover {
-      background-color: #ccc;
+      background-color: rgba(255,255,255,0.45);
     }
     .btn-edit {
-      color: #007bff;
+      color: #ffd700;
     }
     .btn-delete {
-      color: #d9534f;
+      color: #ff6b6b;
     }
   </style>
 </head>
@@ -134,6 +154,23 @@
     }
   }
 
+  function saveRoutes() {
+    localStorage.setItem("routes", JSON.stringify(routes));
+  }
+
+  function clearForm() {
+    countryInput.value = "";
+    cityInput.value = "";
+    areaInput.value = "";
+  }
+
+  function exitEditMode() {
+    editMode = false;
+    editingIndex = null;
+    form.querySelector(".submit-btn").textContent = "Add";
+    clearForm();
+  }
+
   function renderRoutes() {
     routesUl.innerHTML = "";
     routes.forEach((route, index) => {
@@ -141,7 +178,11 @@
 
       const textSpan = document.createElement("span");
       textSpan.className = "route-text";
-      textSpan.textContent = `Country: ${route.country}\nCity: ${route.city}\nArea: ${route.area}`;
+      textSpan.innerHTML = `
+        <span><strong>Country:</strong> ${route.country}</span>
+        <span><strong>City:</strong> ${route.city}</span>
+        <span><strong>Area:</strong> ${route.area}</span>
+      `;
       li.appendChild(textSpan);
 
       const btnGroup = document.createElement("div");
@@ -191,34 +232,15 @@
     }
   }
 
-  function saveRoutes() {
-    localStorage.setItem("routes", JSON.stringify(routes));
-  }
-
   function startEdit(index) {
     editMode = true;
     editingIndex = index;
-
     const route = routes[index];
     countryInput.value = route.country;
     cityInput.value = route.city;
     areaInput.value = route.area;
-
     form.querySelector(".submit-btn").textContent = "Update";
     countryInput.focus();
-  }
-
-  function exitEditMode() {
-    editMode = false;
-    editingIndex = null;
-    form.querySelector(".submit-btn").textContent = "Add";
-    clearForm();
-  }
-
-  function clearForm() {
-    countryInput.value = "";
-    cityInput.value = "";
-    areaInput.value = "";
   }
 
   form.addEventListener("submit", function(e) {
@@ -229,7 +251,7 @@
     const area = areaInput.value.trim();
 
     if (!country || !city || !area) {
-      alert("Please fill out all fields.");
+      alert("Please fill in all fields.");
       return;
     }
 
