@@ -1,216 +1,299 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Add New Customer</title>
+  <title>Route Form with Edit & Delete & Persistence</title>
   <style>
     body {
-      background: #f4f6f9;
+      background-color: #f0f2f5;
       font-family: Arial, sans-serif;
       padding: 20px;
-      max-width: 500px;
-      margin: auto;
       direction: rtl;
     }
-    .form-box {
+    .route-form-container {
       background: white;
+      max-width: 600px;
+      margin: 0 auto 20px auto;
+      border-radius: 10px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
       padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      text-align: right;
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      font-size: 22px;
-      direction: ltr;
+    h1, h2 {
+      color: #333;
+    }
+    .form-group {
+      margin-bottom: 15px;
     }
     label {
       display: block;
       margin-bottom: 5px;
-      font-weight: bold;
-      direction: ltr;
-      text-align: right;
+      color: #444;
+      font-size: 14px;
     }
-    input, select {
+    input[type="text"] {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
       border: 1px solid #ccc;
-      font-size: 16px;
-      direction: ltr;
-      text-align: left;
-    }
-    .gps-group {
-      display: flex;
-      align-items: center;
-      direction: ltr;
-    }
-    .gps-group input {
-      flex: 1;
-    }
-    .gps-btn {
-      margin-left: 10px;
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px;
       border-radius: 6px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease;
-    }
-    .gps-btn:hover {
-      background-color: #0056b3;
+      font-size: 14px;
+      box-sizing: border-box;
     }
     .submit-btn {
-      width: 100%;
-      background: #28a745;
+      background-color: #007bff;
       color: white;
       border: none;
-      padding: 12px;
-      font-size: 16px;
-      border-radius: 6px;
+      padding: 10px 18px;
+      border-radius: 5px;
+      font-size: 14px;
       cursor: pointer;
-      user-select: none;
       transition: background-color 0.3s ease;
     }
     .submit-btn:hover {
-      background: #218838;
+      background-color: #0056b3;
+    }
+    ul#routesUl {
+      list-style: none;
+      padding: 0;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    ul#routesUl li {
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      margin-bottom: 12px;
+      padding: 15px 20px;
+      border-radius: 12px;
+      box-shadow: 0 8px 15px rgba(38, 52, 92, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      white-space: pre-line;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    ul#routesUl li:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 25px rgba(38, 52, 92, 0.35);
+    }
+    .route-text {
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+    .route-text span {
+      display: block;
+      font-weight: 600;
+      font-size: 14px;
+      opacity: 0.85;
+    }
+    .btn-group button {
+      margin-left: 10px;
+      background-color: rgba(255,255,255,0.25);
+      border: none;
+      padding: 7px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      color: white;
+      font-weight: 600;
+      transition: background-color 0.3s ease;
+    }
+    .btn-group button:hover {
+      background-color: rgba(255,255,255,0.45);
+    }
+    .btn-edit {
+      color: #ffd700;
+    }
+    .btn-delete {
+      color: #ff6b6b;
     }
   </style>
 </head>
 <body>
 
-<div class="form-box" dir="ltr">
-  <h2>Add New Customer</h2>
+<div class="route-form-container">
+  <h1>Add Route</h1>
+  <form id="routeForm">
+    <div class="form-group">
+      <label for="country">Country</label>
+      <input type="text" id="country" name="country" placeholder="Enter country name" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label for="city">City</label>
+      <input type="text" id="city" name="city" placeholder="Enter city name" autocomplete="off" />
+    </div>
+    <div class="form-group">
+      <label for="area">Area</label>
+      <input type="text" id="area" name="area" placeholder="Enter area name" autocomplete="off" />
+    </div>
+    <button type="submit" class="submit-btn">Add</button>
+  </form>
+</div>
 
-  <label for="code">Customer Code <span style="color:red">*</span></label>
-  <input type="text" id="code" placeholder="Enter customer code" required autocomplete="off" />
-
-  <label for="name">Full Name <span style="color:red">*</span></label>
-  <input type="text" id="name" placeholder="Enter full name" required autocomplete="off" />
-
-  <label for="mobile">Mobile Number <span style="color:red">*</span></label>
-  <input type="tel" id="mobile" placeholder="Enter mobile number" required autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="Please enter a valid mobile number" />
-
-  <label for="balance">Balance</label>
-  <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
-
-  <label for="route">Route</label>
-  <input type="text" id="route" placeholder="Enter route name" autocomplete="off" />
-
-  <label for="city">City</label>
-  <select id="city" >
-    <option value="" selected disabled>Select city</option>
-  
-  </select>
-
-  <label for="area">Area</label>
-  <select id="area" >
-    <option value="" selected disabled>Select area</option>
-    
-  </select>
-
-  <label for="location">Location (GPS)</label>
-  <div class="gps-group">
-    <input type="text" id="location" placeholder="Click to get GPS location" readonly />
-    <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
-  </div>
-
-  <button class="submit-btn" type="button" onclick="saveCustomer()">Save Customer</button>
+<div>
+  <h2>Routes List</h2>
+  <ul id="routesUl"></ul>
 </div>
 
 <script>
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude.toFixed(5);
-        const lon = position.coords.longitude.toFixed(5);
-        document.getElementById("location").value = lat + ", " + lon;
-        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
-      }, function(error) {
-        switch(error.code) {
-          case error.PERMISSION_DENIED:
-            alert("User denied the request for Geolocation.");
-            break;
-          case error.POSITION_UNAVAILABLE:
-            alert("Location information is unavailable.");
-            break;
-          case error.TIMEOUT:
-            alert("The request to get user location timed out.");
-            break;
-          default:
-            alert("An unknown error occurred while fetching location.");
-            break;
+  // Elements
+  const form = document.getElementById("routeForm");
+  const countryInput = document.getElementById("country");
+  const cityInput = document.getElementById("city");
+  const areaInput = document.getElementById("area");
+  const routesUl = document.getElementById("routesUl");
+
+  // Variables
+  let routes = [];
+  let editMode = false;
+  let editingIndex = null;
+
+  // Load routes from localStorage
+  function loadRoutes() {
+    const storedRoutes = localStorage.getItem("routes");
+    if (storedRoutes) {
+      routes = JSON.parse(storedRoutes);
+    }
+  }
+
+  // Save routes to localStorage
+  function saveRoutes() {
+    localStorage.setItem("routes", JSON.stringify(routes));
+  }
+
+  // Clear input fields
+  function clearForm() {
+    countryInput.value = "";
+    cityInput.value = "";
+    areaInput.value = "";
+  }
+
+  // Exit edit mode: reset form button and variables
+  function exitEditMode() {
+    editMode = false;
+    editingIndex = null;
+    form.querySelector(".submit-btn").textContent = "Add";
+    clearForm();
+  }
+
+  // Render the list of routes on the page
+  function renderRoutes() {
+    routesUl.innerHTML = "";
+
+    routes.forEach((route, index) => {
+      const li = document.createElement("li");
+
+      const textSpan = document.createElement("span");
+      textSpan.className = "route-text";
+      textSpan.innerHTML = 
+        `<span><strong>Country:</strong> ${route.country}</span>
+         <span><strong>City:</strong> ${route.city}</span>
+         <span><strong>Area:</strong> ${route.area}</span>`;
+      li.appendChild(textSpan);
+
+      const btnGroup = document.createElement("div");
+      btnGroup.className = "btn-group";
+
+      // Edit button
+      const editBtn = document.createElement("button");
+      editBtn.className = "btn-edit";
+      editBtn.textContent = "Edit";
+      editBtn.addEventListener("click", () => startEdit(index));
+
+      // Delete button
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "btn-delete";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", () => {
+        if (confirm("Are you sure you want to delete this route?")) {
+          deleteRoute(index);
         }
       });
-    } else {
-      alert("Geolocation is not supported by this browser.");
+
+      btnGroup.appendChild(editBtn);
+      btnGroup.appendChild(deleteBtn);
+
+      li.appendChild(btnGroup);
+      routesUl.appendChild(li);
+    });
+  }
+
+  // Add a new route to array and save
+  function addRoute(route) {
+    routes.push(route);
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // Update a route at specific index
+  function updateRoute(index, route) {
+    routes[index] = route;
+    saveRoutes();
+    renderRoutes();
+  }
+
+  // Delete a route at specific index
+  function deleteRoute(index) {
+    routes.splice(index, 1);
+    saveRoutes();
+    renderRoutes();
+    // If deleting the route currently being edited, exit edit mode
+    if (editMode && editingIndex === index) {
+      exitEditMode();
     }
   }
 
-  function saveCustomer() {
-    const code = document.getElementById("code").value.trim();
-    const name = document.getElementById("name").value.trim();
-    const mobile = document.getElementById("mobile").value.trim();
-    const balanceInput = document.getElementById("balance").value.trim();
-    const balance = balanceInput === "" ? 0 : parseFloat(balanceInput);
-    const route = document.getElementById("route").value.trim();
-    const city = document.getElementById("city").value;
-    const area = document.getElementById("area").value;
-    const location = document.getElementById("location").value.trim();
+  // Start editing a route: populate form and change button text
+  function startEdit(index) {
+    editMode = true;
+    editingIndex = index;
+    const route = routes[index];
+    countryInput.value = route.country;
+    cityInput.value = route.city;
+    areaInput.value = route.area;
+    form.querySelector(".submit-btn").textContent = "Update";
+    countryInput.focus();
+  }
 
-    if (!code || !name || !mobile) {
-      alert("Please fill in all required fields (marked with *).");
+  // Handle form submission
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+
+    const country = countryInput.value.trim();
+    const city = cityInput.value.trim();
+    const area = areaInput.value.trim();
+
+    if (!country || !city || !area) {
+      alert("Please fill in all fields.");
       return;
     }
 
-    const mobilePattern = /^[0-9+\-\s]{7,15}$/;
-    if (!mobilePattern.test(mobile)) {
-      alert("Please enter a valid mobile number.");
-      return;
-    }
+    // Check for duplicate route (except when editing the same index)
+    const duplicateIndex = routes.findIndex(
+      (r) => r.country === country && r.city === city && r.area === area
+    );
 
-    let customers = [];
-    const stored = localStorage.getItem("customers");
-    if (stored) {
-      try {
-        customers = JSON.parse(stored);
-      } catch {
-        customers = [];
+    if (editMode) {
+      if (duplicateIndex !== -1 && duplicateIndex !== editingIndex) {
+        alert("This route already exists.");
+        return;
       }
+      updateRoute(editingIndex, { country, city, area });
+      exitEditMode();
+    } else {
+      if (duplicateIndex !== -1) {
+        alert("This route already exists.");
+        return;
+      }
+      addRoute({ country, city, area });
+      clearForm();
     }
+  });
 
-    const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
-    if (duplicate) {
-      alert("This customer code is already used. Please choose a different code.");
-      return;
-    }
-
-    const newCustomer = { code, name, mobile, balance, route, city, area, location };
-
-    customers.push(newCustomer);
-    localStorage.setItem("customers", JSON.stringify(customers));
-
-    if (window.opener) {
-      window.opener.postMessage("customer-added", "*");
-    }
-
-    alert("Customer saved successfully!");
-
-    // Clear the form to allow adding another customer easily
-    document.getElementById("code").value = "";
-    document.getElementById("name").value = "";
-    document.getElementById("mobile").value = "";
-    document.getElementById("balance").value = 0;
-    document.getElementById("route").value = "";
-    document.getElementById("city").value = "";
-    document.getElementById("area").value = "";
-    document.getElementById("location").value = "";
-    document.getElementById("code").focus();
-  }
+  // Initialize
+  loadRoutes();
+  renderRoutes();
 </script>
 
 </body>
