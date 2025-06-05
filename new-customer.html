@@ -123,7 +123,7 @@
         const lat = position.coords.latitude.toFixed(5);
         const lon = position.coords.longitude.toFixed(5);
         document.getElementById("location").value = lat + ", " + lon;
-        window.open(https://maps.google.com/?q=${lat},${lon}, "_blank");
+        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
       }, function(error) {
         switch(error.code) {
           case error.PERMISSION_DENIED:
@@ -208,4 +208,4 @@
 </script>
 
 </body>
-</html> 
+</html>
