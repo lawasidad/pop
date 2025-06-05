@@ -240,23 +240,28 @@
   </div>
 
   <script>
-   window.addEventListener("message", function(event) {
-  if (event.data === "customer-added") {
-    console.log("کڕیار زیادکرا، نوێدەکرێتەوە...");
-
-    // ئەمە ئەو فانکشنیەیە کە داتاکان لە localStorage یان API بخوێنێتەوە
-    refreshCustomerList(); 
-  }
-});
-
+    // گۆڕینی ژمارەی کڕیارەکان دوای زیادکردن
+    window.addEventListener("message", function(event) {
+      if (event.data === "customer-added") {
+        console.log("✅ کڕیار زیادکرا. نوێکردنەوەی ژمارە...");
+        updatePartyCount();
+      }
     });
 
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (div) {
         const current = parseInt(div.textContent.replace(/,/g, ""));
-        div.textContent = (current + 1).toLocaleString();
+        const updated = current + 1;
+        div.textContent = updated.toLocaleString();
+        console.log("ژمارەی نوێی کڕیار:", updated);
       }
+    }
+
+    function logout() {
+      // لێرە دەتوانی سیشن یان توکن بسڕیت و گەڕێیتە لاگین
+      alert("چوونە دەرەوە کرا.");
+      location.href = "login.html";
     }
   </script>
 </body>
