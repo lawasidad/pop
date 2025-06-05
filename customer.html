@@ -123,6 +123,20 @@
         margin-bottom: 15px;
         float: none;
       }
+      #filterInputs {
+        margin-bottom: 15px;
+      }
+      #filterInputs input {
+        width: 48%;
+        padding: 8px 10px;
+        margin-right: 4%;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+      }
+      #filterInputs input:last-child {
+        margin-right: 0;
+      }
     }
     /* Actions buttons */
     button.action-btn {
@@ -156,6 +170,11 @@
       Customer Management
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
     </h1>
+
+    <div id="filterInputs">
+      <input type="text" id="filterName" placeholder="Search by Name" oninput="filterCustomers()" />
+      <input type="text" id="filterCode" placeholder="Search by Code" oninput="filterCustomers()" />
+    </div>
 
     <table class="customer-table">
       <thead>
@@ -196,10 +215,12 @@
     function loadCustomerList() {
       const stored = localStorage.getItem("customers");
       const data = stored ? JSON.parse(stored) : [];
+      renderTable(data);
+    }
+
+    function renderTable(data) {
       const tbody = document.querySelector(".customer-table tbody");
       tbody.innerHTML = "";
-
-      const totalCustomers = data.length;
 
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
@@ -223,7 +244,23 @@
         tbody.appendChild(tr);
       });
 
-      document.getElementById('totalCustomers').textContent = totalCustomers;
+      document.getElementById('totalCustomers').textContent = data.length;
+    }
+
+    function filterCustomers() {
+      const nameFilter = document.getElementById('filterName').value.toLowerCase().trim();
+      const codeFilter = document.getElementById('filterCode').value.toLowerCase().trim();
+
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+
+      const filtered = data.filter(c => {
+        const nameMatch = c.name.toLowerCase().includes(nameFilter);
+        const codeMatch = c.code.toLowerCase().includes(codeFilter);
+        return nameMatch && codeMatch;
+      });
+
+      renderTable(filtered);
     }
 
     function editCustomer(index) {
@@ -233,18 +270,15 @@
       const c = data[index];
       if (!c) return alert("Customer not found.");
 
-      // For simplicity, prompt for new name and mobile; in practice use a modal or form
       const newName = prompt("Enter new name:", c.name);
-      if (newName === null) return; // canceled
+      if (newName === null) return; 
       const newMobile = prompt("Enter new mobile:", c.mobile);
       if (newMobile === null) return;
 
-      // Optionally edit balance and location too:
       const newBalance = prompt("Enter new balance (IQD):", c.balance);
       if (newBalance === null) return;
       const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
 
-      // Update
       data[index] = {
         ...c,
         name: newName.trim(),
@@ -254,7 +288,7 @@
       };
 
       localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
+      filterCustomers();
     }
 
     function deleteCustomer(index) {
@@ -266,10 +300,12 @@
 
       data.splice(index, 1);
       localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
+      filterCustomers();
     }
 
-    window.onload = loadCustomerList;
+    window.onload = () => {
+      loadCustomerList();
+    };
 
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
