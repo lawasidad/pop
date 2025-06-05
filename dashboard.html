@@ -84,11 +84,72 @@
       margin: 15px 0;
     }
 
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+
+    .stat-box {
+      background: #f9f9f9;
+      padding: 12px;
+      border-radius: 5px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+      text-align: right;
+    }
+
+    .stat-title {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 16px;
+      color: #222;
+      font-weight: bold;
+    }
+
+    .quick-stats {
+      margin: 20px 0;
+    }
+
+    .quick-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 12px;
+    }
+
+    .quick-stat-item {
+      background: #f0f8ff;
+      padding: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      text-align: right;
+    }
+
+    .quick-stat-item div:last-child {
+      font-weight: bold;
+      margin-top: 5px;
+      font-size: 15px;
+    }
+
     .footer {
       text-align: center;
       margin-top: 20px;
       color: #777;
       font-size: 14px;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      margin-top: 15px;
+      font-size: 14px;
+      text-align: right;
     }
 
     .logout-btn {
@@ -106,17 +167,15 @@
       background-color: #c82333;
     }
 
-    .search-bar {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      margin-top: 15px;
-      font-size: 14px;
-      text-align: right;
-    }
-
     @media (max-width: 600px) {
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .quick-stats-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
       .menu {
         justify-content: center;
       }
@@ -141,6 +200,57 @@
       <div class="menu-item" onclick="window.location.href='finance.html'">Finance</div>
       <div class="menu-item" onclick="window.location.href='routes.html'">Routes</div>
       <button class="new-customer-btn" onclick="window.location.href='new-customer.html'">New Customer</button>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="stats-container">
+      <div class="stat-box">
+        <div class="stat-title">Order</div>
+        <div class="stat-value">IQD 0</div>
+        <div class="stat-value">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Invoice</div>
+        <div class="stat-value">IQD 0</div>
+        <div class="stat-value">0 units</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-title">Date Range</div>
+        <div class="stat-value">Visited 0</div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="quick-stats">
+      <h2>Quick Statistics</h2>
+      <div class="quick-stats-grid">
+        <div class="quick-stat-item">
+          <div>To collect:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>To pay:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Low Stock Count:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Stock Value:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Product Count:</div>
+          <div>0</div>
+        </div>
+        <div class="quick-stat-item">
+          <div>Party Count:</div>
+          <div>0</div>
+        </div>
+      </div>
     </div>
 
     <div class="divider"></div>
