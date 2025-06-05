@@ -124,11 +124,14 @@
     data.push(customer);
     localStorage.setItem("customers", JSON.stringify(data));
 
-    // 🔔 ناردنی پیام بۆ پەڕەی سەرەکی (داشبۆرد)
-    window.parent.postMessage("customer-added", "*");
+    // ✅ ناردنی پیام بۆ داشبۆرد لە window opener ـەوە
+    if (window.opener) {
+      window.opener.postMessage("customer-added", "*");
+    }
 
-    // Optional: clear form or show confirmation
     alert("Customer saved successfully!");
+
+    // پاککردنی خانەکان
     document.getElementById("code").value = "";
     document.getElementById("name").value = "";
     document.getElementById("mobile").value = "";
