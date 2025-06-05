@@ -170,8 +170,6 @@
           <th>Balance</th>
           <th>GPS Location</th>
           <th>Route</th>
-          <th>City</th>
-          <th>Area</th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -179,7 +177,7 @@
     </table>
   </div>
 
-  <!-- Modal for adding customers -->
+  <!-- Modal -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -205,22 +203,20 @@
 
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
+        tr.innerHTML = 
           <td data-label="Code">${c.code}</td>
           <td data-label="Name">${c.name}</td>
           <td data-label="Mobile">${c.mobile}</td>
           <td data-label="Balance">IQD ${c.balance}</td>
           <td data-label="GPS Location">
-            ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
+            ${c.location ? <a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a> : '<span class="seo-status">❌</span>'}
           </td>
-          <td data-label="Route">${c.route || ''}</td>
-          <td data-label="City">${c.city || ''}</td>
-          <td data-label="Area">${c.area || ''}</td>
+          <td data-label="Route">${c.country || ''}, ${c.city || ''}, ${c.area || ''}</td>
           <td data-label="Actions">
             <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
             <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
           </td>
-        `;
+        ;
         tbody.appendChild(tr);
       });
     }
@@ -239,13 +235,9 @@
       const newBalance = prompt("Enter new balance (IQD):", c.balance);
       if (newBalance === null) return;
       const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
-      if (newLocation === null) return;
-      const newRoute = prompt("Enter route:", c.route || "");
-      if (newRoute === null) return;
+      const newCountry = prompt("Enter country:", c.country || "");
       const newCity = prompt("Enter city:", c.city || "");
-      if (newCity === null) return;
       const newArea = prompt("Enter area:", c.area || "");
-      if (newArea === null) return;
 
       data[index] = {
         ...c,
@@ -253,7 +245,7 @@
         mobile: newMobile.trim(),
         balance: parseFloat(newBalance) || 0,
         location: newLocation.trim(),
-        route: newRoute.trim(),
+        country: newCountry.trim(),
         city: newCity.trim(),
         area: newArea.trim()
       };
@@ -282,4 +274,4 @@
     });
   </script>
 </body>
-</html>
+</html> 
