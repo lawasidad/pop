@@ -74,6 +74,7 @@
     input[type="password"],
     input[type="tel"],
     input[type="file"],
+    input[type="date"],
     select {
       width: 100%;
       padding: 8px 10px;
@@ -128,6 +129,22 @@
       font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 4px;
+    }
+    /* Date filter container style */
+    .date-filter {
+      max-width: 400px;
+      margin-bottom: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .date-filter label {
+      flex-shrink: 0;
+      font-weight: normal;
+      color: #555;
+    }
+    .date-filter input {
+      flex-grow: 1;
     }
   </style>
 </head>
@@ -228,6 +245,15 @@
       </table>
 
       <h2>Sales by Invoice</h2>
+
+      <!-- Date filter inputs -->
+      <div class="date-filter">
+        <label for="fromDate">From:</label>
+        <input type="date" id="fromDate" />
+        <label for="toDate">To:</label>
+        <input type="date" id="toDate" />
+      </div>
+
       <table id="salesByInvoiceTable">
         <thead>
           <tr>
@@ -239,6 +265,8 @@
         <tbody>
           <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
           <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+          <tr><td>INV003</td><td>2025-06-05</td><td>$200</td></tr>
+          <tr><td>INV004</td><td>2025-06-10</td><td>$175</td></tr>
         </tbody>
       </table>
 
@@ -317,109 +345,4 @@
       }
 
       // Retrieve existing users
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // Add new user to array
-      users.push({ name, role, mobile });
-
-      // Save back to localStorage
-      localStorage.setItem('users', JSON.stringify(users));
-
-      // Update UI immediately
-      loadUsers();
-
-      // Reset form
-      userForm.reset();
-    });
-
-    // COMPANY FORM HANDLING WITH localStorage for name, address, logo
-    const companyForm = document.getElementById('companyForm');
-    const logoInput = document.getElementById('companyLogo');
-    const logoPreview = document.getElementById('logoPreview');
-
-    // Load company info from localStorage on page load
-    function loadCompanyInfo() {
-      const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-      if (companyInfo.name) {
-        document.getElementById('companyName').value = companyInfo.name;
-      }
-      if (companyInfo.address) {
-        document.getElementById('companyAddress').value = companyInfo.address;
-      }
-      if (companyInfo.logo) {
-        logoPreview.src = companyInfo.logo;
-        logoPreview.style.display = 'block';
-      } else {
-        logoPreview.style.display = 'none';
-      }
-    }
-    loadCompanyInfo();
-
-    logoInput.addEventListener('change', function() {
-      const file = this.files[0];
-      if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          logoPreview.src = e.target.result;
-          logoPreview.style.display = 'block';
-          // Save logo immediately in localStorage
-          const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-          companyInfo.logo = e.target.result;
-          localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-        }
-        reader.readAsDataURL(file);
-      } else {
-        logoPreview.src = '';
-        logoPreview.style.display = 'none';
-        const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-        delete companyInfo.logo;
-        localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-      }
-    });
-
-    companyForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const companyName = document.getElementById('companyName').value.trim();
-      const companyAddress = document.getElementById('companyAddress').value.trim();
-
-      if (!companyName || !companyAddress) {
-        alert('Please fill company name and address.');
-        return;
-      }
-
-      // Get existing company info or new object
-      const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-
-      companyInfo.name = companyName;
-      companyInfo.address = companyAddress;
-
-      localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-
-      alert('Company info saved successfully!');
-    });
-
-    // SALES REPORT FILTER FUNCTIONALITY (for Sales by Item Table)
-    const filterInput = document.getElementById('filterInput');
-    const salesByItemTable = document.getElementById('salesByItemTable');
-    const salesByItemRows = salesByItemTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-    filterInput.addEventListener('input', function() {
-      const filterValue = this.value.toLowerCase();
-
-      for (let i = 0; i < salesByItemRows.length; i++) {
-        const itemCell = salesByItemRows[i].getElementsByTagName('td')[0];
-        if (itemCell) {
-          const itemText = itemCell.textContent.toLowerCase();
-          if (itemText.indexOf(filterValue) > -1) {
-            salesByItemRows[i].style.display = '';
-          } else {
-            salesByItemRows[i].style.display = 'none';
-          }
-        }
-      }
-    });
-  </script>
-
-</body>
-</html>
+      const users = JSON.parse
