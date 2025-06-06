@@ -19,11 +19,12 @@
     .tabs {
       display: flex;
       justify-content: center;
+      gap: 15px;
       margin-bottom: 30px;
-      gap: 20px;
+      flex-wrap: wrap;
     }
     .tab {
-      padding: 12px 30px;
+      padding: 12px 25px;
       cursor: pointer;
       background-color: #e2e8f0;
       border-radius: 8px;
@@ -31,34 +32,37 @@
       color: #555;
       transition: background-color 0.3s ease, color 0.3s ease;
       user-select: none;
+      min-width: 100px;
+      text-align: center;
     }
     .tab.active {
       background-color: #667eea;
       color: white;
     }
     .content {
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
       background: white;
       padding: 25px 30px;
       border-radius: 10px;
       box-shadow: 0 0 15px rgb(0 0 0 / 0.1);
-      min-height: 300px;
+      min-height: 350px;
     }
-    /* User Form */
+    /* Form styles */
     form label {
       display: block;
       margin-bottom: 8px;
       color: #444;
       font-weight: bold;
     }
-    form input, form select {
+    form input, form select, form textarea {
       width: 100%;
       padding: 10px 12px;
       margin-bottom: 20px;
       border: 1px solid #ccc;
       border-radius: 6px;
       font-size: 15px;
+      resize: vertical;
     }
     form button {
       padding: 12px 20px;
@@ -73,7 +77,7 @@
     form button:hover {
       background-color: #5563c1;
     }
-    /* Report content */
+    /* Report section */
     .report-section {
       font-size: 16px;
       color: #333;
@@ -83,15 +87,32 @@
 </head>
 <body>
 
-  <h1>Settings</h1>
+  <h1>تنظیمات (Settings)</h1>
 
   <div class="tabs">
-    <div class="tab active" id="tab-user">User</div>
-    <div class="tab" id="tab-report">Report</div>
+    <div class="tab active" id="tab-report">Report</div>
+    <div class="tab" id="tab-sales">Sales</div>
+    <div class="tab" id="tab-user">User</div>
+    <div class="tab" id="tab-company">Company</div>
   </div>
 
-  <div class="content" id="content-user">
+  <div class="content" id="content-report">
+    <div class="report-section">
+      <h2>گزارش‌ها</h2>
+      <p>لە ئێستادا هیچ گزارشی تۆمار نەکراوە. ئەم بەشە دەتوانێت بۆ نیشاندانی گزارشەکان بەکارببرێت.</p>
+    </div>
+  </div>
+
+  <div class="content" id="content-sales" style="display:none;">
+    <div class="report-section">
+      <h2>فرۆشتن (Sales)</h2>
+      <p>ئەمانە دەکرێن کاری سەربەخۆی فرۆشتن لێرە تێدایە. بۆ نموونە، ڕاپۆرتەکان و ڕێکخستنەکانی فرۆشتن.</p>
+    </div>
+  </div>
+
+  <div class="content" id="content-user" style="display:none;">
     <form id="userForm">
+      <h2>ڕێکخستنەکانی بەکارهێنەر (User Settings)</h2>
       <label for="username">ناوی بەکارهێنەر</label>
       <input type="text" id="username" placeholder="ناوی بەکارهێنەر داخڵ بکە" required />
 
@@ -110,34 +131,51 @@
     </form>
   </div>
 
-  <div class="content" id="content-report" style="display:none;">
-    <div class="report-section">
-      <h2>گزارشی سیستەم</h2>
-      <p>لە ئێستادا هیچ گزارشی تۆمار نەکراوە. لە دوای بەکارهێنانی سیستەم، ئەم بەشە بە شێوەی خۆکار تازە دەبێتەوە.</p>
-    </div>
+  <div class="content" id="content-company" style="display:none;">
+    <form id="companyForm">
+      <h2>ڕێکخستنەکانی کۆمپانیا (Company Settings)</h2>
+
+      <label for="companyName">ناوی کۆمپانیا</label>
+      <input type="text" id="companyName" placeholder="ناوی کۆمپانیا داخڵ بکە" required />
+
+      <label for="address">ناونیشانی کۆمپانیا</label>
+      <textarea id="address" rows="3" placeholder="ناونیشانی کۆمپانیا بنووسە" required></textarea>
+
+      <label for="phone">ژمارەی تەلەفۆن</label>
+      <input type="tel" id="phone" placeholder="٠٧١xxxxxxxx" required pattern="[0-9]{10,15}" />
+
+      <button type="submit">پاشکەوتکردن</button>
+    </form>
   </div>
 
   <script>
-    const tabUser = document.getElementById('tab-user');
-    const tabReport = document.getElementById('tab-report');
-    const contentUser = document.getElementById('content-user');
-    const contentReport = document.getElementById('content-report');
+    const tabs = {
+      report: document.getElementById('tab-report'),
+      sales: document.getElementById('tab-sales'),
+      user: document.getElementById('tab-user'),
+      company: document.getElementById('tab-company')
+    };
+    const contents = {
+      report: document.getElementById('content-report'),
+      sales: document.getElementById('content-sales'),
+      user: document.getElementById('content-user'),
+      company: document.getElementById('content-company')
+    };
 
-    tabUser.addEventListener('click', () => {
-      tabUser.classList.add('active');
-      tabReport.classList.remove('active');
-      contentUser.style.display = 'block';
-      contentReport.style.display = 'none';
+    Object.entries(tabs).forEach(([key, tab]) => {
+      tab.addEventListener('click', () => {
+        // Remove active class from all tabs
+        Object.values(tabs).forEach(t => t.classList.remove('active'));
+        // Hide all contents
+        Object.values(contents).forEach(c => c.style.display = 'none');
+
+        // Activate clicked tab and show content
+        tab.classList.add('active');
+        contents[key].style.display = 'block';
+      });
     });
 
-    tabReport.addEventListener('click', () => {
-      tabReport.classList.add('active');
-      tabUser.classList.remove('active');
-      contentReport.style.display = 'block';
-      contentUser.style.display = 'none';
-    });
-
-    // Simple form submission handler (user form)
+    // Handle User Form submit
     const userForm = document.getElementById('userForm');
     userForm.addEventListener('submit', e => {
       e.preventDefault();
@@ -150,11 +188,25 @@
         return;
       }
 
-      // This is a stub for saving user settings
       alert(`کاربەر: ${username}\nئیمەیڵ: ${email}\nڕۆڵ: ${role}\nپاشکەوتکرا`);
-
-      // Clear form
       userForm.reset();
+    });
+
+    // Handle Company Form submit
+    const companyForm = document.getElementById('companyForm');
+    companyForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('companyName').value.trim();
+      const address = document.getElementById('address').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+
+      if (!name || !address || !phone) {
+        alert('تکایە هەموو خانەکان پڕ بکەوە');
+        return;
+      }
+
+      alert(`ناوی کۆمپانیا: ${name}\nناونیشان: ${address}\nژمارەی تەلەفۆن: ${phone}\nپاشکەوتکرا`);
+      companyForm.reset();
     });
   </script>
 
