@@ -177,6 +177,7 @@
           <option value="User">User</option>
           <option value="Manager">Manager</option>
         </select>
+        <input type="password" id="password" placeholder="Enter password" required />
         <button type="submit">Add User</button>
       </form>
       <div id="userList">
@@ -187,6 +188,7 @@
               <th>Username</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Password</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -233,6 +235,7 @@
   const usernameInput = document.getElementById('username');
   const emailInput = document.getElementById('email');
   const roleSelect = document.getElementById('role');
+  const passwordInput = document.getElementById('password');
   const editIndexInput = document.getElementById('editIndex');
   const usersTbody = document.getElementById('usersTbody');
 
@@ -243,10 +246,14 @@
     users.forEach((user, index) => {
       const tr = document.createElement('tr');
 
+      // Show password masked with bullets for security in UI
+      const maskedPassword = '•'.repeat(user.password.length);
+
       tr.innerHTML = `
         <td>${user.username}</td>
         <td>${user.email}</td>
         <td>${user.role}</td>
+        <td>${maskedPassword}</td>
         <td>
           <button class="action-btn edit-btn" data-index="${index}">Edit</button>
           <button class="action-btn delete-btn" data-index="${index}">Delete</button>
@@ -279,6 +286,7 @@
     usernameInput.value = user.username;
     emailInput.value = user.email;
     roleSelect.value = user.role;
+    passwordInput.value = user.password;
     editIndexInput.value = index;
     userForm.querySelector('button').textContent = 'Update User';
   }
@@ -303,38 +311,6 @@
     const username = usernameInput.value.trim();
     const email = emailInput.value.trim();
     const role = roleSelect.value;
+    const password = passwordInput.value;
 
-    if (!username || !email || !role) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    const editingIndex = editIndexInput.value;
-
-    // Check duplicates only if adding new or changing username
-    const duplicate = users.some((u, idx) => u.username.toLowerCase() === username.toLowerCase() && idx != editingIndex);
-
-    if (duplicate) {
-      alert('Username already exists!');
-      return;
-    }
-
-    if (editingIndex === '') {
-      // Add new user
-      users.push({ username, email, role });
-    } else {
-      // Update existing user
-      users[editingIndex] = { username, email, role };
-    }
-
-    saveUsers();
-    renderUsers();
-    resetForm();
-  });
-
-  // Initial render
-  renderUsers();
-</script>
-
-</body>
-</html>
+    if
