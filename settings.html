@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard with Users, Company, Sales Report</title>
+  <title>Dashboard with Users, Company, Sales Report with Filters</title>
   <style>
     * {
       box-sizing: border-box;
@@ -74,6 +74,7 @@
     input[type="password"],
     input[type="tel"],
     input[type="file"],
+    input[type="date"],
     select {
       width: 100%;
       padding: 8px 10px;
@@ -109,11 +110,9 @@
     th {
       background-color: #f7f7f7;
     }
-    /* No black rows - clean look */
     tr:hover {
       background-color: #f1f1f1;
     }
-    /* Logo preview */
     #logoPreview {
       max-width: 150px;
       max-height: 80px;
@@ -121,6 +120,10 @@
       margin-top: 10px;
       border: 1px solid #ccc;
       border-radius: 4px;
+    }
+    .filter-group {
+      margin-bottom: 15px;
+      max-width: 600px;
     }
   </style>
 </head>
@@ -170,9 +173,7 @@
             <th>Mobile Number</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Users will be added here dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </section>
 
@@ -199,6 +200,16 @@
     <section id="salesSection" class="section">
       <h1>Sales Report</h1>
 
+      <div class="filter-group">
+        <label for="itemFilter">Filter by Item:</label>
+        <input type="text" id="itemFilter" placeholder="Type item name to filter" />
+      </div>
+
+      <div class="filter-group">
+        <label for="dateFilter">Filter by Date:</label>
+        <input type="date" id="dateFilter" />
+      </div>
+
       <h2>Sales by Item</h2>
       <table id="salesByItemTable">
         <thead>
@@ -206,11 +217,19 @@
             <th>Item</th>
             <th>Quantity Sold</th>
             <th>Total Sales</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
-          <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+          <tr data-item="Example Item 1" data-date="2025-06-01">
+            <td>Example Item 1</td><td>10</td><td>$100</td><td>2025-06-01</td>
+          </tr>
+          <tr data-item="Example Item 2" data-date="2025-06-02">
+            <td>Example Item 2</td><td>5</td><td>$50</td><td>2025-06-02</td>
+          </tr>
+          <tr data-item="Example Item 3" data-date="2025-06-01">
+            <td>Example Item 3</td><td>7</td><td>$70</td><td>2025-06-01</td>
+          </tr>
         </tbody>
       </table>
 
@@ -224,8 +243,9 @@
           </tr>
         </thead>
         <tbody>
-          <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
-          <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+          <tr data-date="2025-06-01"><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
+          <tr data-date="2025-06-02"><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+          <tr data-date="2025-06-03"><td>INV003</td><td>2025-06-03</td><td>$200</td></tr>
         </tbody>
       </table>
 
@@ -235,11 +255,13 @@
           <tr>
             <th>Customer</th>
             <th>Total Amount</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Customer A</td><td>$250</td></tr>
-          <tr><td>Customer B</td><td>$100</td></tr>
+          <tr data-date="2025-06-01"><td>Customer A</td><td>$250</td><td>2025-06-01</td></tr>
+          <tr data-date="2025-06-02"><td>Customer B</td><td>$100</td><td>2025-06-02</td></tr>
+          <tr data-date="2025-06-03"><td>Customer C</td><td>$300</td><td>2025-06-03</td></tr>
         </tbody>
       </table>
     </section>
@@ -247,145 +269,83 @@
   </div>
 
   <script>
-    // Sidebar button click handler
+    // Sidebar navigation logic
     const sidebarButtons = document.querySelectorAll('.sidebar button');
     const sections = document.querySelectorAll('.section');
-
-    sidebarButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        sidebarButtons.forEach(btn => btn.classList.remove('active'));
-        // Add active to clicked button
-        button.classList.add('active');
-
-        // Hide all sections
-        sections.forEach(section => section.classList.remove('active'));
-        // Show targeted section
-        const target = button.getAttribute('data-target');
-        document.getElementById(target).classList.add('active');
+    sidebarButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        sidebarButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sections.forEach(s => s.classList.remove('active'));
+        document.getElementById(btn.dataset.target).classList.add('active');
       });
     });
-
-    // Set default active section (Users)
     sidebarButtons[0].click();
 
-    // USER FORM HANDLING WITH localStorage
+    // Users form and list logic (same as before)
     const userForm = document.getElementById('userForm');
     const userListTableBody = document.querySelector('#userListTable tbody');
-
-    // Load users from localStorage on page load
     function loadUsers() {
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-      userListTableBody.innerHTML = ''; // Clear current list
+      userListTableBody.innerHTML = '';
       users.forEach(user => {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td>${user.name}</td>
-          <td>${user.role}</td>
-          <td>${user.mobile}</td>
-        `;
-        userListTableBody.appendChild(newRow);
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
+        userListTableBody.appendChild(row);
       });
     }
     loadUsers();
-
-    userForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      // Get input values
+    userForm.addEventListener('submit', e => {
+      e.preventDefault();
       const name = document.getElementById('userName').value.trim();
-      const password = document.getElementById('userPassword').value; // Not stored for privacy
+      const password = document.getElementById('userPassword').value;
       const role = document.getElementById('userRole').value;
       const mobile = document.getElementById('userMobile').value.trim();
-
       if (!name || !password || !role || !mobile) {
         alert('Please fill all fields correctly.');
         return;
       }
-
-      // Retrieve existing users
       const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-      // Add new user to array
       users.push({ name, role, mobile });
-
-      // Save back to localStorage
       localStorage.setItem('users', JSON.stringify(users));
-
-      // Update UI immediately
       loadUsers();
-
-      // Reset form
       userForm.reset();
     });
 
-    // COMPANY FORM HANDLING WITH localStorage for name, address, logo
+    // Company form logic (same as before)
     const companyForm = document.getElementById('companyForm');
     const logoInput = document.getElementById('companyLogo');
     const logoPreview = document.getElementById('logoPreview');
-
-    // Load company info from localStorage on page load
     function loadCompanyInfo() {
-      const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-      if (companyInfo.name) {
-        document.getElementById('companyName').value = companyInfo.name;
-      }
-      if (companyInfo.address) {
-        document.getElementById('companyAddress').value = companyInfo.address;
-      }
-      if (companyInfo.logo) {
-        logoPreview.src = companyInfo.logo;
+      const info = JSON.parse(localStorage.getItem('companyInfo') || '{}');
+      if (info.name) document.getElementById('companyName').value = info.name;
+      if (info.address) document.getElementById('companyAddress').value = info.address;
+      if (info.logo) {
+        logoPreview.src = info.logo;
         logoPreview.style.display = 'block';
       } else {
         logoPreview.style.display = 'none';
       }
     }
     loadCompanyInfo();
-
-    logoInput.addEventListener('change', function() {
-      const file = this.files[0];
+    logoInput.addEventListener('change', () => {
+      const file = logoInput.files[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = e => {
           logoPreview.src = e.target.result;
           logoPreview.style.display = 'block';
-          // Save logo immediately in localStorage
-          const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-          companyInfo.logo = e.target.result;
-          localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-        }
+          const info = JSON.parse(localStorage.getItem('companyInfo') || '{}');
+          info.logo = e.target.result;
+          localStorage.setItem('companyInfo', JSON.stringify(info));
+        };
         reader.readAsDataURL(file);
       } else {
         logoPreview.src = '';
         logoPreview.style.display = 'none';
-        const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-        delete companyInfo.logo;
-        localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+        const info = JSON.parse(localStorage.getItem('companyInfo') || '{}');
+        delete info.logo;
+        localStorage.setItem('companyInfo', JSON.stringify(info));
       }
     });
-
-    companyForm.addEventListener('submit', function(event) {
-      event.preventDefault();
-
-      const companyName = document.getElementById('companyName').value.trim();
-      const companyAddress = document.getElementById('companyAddress').value.trim();
-
-      if (!companyName || !companyAddress) {
-        alert('Please fill company name and address.');
-        return;
-      }
-
-      // Get existing company info or new object
-      const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
-
-      companyInfo.name = companyName;
-      companyInfo.address = companyAddress;
-
-      localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
-
-      alert('Company info saved successfully!');
-    });
-  </script>
-
-</body>
-</html>
+    companyForm
