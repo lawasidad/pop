@@ -3,143 +3,224 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form with Search, Quantity & Discount Controls</title>
+  <title>Responsive Sales Form</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       background-color: #f9f9f9;
       padding: 20px;
       direction: rtl;
+      margin: 0;
     }
     .container {
-      max-width: 700px;
+      max-width: 900px;
       margin: auto;
       background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 30px 25px;
+      box-sizing: border-box;
     }
     h2 {
       text-align: right;
-      margin-bottom: 15px;
+      margin-bottom: 25px;
       color: #333;
+      font-size: 2.2rem;
     }
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
       font-weight: bold;
       text-align: right;
+      font-size: 1.1rem;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
-      padding: 8px 10px;
-      margin-bottom: 15px;
+      padding: 10px 14px;
+      margin-bottom: 20px;
       border: 1px solid #ccc;
-      border-radius: 6px;
-      font-size: 16px;
+      border-radius: 8px;
+      font-size: 18px;
       text-align: right;
       box-sizing: border-box;
+      transition: border-color 0.3s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: #1976d2;
+      outline: none;
     }
     .items-list {
-      max-height: 300px;
+      max-height: 420px;
       overflow-y: auto;
       border: 1px solid #ddd;
-      border-radius: 6px;
-      padding: 10px;
-      margin-bottom: 20px;
+      border-radius: 8px;
+      padding: 15px;
+      margin-bottom: 25px;
+      background: #fff;
+      box-sizing: border-box;
     }
     .item {
       display: flex;
       align-items: center;
-      margin-bottom: 15px;
-      padding: 8px;
-      border-radius: 6px;
+      margin-bottom: 18px;
+      padding: 12px;
+      border-radius: 8px;
       background: #fafafa;
       border: 1px solid #ccc;
-      gap: 10px;
+      gap: 15px;
+      flex-wrap: wrap;
     }
     .item img {
-      width: 50px;
-      height: 50px;
+      width: 60px;
+      height: 60px;
       object-fit: contain;
-      border-radius: 4px;
+      border-radius: 6px;
       background: white;
       border: 1px solid #bbb;
+      flex-shrink: 0;
     }
     .item-info {
       flex-grow: 1;
       text-align: right;
+      min-width: 150px;
     }
     .item-name {
       font-weight: bold;
-      font-size: 18px;
+      font-size: 20px;
       color: #333;
     }
     .item-price {
-      font-size: 14px;
+      font-size: 15px;
       color: #555;
-      margin-top: 4px;
+      margin-top: 6px;
     }
     .controls {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 6px;
-      min-width: 130px;
+      gap: 20px;
+      min-width: 220px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
     }
     .qty-control, .discount-control {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+    }
+    .qty-control button, .discount-control input {
+      font-size: 18px;
     }
     button {
-      width: 28px;
-      height: 28px;
-      font-size: 18px;
+      width: 34px;
+      height: 34px;
+      font-size: 22px;
       font-weight: bold;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       background-color: #1976d2;
       color: white;
       cursor: pointer;
       user-select: none;
-      transition: background-color 0.2s;
+      transition: background-color 0.25s;
     }
     button:hover {
       background-color: #155a9c;
     }
     input[type="number"] {
-      width: 55px;
-      padding: 4px 6px;
-      border-radius: 5px;
+      width: 60px;
+      padding: 6px 8px;
+      border-radius: 6px;
       border: 1px solid #ccc;
       text-align: center;
+      font-size: 18px;
+      box-sizing: border-box;
+    }
+    .discount-control label {
       font-size: 16px;
+      font-weight: normal;
+      margin-right: 6px;
+      user-select: none;
     }
     .total-summary {
       text-align: right;
       font-weight: bold;
-      font-size: 22px;
+      font-size: 26px;
       color: #1976d2;
-      margin-bottom: 20px;
+      margin-bottom: 30px;
+      min-height: 32px;
     }
     #submitBtn {
       width: 100%;
-      padding: 20px 0;
-      font-size: 28px;
-      font-weight: bold;
+      padding: 22px 0;
+      font-size: 30px;
+      font-weight: 900;
       color: white;
       background-color: #1976d2;
       border: none;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.3s;
+      transition: background-color 0.35s, box-shadow 0.35s;
+      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
       margin-top: 0;
-      box-shadow: 0 4px 12px rgba(25, 118, 210, 0.6);
     }
     #submitBtn:hover {
       background-color: #155a9c;
-      box-shadow: 0 6px 16px rgba(21, 90, 156, 0.8);
+      box-shadow: 0 7px 20px rgba(21, 90, 156, 0.85);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+      h2 {
+        font-size: 1.8rem;
+      }
+      .item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .item-info {
+        width: 100%;
+        text-align: right;
+        margin-bottom: 12px;
+      }
+      .controls {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 15px;
+      }
+      .qty-control, .discount-control {
+        gap: 6px;
+      }
+      input[type="number"] {
+        width: 50px;
+        font-size: 16px;
+        padding: 5px 7px;
+      }
+      button {
+        width: 30px;
+        height: 30px;
+        font-size: 20px;
+      }
+      #submitBtn {
+        font-size: 24px;
+        padding: 18px 0;
+      }
+    }
+
+    @media (max-width: 400px) {
+      input[type="text"], input[type="number"] {
+        font-size: 16px;
+        padding: 8px 10px;
+      }
+      #submitBtn {
+        font-size: 22px;
+        padding: 16px 0;
+      }
+      .total-summary {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
@@ -164,12 +245,12 @@
 
 <script>
   const products = [
-    { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/50?text=A" },
-    { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/50?text=B" },
-    { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/50?text=C" },
-    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" },
-    { id: 5, name: "Product E", price: 40, image: "https://via.placeholder.com/50?text=E" },
-    { id: 6, name: "Product F", price: 60, image: "https://via.placeholder.com/50?text=F" }
+    { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/60?text=A" },
+    { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/60?text=B" },
+    { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/60?text=C" },
+    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/60?text=D" },
+    { id: 5, name: "Product E", price: 40, image: "https://via.placeholder.com/60?text=E" },
+    { id: 6, name: "Product F", price: 60, image: "https://via.placeholder.com/60?text=F" }
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -183,7 +264,7 @@
 
   function renderItems() {
     itemsList.innerHTML = "";
-    filteredCart.forEach((item, index) => {
+    filteredCart.forEach(item => {
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
@@ -218,7 +299,7 @@
     let newQty = cart[index].quantity + delta;
     if (newQty < 0) newQty = 0;
     cart[index].quantity = newQty;
-    filterProducts(); // refresh filteredCart and render
+    filterProducts();
   }
 
   function setQuantity(id, value) {
@@ -227,7 +308,7 @@
     let val = Number(value);
     if (isNaN(val) || val < 0) val = 0;
     cart[index].quantity = val;
-    filterProducts(); // refresh filteredCart and render
+    filterProducts();
   }
 
   function setDiscount(id, value) {
@@ -237,7 +318,7 @@
     if (isNaN(val) || val < 0) val = 0;
     if (val > 100) val = 100;
     cart[index].discount = val;
-    filterProducts(); // refresh filteredCart and render
+    filterProducts();
   }
 
   function updateTotalSummary() {
@@ -296,7 +377,7 @@
   // Initial render
   filterProducts();
 
-  // Make functions available globally for inline handlers
+  // Make functions global for inline event handlers
   window.changeQuantity = changeQuantity;
   window.setQuantity = setQuantity;
   window.setDiscount = setDiscount;
