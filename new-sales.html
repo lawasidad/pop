@@ -192,13 +192,6 @@
   </div>
 
   <script>
-    const products = [
-      { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/50?text=A" },
-      { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/50?text=B" },
-      { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/50?text=C" },
-      { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" }
-    ];
-
     const itemsList = document.getElementById("itemsList");
     const searchInput = document.getElementById("searchInput");
     const selectedItemSection = document.getElementById("selectedItemSection");
@@ -215,10 +208,11 @@
     const customerInput = document.getElementById("customer");
 
     let selectedProduct = null;
+    let allProducts = [];
 
     function renderItems(filter = "") {
       itemsList.innerHTML = "";
-      const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+      const filtered = allProducts.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
       filtered.forEach(product => {
         const itemDiv = document.createElement("div");
         itemDiv.className = "item";
@@ -235,7 +229,7 @@
     }
 
     function selectProduct(product) {
-      selectedProduct = {...product};
+      selectedProduct = { ...product };
       selectedItemName.textContent = product.name;
       selectedItemPrice.textContent = `Price: IQD ${product.price.toFixed(2)}`;
       selectedItemImage.src = product.image;
@@ -300,9 +294,6 @@
       console.log("Sale submitted:", saleData);
       alert(`Sale completed!\n\nCustomer: ${saleData.customer}\nProduct: ${saleData.productName}\nTotal: IQD ${saleData.total.toFixed(2)}`);
 
-      // Here you can add your code to send this data to the server or any other action
-
-      // Reset form and selections:
       selectedProduct = null;
       selectedItemSection.style.display = "none";
       customerInput.value = "";
@@ -310,7 +301,7 @@
       renderItems();
     };
 
-    // initial render
+    // Initial render with empty product list
     renderItems();
   </script>
 </body>
