@@ -1,185 +1,152 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form with PDF Export</title>
+  <title>Sales Form</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
-      font-family: Tahoma, sans-serif;
-      background-color: #f9f9f9;
+      font-family: sans-serif;
       padding: 20px;
-      direction: rtl;
-      margin: 0;
     }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      padding: 30px 25px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-top: 10px;
-    }
-    input[type="text"] {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
+    .product {
       border: 1px solid #ccc;
-      border-radius: 6px;
-    }
-    .item {
-      margin-bottom: 12px;
       padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
+      margin-bottom: 10px;
     }
-    .item input {
-      width: 60px;
-      margin-left: 10px;
+    .product h3 {
+      margin: 0 0 5px;
     }
-    #submitBtn, #pdfBtn {
-      margin-top: 20px;
-      padding: 14px;
-      width: 100%;
-      max-width: 300px;
-      font-size: 20px;
+    .product input {
+      width: 50px;
+    }
+    .btn {
+      padding: 10px 15px;
+      background: #3498db;
+      color: white;
       border: none;
-      border-radius: 8px;
       cursor: pointer;
-      display: block;
-      margin-left: auto;
-      margin-right: auto;
+      margin: 5px 0;
     }
-    #submitBtn {
-      background-color: #1976d2;
-      color: white;
-    }
-    #pdfBtn {
-      background-color: #4caf50;
-      color: white;
+    #downloadPdfBtn {
+      display: none;
+      background: #27ae60;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <h2>New Sales Form</h2>
+  <h2>فرۆشتنی کاڵا</h2>
 
-  <label for="customer">Customer Name</label>
-  <input type="text" id="customer" placeholder="Enter customer name" />
+  <label>ناوی کڕیار:</label>
+  <input type="text" id="customer" placeholder="ناو بنووسە" /><br><br>
 
-  <div id="itemsList"></div>
+  <div id="productList"></div>
 
-  <button id="submitBtn">Submit Sale</button>
+  <button class="btn" id="submitSaleBtn">Submit Sale</button>
+  <button class="btn" id="downloadPdfBtn">Download PDF</button>
 
-  <label for="pdfCustomer">Select Customer to Generate PDF</label>
-  <select id="pdfCustomer">
-    <option value="">-- Choose Customer --</option>
-  </select>
+  <script>
+    const products = [
+      { id: 1, name: "کەلوپەلی یەک", price: 1000 },
+      { id: 2, name: "کەلوپەلی دوو", price: 1500 },
+      { id: 3, name: "کەلوپەلی سێ", price: 2000 },
+    ];
 
-  <button id="pdfBtn">Export Selected Invoice to PDF</button>
-</div>
+    const cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+    let lastSaleData = null;
 
-<script>
-  const products = [
-    { id: 1, name: "Product A", price: 20 },
-    { id: 2, name: "Product B", price: 35 },
-    { id: 3, name: "Product C", price: 50 }
-  ];
+    const productList = document.getElementById("productList");
 
-  let sales = []; // Store all submitted sales
-
-  const itemsList = document.getElementById("itemsList");
-  const submitBtn = document.getElementById("submitBtn");
-  const pdfBtn = document.getElementById("pdfBtn");
-  const customerInput = document.getElementById("customer");
-  const pdfCustomerSelect = document.getElementById("pdfCustomer");
-
-  let cart = products.map(p => ({ ...p, quantity: 0 }));
-
-  function renderItems() {
-    itemsList.innerHTML = "";
-    cart.forEach(item => {
+    cart.forEach((item, index) => {
       const div = document.createElement("div");
-      div.className = "item";
+      div.className = "product";
       div.innerHTML = `
-        <label>${item.name} - IQD ${item.price}</label>
-        <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" />
+        <h3>${item.name}</h3>
+        <p>نرخی یەکە: ${item.price} د.ع</p>
+        <label>بڕ:</label>
+        <button onclick="changeQuantity(${index}, -1)">-</button>
+        <input type="number" id="qty-${index}" value="0" readonly />
+        <button onclick="changeQuantity(${index}, 1)">+</button>
+        <br>
+        <label>داشکاندن (%):</label>
+        <input type="number" id="discount-${index}" value="0" min="0" max="100" onchange="updateDiscount(${index})" />
       `;
-      itemsList.appendChild(div);
+      productList.appendChild(div);
     });
-  }
 
-  function setQuantity(id, value) {
-    const idx = cart.findIndex(p => p.id === id);
-    cart[idx].quantity = Math.max(0, Number(value));
-  }
-
-  submitBtn.onclick = () => {
-    const customer = customerInput.value.trim();
-    if (!customer) return alert("Please enter customer name.");
-    const selectedItems = cart.filter(i => i.quantity > 0);
-    if (selectedItems.length === 0) return alert("Please select products.");
-
-    const sale = {
-      customer,
-      items: selectedItems,
-      total: selectedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
-    };
-    sales.push(sale);
-
-    // Add customer to select if not already
-    if (![...pdfCustomerSelect.options].some(o => o.value === customer)) {
-      const option = document.createElement("option");
-      option.value = customer;
-      option.textContent = customer;
-      pdfCustomerSelect.appendChild(option);
+    function changeQuantity(index, delta) {
+      cart[index].quantity = Math.max(0, cart[index].quantity + delta);
+      document.getElementById(`qty-${index}`).value = cart[index].quantity;
     }
 
-    alert(`Sale submitted for ${customer}.\nTotal: IQD ${sale.total}`);
+    function updateDiscount(index) {
+      const val = parseFloat(document.getElementById(`discount-${index}`).value);
+      cart[index].discount = isNaN(val) ? 0 : Math.min(100, Math.max(0, val));
+    }
 
-    cart = products.map(p => ({ ...p, quantity: 0 }));
-    customerInput.value = "";
-    renderItems();
-  };
+    document.getElementById("submitSaleBtn").onclick = () => {
+      const customer = document.getElementById("customer").value.trim();
+      if (customer === "") {
+        alert("تکایە ناوی کڕیار بنووسە");
+        return;
+      }
 
-  pdfBtn.onclick = async () => {
-    const selectedCustomer = pdfCustomerSelect.value;
-    if (!selectedCustomer) return alert("Please select a customer for PDF.");
+      const items = cart.filter(i => i.quantity > 0).map(i => {
+        const total = i.quantity * i.price * (1 - i.discount / 100);
+        return {
+          productName: i.name,
+          quantity: i.quantity,
+          unitPrice: i.price,
+          discountPercent: i.discount,
+          total: Math.round(total)
+        };
+      });
 
-    const sale = sales.find(s => s.customer === selectedCustomer);
-    if (!sale) return alert("No sale found for selected customer.");
+      if (items.length === 0) {
+        alert("هیچ کاڵایەک هەڵنەبژێردراوە");
+        return;
+      }
 
-    const { jsPDF } = window.jspdf;
-    const doc = new jsPDF();
+      const grandTotal = items.reduce((sum, i) => sum + i.total, 0);
+      lastSaleData = { customer, items, grandTotal };
 
-    doc.setFontSize(18);
-    doc.text(`Invoice for ${sale.customer}`, 10, 20);
+      alert("فرۆشتن بە سەرکەوتوویی تۆمار کرا! دەتوانیت PDF دابەزێنیت.");
+      document.getElementById("downloadPdfBtn").style.display = "inline-block";
+    };
 
-    doc.setFontSize(12);
-    let y = 30;
-    sale.items.forEach(item => {
-      doc.text(`- ${item.name} x${item.quantity} = IQD ${item.price * item.quantity}`, 10, y);
-      y += 10;
-    });
+    document.getElementById("downloadPdfBtn").onclick = () => {
+      if (!lastSaleData) {
+        alert("هیچ فرۆشتنێک نییە بۆ دابەزاندن");
+        return;
+      }
+      generatePDF(lastSaleData);
+    };
 
-    doc.setFontSize(14);
-    doc.text(`Total: IQD ${sale.total}`, 10, y + 10);
+    function generatePDF(sale) {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
 
-    doc.save(`${sale.customer}_invoice.pdf`);
-  };
+      doc.setFontSize(16);
+      doc.text(`فاکتەر بۆ: ${sale.customer}`, 10, 10);
 
-  renderItems();
-  window.setQuantity = setQuantity;
-</script>
+      doc.setFontSize(12);
+      let y = 20;
+      sale.items.forEach((item, i) => {
+        doc.text(
+          `${i + 1}) ${item.productName} - بڕ: ${item.quantity}, نرخی یەکە: ${item.unitPrice}, داشکاندن: ${item.discountPercent}%, کۆی گشتی: ${item.total}`,
+          10,
+          y
+        );
+        y += 10;
+      });
+
+      doc.setFontSize(14);
+      doc.text(`کۆی گشتی: ${sale.grandTotal} د.ع`, 10, y + 10);
+
+      doc.save(`invoice_${sale.customer}.pdf`);
+    }
+  </script>
+
 </body>
 </html>
