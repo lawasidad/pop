@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inventory Form</title>
   <style>
     * {
@@ -36,6 +36,7 @@
       flex-wrap: wrap;
       gap: 15px;
       margin-bottom: 25px;
+      align-items: center;
     }
 
     form input {
@@ -43,16 +44,15 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: white !important;
-      color: #333 !important;
-      outline: none;
-      transition: background-color 0.3s ease;
+      background-color: white; /* prevent black background on input */
+      color: #333;
+      outline-offset: 2px;
+      transition: background-color 0.3s;
     }
 
     form input:focus {
-      outline: 2px solid #3498db;
-      background-color: #eef6fc !important;
-      color: #333 !important;
+      border-color: #3498db;
+      background-color: #eef6fc;
     }
 
     form button {
@@ -62,16 +62,11 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      flex-shrink: 0;
+      transition: background-color 0.3s;
     }
-
-    form button:focus {
-      outline: 2px solid #2980b9;
-      background-color: #2980b9;
-    }
-
-    form button:active {
-      background-color: #2471a3;
+    form button:hover {
+      background: #2980b9;
     }
 
     .search-box {
@@ -85,31 +80,24 @@
       max-width: 300px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: white !important;
-      color: #333 !important;
-      outline: none;
-      transition: background-color 0.3s ease;
-    }
-
-    .search-box input:focus {
-      outline: 2px solid #3498db;
-      background-color: #eef6fc !important;
-      color: #333 !important;
+      background-color: white; /* prevent black background */
+      color: #333;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
-      background-color: white !important;
+      background-color: white; /* table background white */
     }
 
     th, td {
       padding: 10px;
       border-bottom: 1px solid #eee;
       text-align: left;
-      background-color: white !important;
-      color: #333 !important;
+      vertical-align: middle;
+      background-color: white; /* prevent black */
+      color: #333;
     }
 
     th {
@@ -117,8 +105,8 @@
       color: white;
     }
 
-    tbody tr:hover {
-      background-color: #f1f1f1 !important;
+    tr:hover {
+      background-color: #f1f1f1;
     }
 
     .action-btn {
@@ -127,7 +115,16 @@
       color: #3498db;
       cursor: pointer;
       margin: 0 5px;
-      font-size: 16px;
+      font-size: 18px;
+    }
+
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: white; /* keep white behind images */
     }
 
     @media (max-width: 768px) {
@@ -159,6 +156,11 @@
         font-weight: bold;
         color: #555;
       }
+
+      .thumbnail {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
@@ -171,7 +173,8 @@
     <input type="text" id="name" placeholder="Product Name" required />
     <input type="text" id="code" placeholder="Product Code" required />
     <input type="number" id="quantity" placeholder="Quantity" required min="0" />
-    <input type="number" id="price" placeholder="Unit Price" required min="0" step="0.01" />
+    <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
+    <input type="file" id="image" accept="image/*" />
     <button type="submit">Add</button>
   </form>
 
@@ -182,6 +185,7 @@
   <table>
     <thead>
       <tr>
+        <th>Image</th>
         <th>Name</th>
         <th>Code</th>
         <th>Qty</th>
@@ -198,6 +202,7 @@
   const form = document.getElementById("inventoryForm");
   const searchInput = document.getElementById("searchInput");
   const inventoryList = document.getElementById("inventoryList");
+  const imageInput = document.getElementById("image");
 
   let products = [];
   let editIndex = -1;
@@ -210,43 +215,112 @@
     const quantity = parseInt(document.getElementById("quantity").value);
     const price = parseFloat(document.getElementById("price").value);
 
+    const file = imageInput.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageDataUrl = event.target.result;
+        saveProduct({ name, code, quantity, price, image: imageDataUrl });
+      }
+      reader.readAsDataURL(file);
+    } else {
+      saveProduct({ name, code, quantity, price, image: null });
+    }
+  });
+
+  function saveProduct(product) {
     if (editIndex > -1) {
-      products[editIndex] = { name, code, quantity, price };
+      products[editIndex] = product;
       editIndex = -1;
     } else {
-      products.push({ name, code, quantity, price });
+      products.push(product);
     }
-
     form.reset();
-    document.activeElement.blur(); // Remove focus to avoid input highlight
+    imageInput.value = ""; // clear file input after submit
     updateTable(products);
-  });
+  }
 
   function updateTable(data) {
     inventoryList.innerHTML = "";
 
     if (data.length === 0) {
-      inventoryList.innerHTML = `<tr><td colspan="6" style="text-align:center;">No products</td></tr>`;
+      inventoryList.innerHTML = `<tr><td colspan="7" style="text-align:center;">No products</td></tr>`;
       return;
     }
 
+    // Use document fragment to avoid multiple innerHTML appends (reduce flicker)
+    const fragment = document.createDocumentFragment();
+
     data.forEach((item, index) => {
-      const row = document.createElement("tr");
+      const tr = document.createElement('tr');
 
-      row.innerHTML = `
-        <td data-label="Name">${item.name}</td>
-        <td data-label="Code">${item.code}</td>
-        <td data-label="Qty">${item.quantity}</td>
-        <td data-label="Price">${item.price.toLocaleString()}</td>
-        <td data-label="Total">${(item.quantity * item.price).toLocaleString()}</td>
-        <td data-label="Action">
-          <button class="action-btn" onclick="editItem(${index})" aria-label="Edit item">✏️</button>
-          <button class="action-btn" onclick="deleteItem(${index})" aria-label="Delete item">🗑️</button>
-        </td>
-      `;
+      const imgTd = document.createElement('td');
+      imgTd.setAttribute('data-label', 'Image');
+      if (item.image) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.name;
+        img.className = 'thumbnail';
+        imgTd.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.style.width = '50px';
+        placeholder.style.height = '50px';
+        placeholder.style.background = '#eee';
+        placeholder.style.borderRadius = '6px';
+        imgTd.appendChild(placeholder);
+      }
+      tr.appendChild(imgTd);
 
-      inventoryList.appendChild(row);
+      const nameTd = document.createElement('td');
+      nameTd.setAttribute('data-label', 'Name');
+      nameTd.textContent = item.name;
+      tr.appendChild(nameTd);
+
+      const codeTd = document.createElement('td');
+      codeTd.setAttribute('data-label', 'Code');
+      codeTd.textContent = item.code;
+      tr.appendChild(codeTd);
+
+      const qtyTd = document.createElement('td');
+      qtyTd.setAttribute('data-label', 'Qty');
+      qtyTd.textContent = item.quantity;
+      tr.appendChild(qtyTd);
+
+      const priceTd = document.createElement('td');
+      priceTd.setAttribute('data-label', 'Price');
+      priceTd.textContent = item.price.toLocaleString();
+      tr.appendChild(priceTd);
+
+      const totalTd = document.createElement('td');
+      totalTd.setAttribute('data-label', 'Total');
+      totalTd.textContent = (item.quantity * item.price).toLocaleString();
+      tr.appendChild(totalTd);
+
+      const actionTd = document.createElement('td');
+      actionTd.setAttribute('data-label', 'Action');
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'action-btn';
+      editBtn.title = "Edit";
+      editBtn.innerHTML = '✏️';
+      editBtn.addEventListener('click', () => editItem(index));
+      actionTd.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'action-btn';
+      deleteBtn.title = "Delete";
+      deleteBtn.innerHTML = '🗑️';
+      deleteBtn.addEventListener('click', () => deleteItem(index));
+      actionTd.appendChild(deleteBtn);
+
+      tr.appendChild(actionTd);
+
+      fragment.appendChild(tr);
     });
+
+    inventoryList.appendChild(fragment);
   }
 
   function editItem(index) {
@@ -255,6 +329,7 @@
     document.getElementById("code").value = item.code;
     document.getElementById("quantity").value = item.quantity;
     document.getElementById("price").value = item.price;
+    imageInput.value = ""; // clear file input on edit (cannot set value programmatically)
     editIndex = index;
   }
 
