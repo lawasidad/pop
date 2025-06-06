@@ -1,351 +1,185 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form</title>
+  <title>Sales Form with PDF Export</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     body {
-      font-family: "Tahoma", sans-serif;
-      background: #f0f0f0;
+      font-family: Tahoma, sans-serif;
+      background-color: #f9f9f9;
       padding: 20px;
-      direction: ltr;
-      text-align: left;
+      direction: rtl;
+      margin: 0;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background: white;
-      padding: 20px 30px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
+      border-radius: 10px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      padding: 30px 25px;
     }
     h2 {
       text-align: center;
       margin-bottom: 20px;
-      color: #2c3e50;
     }
     label {
       display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-      color: #34495e;
+      margin-top: 10px;
     }
-    input[type="text"], input[type="number"] {
+    input[type="text"] {
       width: 100%;
-      padding: 8px 10px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    .items-list {
-      margin-top: 15px;
-      max-height: 350px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 5px;
       padding: 10px;
-      background: #fafafa;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
     .item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .item:last-child {
-      border-bottom: none;
-    }
-    .item img {
-      width: 60px;
-      height: 60px;
+      margin-bottom: 12px;
+      padding: 10px;
+      border: 1px solid #ddd;
       border-radius: 6px;
-      margin-right: 10px;
-      object-fit: cover;
     }
-    .item-info {
-      flex-grow: 1;
+    .item input {
+      width: 60px;
       margin-left: 10px;
     }
-    .item-name {
-      font-weight: bold;
-      font-size: 17px;
-      color: #2c3e50;
-      margin-bottom: 5px;
-    }
-    .item-price {
-      font-size: 14px;
-      color: #555;
-    }
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      min-width: 250px;
-      font-size: 14px;
-    }
-    .qty-control button,
-    .discount-control input[type="number"] {
-      cursor: pointer;
-      padding: 5px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-      background-color: white;
-      user-select: none;
-    }
-    .qty-control input[type="number"] {
-      width: 50px;
-      text-align: center;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-    }
-    .discount-control {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 90px;
-    }
-    .discount-control label {
-      margin-bottom: 2px;
-      font-size: 13px;
-    }
-    .total-summary {
+    #submitBtn, #pdfBtn {
       margin-top: 20px;
+      padding: 14px;
+      width: 100%;
+      max-width: 300px;
       font-size: 20px;
-      font-weight: bold;
-      color: #1a3e72;
-      border-top: 2px solid #2c3e50;
-      padding-top: 10px;
-      text-align: left;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
     }
     #submitBtn {
-      margin-top: 25px;
-      width: 100%;
-      background: #2c3e50;
+      background-color: #1976d2;
       color: white;
-      padding: 14px 0;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
     }
-    #submitBtn:hover {
-      background: #1a2a3a;
+    #pdfBtn {
+      background-color: #4caf50;
+      color: white;
     }
   </style>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h2>Sales Form</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" />
+<div class="container">
+  <h2>New Sales Form</h2>
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" oninput="filterProducts()" />
+  <label for="customer">Customer Name</label>
+  <input type="text" id="customer" placeholder="Enter customer name" />
 
-    <div class="items-list" id="itemsList"></div>
+  <div id="itemsList"></div>
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+  <button id="submitBtn">Submit Sale</button>
 
-    <button id="submitBtn">Submit Sale</button>
-  </div>
+  <label for="pdfCustomer">Select Customer to Generate PDF</label>
+  <select id="pdfCustomer">
+    <option value="">-- Choose Customer --</option>
+  </select>
+
+  <button id="pdfBtn">Export Selected Invoice to PDF</button>
+</div>
 
 <script>
-  const { jsPDF } = window.jspdf;
-
-  // Sample products for testing
   const products = [
-    { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
-    { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
-    { id: 3, name: "Product C", price: 50000, image: "https://via.placeholder.com/60?text=C" },
-    { id: 4, name: "Product D", price: 15000, image: "https://via.placeholder.com/60?text=D" },
-    { id: 5, name: "Product E", price: 40000, image: "https://via.placeholder.com/60?text=E" },
-    { id: 6, name: "Product F", price: 60000, image: "https://via.placeholder.com/60?text=F" }
+    { id: 1, name: "Product A", price: 20 },
+    { id: 2, name: "Product B", price: 35 },
+    { id: 3, name: "Product C", price: 50 }
   ];
 
-  const itemsList = document.getElementById("itemsList");
-  const totalSummary = document.getElementById("totalSummary");
-  const submitBtn = document.getElementById("submitBtn");
-  const customerInput = document.getElementById("customer");
-  const searchInput = document.getElementById("searchProduct");
+  let sales = []; // Store all submitted sales
 
-  // Cart array with quantity and discount for each product
-  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-  let filteredCart = [...cart];
+  const itemsList = document.getElementById("itemsList");
+  const submitBtn = document.getElementById("submitBtn");
+  const pdfBtn = document.getElementById("pdfBtn");
+  const customerInput = document.getElementById("customer");
+  const pdfCustomerSelect = document.getElementById("pdfCustomer");
+
+  let cart = products.map(p => ({ ...p, quantity: 0 }));
 
   function renderItems() {
     itemsList.innerHTML = "";
-    filteredCart.forEach(item => {
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
-      itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" />
-        <div class="item-info">
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
-        </div>
-        <div class="controls">
-          <div class="qty-control">
-            <button onclick="changeQuantity(${item.id}, -1)">-</button>
-            <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" />
-            <button onclick="changeQuantity(${item.id}, 1)">+</button>
-          </div>
-          <div class="discount-control">
-            <label>Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${item.id}, this.value)" />
-          </div>
-          <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toLocaleString()}
-          </div>
-        </div>
+    cart.forEach(item => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <label>${item.name} - IQD ${item.price}</label>
+        <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" />
       `;
-      itemsList.appendChild(itemDiv);
+      itemsList.appendChild(div);
     });
-    updateTotalSummary();
-  }
-
-  function changeQuantity(id, delta) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
-    let newQty = cart[index].quantity + delta;
-    if (newQty < 0) newQty = 0;
-    cart[index].quantity = newQty;
-    filterProducts();
   }
 
   function setQuantity(id, value) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
-    let val = Number(value);
-    if (isNaN(val) || val < 0) val = 0;
-    cart[index].quantity = val;
-    filterProducts();
-  }
-
-  function setDiscount(id, value) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
-    let val = Number(value);
-    if (isNaN(val) || val < 0) val = 0;
-    if (val > 100) val = 100;
-    cart[index].discount = val;
-    filterProducts();
-  }
-
-  function updateTotalSummary() {
-    const total = cart.reduce((sum, item) => {
-      return sum + (item.quantity * item.price * (1 - item.discount / 100));
-    }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toLocaleString()}`;
-  }
-
-  function filterProducts() {
-    const query = searchInput.value.trim().toLowerCase();
-    if (query === "") {
-      filteredCart = [...cart];
-    } else {
-      filteredCart = cart.filter(item => item.name.toLowerCase().includes(query));
-    }
-    renderItems();
-  }
-
-  function generatePDF(saleData) {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "pt",
-      format: "a4"
-    });
-
-    let y = 40;
-    const leftMargin = 40;
-    doc.setFontSize(22);
-    doc.text("Sales Receipt", leftMargin + 150, y);
-    y += 30;
-
-    doc.setFontSize(16);
-    doc.text(`Customer: ${saleData.customer}`, leftMargin, y);
-    y += 25;
-
-    doc.setFontSize(14);
-    doc.text("Items:", leftMargin, y);
-    y += 20;
-
-    doc.setFont(undefined, "bold");
-    doc.text("Name", leftMargin, y);
-    doc.text("Qty", leftMargin + 150, y);
-    doc.text("Price", leftMargin + 200, y);
-    doc.text("Discount %", leftMargin + 320, y);
-    doc.text("Total", leftMargin + 420, y);
-    y += 15;
-    doc.setLineWidth(0.5);
-    doc.line(leftMargin, y, 550, y);
-    y += 15;
-
-    doc.setFont(undefined, "normal");
-    saleData.items.forEach(item => {
-      if (y > 750) {
-        doc.addPage();
-        y = 40;
-      }
-      doc.text(item.productName, leftMargin, y);
-      doc.text(item.quantity.toString(), leftMargin + 150, y);
-      doc.text(`IQD ${item.unitPrice.toLocaleString()}`, leftMargin + 200, y);
-      doc.text(item.discountPercent.toString(), leftMargin + 320, y);
-      doc.text(`IQD ${item.total.toLocaleString()}`, leftMargin + 420, y);
-      y += 20;
-    });
-
-    y += 10;
-    doc.setLineWidth(0.8);
-    doc.line(leftMargin, y, 550, y);
-    y += 25;
-
-    doc.setFontSize(16);
-    doc.setFont(undefined, "bold");
-    doc.text(`Grand Total: IQD ${saleData.grandTotal.toLocaleString()}`, leftMargin, y);
-
-    doc.save(`sale_${Date.now()}.pdf`);
+    const idx = cart.findIndex(p => p.id === id);
+    cart[idx].quantity = Math.max(0, Number(value));
   }
 
   submitBtn.onclick = () => {
     const customer = customerInput.value.trim();
-    if (customer === "") {
-      alert("Please enter customer name");
-      return;
+    if (!customer) return alert("Please enter customer name.");
+    const selectedItems = cart.filter(i => i.quantity > 0);
+    if (selectedItems.length === 0) return alert("Please select products.");
+
+    const sale = {
+      customer,
+      items: selectedItems,
+      total: selectedItems.reduce((sum, i) => sum + i.price * i.quantity, 0)
+    };
+    sales.push(sale);
+
+    // Add customer to select if not already
+    if (![...pdfCustomerSelect.options].some(o => o.value === customer)) {
+      const option = document.createElement("option");
+      option.value = customer;
+      option.textContent = customer;
+      pdfCustomerSelect.appendChild(option);
     }
 
-    const items = cart.filter(item => item.quantity > 0).map(item => {
-      const total = item.quantity * item.price * (1 - item.discount / 100);
-      return {
-        productName: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        discountPercent: item.discount,
-        total: Math.round(total)
-      };
-    });
+    alert(`Sale submitted for ${customer}.\nTotal: IQD ${sale.total}`);
 
-    if (items.length === 0) {
-      alert("No products selected");
-      return;
-    }
-
-    const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
-
-    generatePDF({ customer, items, grandTotal });
+    cart = products.map(p => ({ ...p, quantity: 0 }));
+    customerInput.value = "";
+    renderItems();
   };
 
-  // Initial render
-  renderItems();
+  pdfBtn.onclick = async () => {
+    const selectedCustomer = pdfCustomerSelect.value;
+    if (!selectedCustomer) return alert("Please select a customer for PDF.");
 
+    const sale = sales.find(s => s.customer === selectedCustomer);
+    if (!sale) return alert("No sale found for selected customer.");
+
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(`Invoice for ${sale.customer}`, 10, 20);
+
+    doc.setFontSize(12);
+    let y = 30;
+    sale.items.forEach(item => {
+      doc.text(`- ${item.name} x${item.quantity} = IQD ${item.price * item.quantity}`, 10, y);
+      y += 10;
+    });
+
+    doc.setFontSize(14);
+    doc.text(`Total: IQD ${sale.total}`, 10, y + 10);
+
+    doc.save(`${sale.customer}_invoice.pdf`);
+  };
+
+  renderItems();
+  window.setQuantity = setQuantity;
 </script>
 </body>
 </html>
