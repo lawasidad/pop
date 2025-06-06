@@ -3,139 +3,156 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Login and User Registration</title>
+<title>Modern Blue Login</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
+  * {
+    box-sizing: border-box;
+  }
   body {
-    font-family: Arial, sans-serif;
-    background: #f0f4f8;
-    margin: 0; padding: 0;
+    margin: 0;
+    height: 100vh;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1e3c72, #2a5298);
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
   }
-  .container {
-    background: white;
-    padding: 30px 40px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    width: 320px;
+  .login-box, .register-box {
+    background: #ffffffdd;
+    padding: 40px 50px;
+    border-radius: 15px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    width: 350px;
+    text-align: center;
+    position: absolute;
+  }
+  .login-box {
+    display: block;
+  }
+  .register-box {
+    display: none;
   }
   h2 {
-    margin-bottom: 20px;
-    color: #0a4d8c;
-    text-align: center;
+    margin-bottom: 25px;
+    font-weight: 600;
+    color: #1e3c72;
+    letter-spacing: 1.2px;
   }
-  input {
+  input[type="text"],
+  input[type="password"] {
     width: 100%;
-    padding: 10px 12px;
-    margin: 10px 0 20px 0;
-    border: 1.5px solid #0a4d8c;
-    border-radius: 5px;
-    font-size: 15px;
+    padding: 14px 18px;
+    margin: 12px 0 20px 0;
+    border: 2px solid #2a5298;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: #145da0;
+    outline: none;
   }
   button {
-    background-color: #0a4d8c;
+    background-color: #1e3c72;
     color: white;
     border: none;
-    padding: 12px 0;
+    padding: 14px 0;
     width: 100%;
-    font-size: 16px;
-    border-radius: 5px;
+    border-radius: 10px;
+    font-size: 18px;
     cursor: pointer;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    transition: background-color 0.3s ease;
   }
   button:hover {
-    background-color: #07406b;
+    background-color: #144d7f;
+  }
+  .forgot-password, .toggle-link {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #2a5298;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: underline;
   }
   .message {
-    margin-top: 15px;
     color: red;
-    text-align: center;
-  }
-  .link {
-    margin-top: 15px;
-    text-align: center;
-  }
-  .link a {
-    color: #0a4d8c;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  .link a:hover {
-    text-decoration: underline;
+    margin-bottom: 10px;
+    min-height: 18px;
   }
 </style>
 </head>
 <body>
 
-<div class="container" id="loginContainer">
-  <h2>Login</h2>
-  <input type="text" id="loginUsername" placeholder="Username" />
-  <input type="password" id="loginPassword" placeholder="Password" />
-  <button id="loginBtn">Login</button>
-  <div class="message" id="loginMessage"></div>
-  <div class="link">Don't have an account? <a id="showRegister">Register here</a></div>
+<!-- Login Form -->
+<div class="login-box" id="loginBox">
+  <h2>Login to Dashboard</h2>
+  <form id="loginForm">
+    <input type="text" id="loginUsername" placeholder="Username" required autocomplete="off" />
+    <input type="password" id="loginPassword" placeholder="Password" required autocomplete="off" />
+    <div class="message" id="loginMessage"></div>
+    <button type="submit">Log In</button>
+  </form>
+  <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span><br />
+  <span class="toggle-link" id="showRegister">Don't have an account? Register</span>
 </div>
 
-<div class="container" id="registerContainer" style="display:none;">
-  <h2>Register User</h2>
-  <input type="text" id="regUsername" placeholder="Username" />
-  <input type="password" id="regPassword" placeholder="Password" />
-  <button id="registerBtn">Register</button>
-  <div class="message" id="registerMessage"></div>
-  <div class="link">Already have an account? <a id="showLogin">Login here</a></div>
+<!-- Register Form -->
+<div class="register-box" id="registerBox">
+  <h2>Register New User</h2>
+  <form id="registerForm">
+    <input type="text" id="regUsername" placeholder="Username" required autocomplete="off" />
+    <input type="password" id="regPassword" placeholder="Password" required autocomplete="off" />
+    <div class="message" id="registerMessage"></div>
+    <button type="submit">Register</button>
+  </form>
+  <span class="toggle-link" id="showLogin">Already have an account? Login</span>
 </div>
 
 <script>
-  // Elements
-  const loginContainer = document.getElementById('loginContainer');
-  const registerContainer = document.getElementById('registerContainer');
+  // Toggle forms
+  const loginBox = document.getElementById('loginBox');
+  const registerBox = document.getElementById('registerBox');
+  const showRegister = document.getElementById('showRegister');
+  const showLogin = document.getElementById('showLogin');
 
-  const loginUsername = document.getElementById('loginUsername');
-  const loginPassword = document.getElementById('loginPassword');
-  const loginBtn = document.getElementById('loginBtn');
-  const loginMessage = document.getElementById('loginMessage');
-
-  const regUsername = document.getElementById('regUsername');
-  const regPassword = document.getElementById('regPassword');
-  const registerBtn = document.getElementById('registerBtn');
-  const registerMessage = document.getElementById('registerMessage');
-
-  const showRegisterLink = document.getElementById('showRegister');
-  const showLoginLink = document.getElementById('showLogin');
-
-  // Switch views
-  showRegisterLink.onclick = () => {
-    loginContainer.style.display = 'none';
-    registerContainer.style.display = 'block';
+  showRegister.onclick = () => {
+    loginBox.style.display = 'none';
+    registerBox.style.display = 'block';
+    clearMessages();
+  };
+  showLogin.onclick = () => {
+    registerBox.style.display = 'none';
+    loginBox.style.display = 'block';
     clearMessages();
   };
 
-  showLoginLink.onclick = () => {
-    registerContainer.style.display = 'none';
-    loginContainer.style.display = 'block';
-    clearMessages();
-  };
-
-  function clearMessages() {
-    loginMessage.textContent = '';
-    registerMessage.textContent = '';
+  function clearMessages(){
+    document.getElementById('loginMessage').textContent = '';
+    document.getElementById('registerMessage').textContent = '';
   }
 
   // Register user
-  registerBtn.onclick = () => {
-    const username = regUsername.value.trim();
-    const password = regPassword.value.trim();
+  document.getElementById('registerForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value.trim();
+    const registerMessage = document.getElementById('registerMessage');
 
     if(username === '' || password === '') {
-      registerMessage.textContent = 'Please fill both username and password.';
+      registerMessage.textContent = 'Please fill in both username and password.';
       return;
     }
 
+    // Get users from localStorage or empty array
     let users = JSON.parse(localStorage.getItem('users') || '[]');
 
-    // Check if username already exists
-    if(users.some(u => u.username === username)) {
+    // Check if username exists
+    if(users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
       registerMessage.textContent = 'Username already exists.';
       return;
     }
@@ -144,14 +161,15 @@
     localStorage.setItem('users', JSON.stringify(users));
     registerMessage.style.color = 'green';
     registerMessage.textContent = 'Registration successful! You can now login.';
-    regUsername.value = '';
-    regPassword.value = '';
-  };
+    this.reset();
+  });
 
   // Login user
-  loginBtn.onclick = () => {
-    const username = loginUsername.value.trim();
-    const password = loginPassword.value.trim();
+  document.getElementById('loginForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value.trim();
+    const loginMessage = document.getElementById('loginMessage');
 
     if(username === '' || password === '') {
       loginMessage.textContent = 'Please enter username and password.';
@@ -160,21 +178,21 @@
 
     let users = JSON.parse(localStorage.getItem('users') || '[]');
 
-    const user = users.find(u => u.username === username && u.password === password);
-    if(user) {
+    const userFound = users.find(u => u.username.toLowerCase() === username.toLowerCase() && u.password === password);
+
+    if(userFound){
       loginMessage.style.color = 'green';
       loginMessage.textContent = 'Login successful! Redirecting...';
 
-      // Here you can redirect or show the dashboard
       setTimeout(() => {
-        // For demonstration, just replace the page content with a dashboard message
-        document.body.innerHTML = `<h1 style="text-align:center; margin-top:100px; color:#0a4d8c;">Welcome, ${user.username}! This is your dashboard.</h1>`;
+        // Redirect to dashboard.html or show dashboard content here
+        window.location.href = 'dashboard.html';
       }, 1000);
     } else {
       loginMessage.style.color = 'red';
       loginMessage.textContent = 'Invalid username or password.';
     }
-  };
+  });
 </script>
 
 </body>
