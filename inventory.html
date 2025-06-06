@@ -36,6 +36,7 @@
       flex-wrap: wrap;
       gap: 15px;
       margin-bottom: 25px;
+      align-items: center;
     }
 
     form input {
@@ -52,6 +53,7 @@
       border: none;
       border-radius: 8px;
       cursor: pointer;
+      flex-shrink: 0;
     }
 
     .search-box {
@@ -77,6 +79,7 @@
       padding: 10px;
       border-bottom: 1px solid #eee;
       text-align: left;
+      vertical-align: middle;
     }
 
     th {
@@ -94,6 +97,15 @@
       color: #3498db;
       cursor: pointer;
       margin: 0 5px;
+      font-size: 18px;
+    }
+
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 6px;
     }
 
     @media (max-width: 768px) {
@@ -125,6 +137,11 @@
         font-weight: bold;
         color: #555;
       }
+
+      .thumbnail {
+        width: 40px;
+        height: 40px;
+      }
     }
   </style>
 </head>
@@ -137,7 +154,8 @@
     <input type="text" id="name" placeholder="Product Name" required />
     <input type="text" id="code" placeholder="Product Code" required />
     <input type="number" id="quantity" placeholder="Quantity" required />
-    <input type="number" id="price" placeholder="Unit Price" required />
+    <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
+    <input type="file" id="image" accept="image/*" />
     <button type="submit">Add</button>
   </form>
 
@@ -148,6 +166,7 @@
   <table>
     <thead>
       <tr>
+        <th>Image</th>
         <th>Name</th>
         <th>Code</th>
         <th>Qty</th>
@@ -164,6 +183,7 @@
   const form = document.getElementById("inventoryForm");
   const searchInput = document.getElementById("searchInput");
   const inventoryList = document.getElementById("inventoryList");
+  const imageInput = document.getElementById("image");
 
   let products = [];
   let editIndex = -1;
@@ -176,36 +196,56 @@
     const quantity = parseInt(document.getElementById("quantity").value);
     const price = parseFloat(document.getElementById("price").value);
 
+    // Handle image upload - convert to base64 data URL if file selected
+    const file = imageInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageDataUrl = event.target.result;
+        saveProduct({ name, code, quantity, price, image: imageDataUrl });
+      }
+      reader.readAsDataURL(file);
+    } else {
+      // No image selected
+      saveProduct({ name, code, quantity, price, image: null });
+    }
+  });
+
+  function saveProduct(product) {
     if (editIndex > -1) {
-      products[editIndex] = { name, code, quantity, price };
+      products[editIndex] = product;
       editIndex = -1;
     } else {
-      products.push({ name, code, quantity, price });
+      products.push(product);
     }
-
     form.reset();
     updateTable(products);
-  });
+  }
 
   function updateTable(data) {
     inventoryList.innerHTML = "";
 
     if (data.length === 0) {
-      inventoryList.innerHTML = `<tr><td colspan="6" style="text-align:center;">No products</td></tr>`;
+      inventoryList.innerHTML = `<tr><td colspan="7" style="text-align:center;">No products</td></tr>`;
       return;
     }
 
     data.forEach((item, index) => {
+      const imgHtml = item.image 
+        ? `<img src="${item.image}" alt="${item.name}" class="thumbnail" />` 
+        : `<div style="width:50px; height:50px; background:#eee; border-radius:6px;"></div>`;
+
       const row = `
         <tr>
+          <td data-label="Image">${imgHtml}</td>
           <td data-label="Name">${item.name}</td>
           <td data-label="Code">${item.code}</td>
           <td data-label="Qty">${item.quantity}</td>
           <td data-label="Price">${item.price.toLocaleString()}</td>
           <td data-label="Total">${(item.quantity * item.price).toLocaleString()}</td>
           <td data-label="Action">
-            <button class="action-btn" onclick="editItem(${index})">✏️</button>
-            <button class="action-btn" onclick="deleteItem(${index})">🗑️</button>
+            <button class="action-btn" onclick="editItem(${index})" title="Edit">✏️</button>
+            <button class="action-btn" onclick="deleteItem(${index})" title="Delete">🗑️</button>
           </td>
         </tr>`;
       inventoryList.innerHTML += row;
@@ -218,6 +258,7 @@
     document.getElementById("code").value = item.code;
     document.getElementById("quantity").value = item.quantity;
     document.getElementById("price").value = item.price;
+    imageInput.value = ""; // Reset file input on edit, no direct way to set file input value programmatically
     editIndex = index;
   }
 
