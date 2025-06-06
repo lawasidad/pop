@@ -1,152 +1,148 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard with Users, Company, Sales Report</title>
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      display: flex;
-      height: 100vh;
-      background-color: #f0f2f5;
-    }
-    .sidebar {
-      width: 220px;
-      background-color: #2c3e50;
-      color: white;
-      display: flex;
-      flex-direction: column;
-    }
-    .sidebar h2 {
-      text-align: center;
-      margin: 0;
-      padding: 20px;
-      border-bottom: 1px solid #34495e;
-    }
-    .sidebar button {
-      padding: 15px 20px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 16px;
-      text-align: left;
-      cursor: pointer;
-      border-bottom: 1px solid #34495e;
-      transition: background-color 0.3s ease;
-    }
-    .sidebar button:hover,
-    .sidebar button.active {
-      background-color: #34495e;
-    }
-    .main-content {
-      flex-grow: 1;
-      padding: 30px;
-      background: white;
-      overflow-y: auto;
-    }
-    .section {
-      display: none;
-    }
-    .section.active {
-      display: block;
-    }
-    h1 {
-      margin-top: 0;
-      margin-bottom: 20px;
-      color: #333;
-    }
-    form {
-      margin-bottom: 30px;
-      max-width: 600px;
-    }
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-      color: #555;
-    }
-    input[type="text"],
-    input[type="password"],
-    input[type="tel"],
-    input[type="file"],
-    input[type="date"],
-    select {
-      width: 100%;
-      padding: 8px 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 14px;
-    }
-    button.submit-btn {
-      background-color: #2980b9;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      font-size: 15px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background-color 0.3s ease;
-    }
-    button.submit-btn:hover {
-      background-color: #3498db;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    th, td {
-      text-align: left;
-      padding: 10px;
-      border-bottom: 1px solid #ddd;
-      color: #444;
-    }
-    th {
-      background-color: #f7f7f7;
-    }
-    tr:hover {
-      background-color: #f1f1f1;
-    }
-    #logoPreview {
-      max-width: 150px;
-      max-height: 80px;
-      display: block;
-      margin-top: 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    /* Filter input style */
-    #filterInput {
-      margin-bottom: 15px;
-      padding: 8px 10px;
-      width: 300px;
-      font-size: 14px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    /* Date filter container style */
-    .date-filter {
-      max-width: 400px;
-      margin-bottom: 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .date-filter label {
-      flex-shrink: 0;
-      font-weight: normal;
-      color: #555;
-    }
-    .date-filter input {
-      flex-grow: 1;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard with Users, Company, Sales Report</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: Arial, sans-serif;
+    display: flex; height: 100vh;
+    background-color: #f0f2f5;
+  }
+  .sidebar {
+    width: 220px;
+    background-color: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar h2 {
+    text-align: center;
+    margin: 0;
+    padding: 20px;
+    border-bottom: 1px solid #34495e;
+  }
+  .sidebar button {
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    text-align: left;
+    cursor: pointer;
+    border-bottom: 1px solid #34495e;
+    transition: background-color 0.3s ease;
+  }
+  .sidebar button:hover,
+  .sidebar button.active {
+    background-color: #34495e;
+  }
+  .main-content {
+    flex-grow: 1;
+    padding: 30px;
+    background: white;
+    overflow-y: auto;
+  }
+  .section {
+    display: none;
+  }
+  .section.active {
+    display: block;
+  }
+  h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  form {
+    margin-bottom: 30px;
+    max-width: 600px;
+  }
+  label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: bold;
+    color: #555;
+  }
+  input[type="text"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="file"],
+  input[type="date"],
+  select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+  button.submit-btn {
+    background-color: #2980b9;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  button.submit-btn:hover {
+    background-color: #3498db;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    color: #444;
+  }
+  th {
+    background-color: #f7f7f7;
+  }
+  tr:hover {
+    background-color: #f1f1f1;
+  }
+  #logoPreview {
+    max-width: 150px;
+    max-height: 80px;
+    display: block;
+    margin-top: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  /* Filter input style */
+  #filterInput {
+    margin-bottom: 15px;
+    padding: 8px 10px;
+    width: 300px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  /* Date filter container style */
+  .date-filter {
+    max-width: 420px;
+    margin-bottom: 20px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .date-filter label {
+    flex-shrink: 0;
+    font-weight: normal;
+    color: #555;
+  }
+  .date-filter input {
+    flex-grow: 1;
+  }
+</style>
 </head>
 <body>
 
@@ -287,62 +283,139 @@
 
   </div>
 
-  <script>
-    // Sidebar button click handler
-    const sidebarButtons = document.querySelectorAll('.sidebar button');
-    const sections = document.querySelectorAll('.section');
+<script>
+  // Sidebar button click handler
+  const sidebarButtons = document.querySelectorAll('.sidebar button');
+  const sections = document.querySelectorAll('.section');
 
-    sidebarButtons.forEach(button => {
-      button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        sidebarButtons.forEach(btn => btn.classList.remove('active'));
-        // Add active to clicked button
-        button.classList.add('active');
+  sidebarButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      // Remove active class from all buttons
+      sidebarButtons.forEach(btn => btn.classList.remove('active'));
+      // Add active to clicked button
+      button.classList.add('active');
 
-        // Hide all sections
-        sections.forEach(section => section.classList.remove('active'));
-        // Show targeted section
-        const target = button.getAttribute('data-target');
-        document.getElementById(target).classList.add('active');
-      });
+      // Hide all sections
+      sections.forEach(section => section.classList.remove('active'));
+      // Show targeted section
+      const target = button.getAttribute('data-target');
+      document.getElementById(target).classList.add('active');
     });
+  });
 
-    // Set default active section (Users)
-    sidebarButtons[0].click();
+  // Set default active section (Users)
+  sidebarButtons[0].click();
 
-    // USER FORM HANDLING WITH localStorage
-    const userForm = document.getElementById('userForm');
-    const userListTableBody = document.querySelector('#userListTable tbody');
+  // USER FORM HANDLING with localStorage
+  const userForm = document.getElementById('userForm');
+  const userListTableBody = document.querySelector('#userListTable tbody');
 
-    // Load users from localStorage on page load
-    function loadUsers() {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      userListTableBody.innerHTML = ''; // Clear current list
-      users.forEach(user => {
-        const newRow = document.createElement('tr');
-        newRow.innerHTML = `
-          <td>${user.name}</td>
-          <td>${user.role}</td>
-          <td>${user.mobile}</td>
-        `;
-        userListTableBody.appendChild(newRow);
-      });
+  // Load users from localStorage on page load
+  function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    userListTableBody.innerHTML = '';
+    users.forEach(user => {
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${user.name}</td>
+        <td>${user.role}</td>
+        <td>${user.mobile}</td>
+      `;
+      userListTableBody.appendChild(newRow);
+    });
+  }
+  loadUsers();
+
+  userForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Get input values
+    const name = document.getElementById('userName').value.trim();
+    const password = document.getElementById('userPassword').value; // Not stored for privacy
+    const role = document.getElementById('userRole').value;
+    const mobile = document.getElementById('userMobile').value.trim();
+
+    if (!name || !password || !role || !mobile) {
+      alert('Please fill all fields correctly.');
+      return;
     }
+
+    // Retrieve existing users
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Add new user (password not stored)
+    users.push({ name, role, mobile });
+    localStorage.setItem('users', JSON.stringify(users));
+
     loadUsers();
 
-    userForm.addEventListener('submit', function(event) {
-      event.preventDefault();
+    // Reset form
+    userForm.reset();
+  });
 
-      // Get input values
-      const name = document.getElementById('userName').value.trim();
-      const password = document.getElementById('userPassword').value; // Not stored for privacy
-      const role = document.getElementById('userRole').value;
-      const mobile = document.getElementById('userMobile').value.trim();
+  // COMPANY FORM HANDLING
+  const companyForm = document.getElementById('companyForm');
+  const logoInput = document.getElementById('companyLogo');
+  const logoPreview = document.getElementById('logoPreview');
 
-      if (!name || !password || !role || !mobile) {
-        alert('Please fill all fields correctly.');
-        return;
-      }
+  // Load company info from localStorage
+  function loadCompany() {
+    const company = JSON.parse(localStorage.getItem('company') || '{}');
+    if (company.name) document.getElementById('companyName').value = company.name;
+    if (company.address) document.getElementById('companyAddress').value = company.address;
+    if (company.logo) {
+      logoPreview.src = company.logo;
+      logoPreview.style.display = 'block';
+    }
+  }
+  loadCompany();
 
-      // Retrieve existing users
-      const users = JSON.parse
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        logoPreview.src = e.target.result;
+        logoPreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  companyForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const name = document.getElementById('companyName').value.trim();
+    const address = document.getElementById('companyAddress').value.trim();
+    const logo = logoPreview.src || '';
+
+    if (!name || !address) {
+      alert('Please fill all fields.');
+      return;
+    }
+
+    localStorage.setItem('company', JSON.stringify({ name, address, logo }));
+    alert('Company information saved!');
+  });
+
+  // SALES REPORT - Filter Sales by Item
+  const filterInput = document.getElementById('filterInput');
+  const salesByItemTable = document.getElementById('salesByItemTable');
+
+  filterInput.addEventListener('input', () => {
+    const filter = filterInput.value.toLowerCase();
+    const rows = salesByItemTable.tBodies[0].rows;
+    for (let row of rows) {
+      const itemName = row.cells[0].textContent.toLowerCase();
+      row.style.display = itemName.includes(filter) ? '' : 'none';
+    }
+  });
+
+  // SALES BY INVOICE - Filter by Date Range
+  const fromDateInput = document.getElementById('fromDate');
+  const toDateInput = document.getElementById('toDate');
+  const salesByInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
+
+  function filterSalesByDate() {
+    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+    const toDate = toDateInput.value ? new Date(toDateInput.value) :
