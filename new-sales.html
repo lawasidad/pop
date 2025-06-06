@@ -124,14 +124,15 @@
     #submitBtn {
       margin-top: 20px;
       width: 100%;
-      padding: 12px;
-      font-size: 18px;
+      padding: 16px 0;
+      font-size: 24px;
       font-weight: bold;
       color: white;
       background-color: #1976d2;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       cursor: pointer;
+      transition: background-color 0.3s;
     }
     #submitBtn:hover {
       background-color: #155a9c;
@@ -158,7 +159,9 @@
     { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/50?text=A" },
     { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/50?text=B" },
     { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/50?text=C" },
-    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" }
+    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" },
+    { id: 5, name: "Product E", price: 40, image: "https://via.placeholder.com/50?text=E" },
+    { id: 6, name: "Product F", price: 60, image: "https://via.placeholder.com/50?text=F" }
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -166,7 +169,6 @@
   const submitBtn = document.getElementById("submitBtn");
   const customerInput = document.getElementById("customer");
 
-  // Cart is basically products with adjustable quantity and discount
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
 
   function renderItems() {
@@ -236,7 +238,6 @@
       return;
     }
 
-    // Only send items with quantity > 0
     const itemsToSell = cart.filter(item => item.quantity > 0);
 
     if (itemsToSell.length === 0) {
@@ -260,7 +261,6 @@
     console.log("Sale submitted:", saleData);
     alert(`Sale completed!\nCustomer: ${saleData.customer}\nTotal: IQD ${saleData.grandTotal.toFixed(2)}`);
 
-    // Reset quantities and discounts
     cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
     customerInput.value = "";
     renderItems();
@@ -268,7 +268,6 @@
 
   renderItems();
 
-  // Make functions global so they work on inline handlers
   window.changeQuantity = changeQuantity;
   window.setQuantity = setQuantity;
   window.setDiscount = setDiscount;
