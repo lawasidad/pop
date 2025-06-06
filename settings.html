@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard with Sales Report</title>
+<title>Dashboard</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -52,6 +52,7 @@
   .section.active {
     display: block;
   }
+
   /* Sales report styles */
   #salesSection {
     max-width: 700px;
@@ -78,6 +79,14 @@
     font-weight: bold;
     color: #2c3e50;
   }
+
+  /* Placeholder styles for other sections */
+  #usersSection, #companySection {
+    max-width: 700px;
+  }
+  #usersSection h1, #companySection h1 {
+    margin-bottom: 20px;
+  }
 </style>
 </head>
 <body>
@@ -86,11 +95,13 @@
   <h2>Dashboard</h2>
   <nav>
     <button class="active" data-target="salesSection" type="button">Sales Report</button>
-    <!-- Other sections can go here -->
+    <button data-target="usersSection" type="button">Users</button>
+    <button data-target="companySection" type="button">Company</button>
   </nav>
 </div>
 
 <div class="main-content">
+
   <section id="salesSection" class="section active">
     <h1>Sales Report</h1>
 
@@ -106,10 +117,39 @@
       Total Sales: $0.00
     </div>
   </section>
+
+  <section id="usersSection" class="section">
+    <h1>Users</h1>
+    <p>This section is under development.</p>
+  </section>
+
+  <section id="companySection" class="section">
+    <h1>Company</h1>
+    <p>This section is under development.</p>
+  </section>
+
 </div>
 
 <script>
-  // Dummy sales data - each with date and amount
+  // Navigation buttons logic
+  const navButtons = document.querySelectorAll('.sidebar nav button');
+  const sections = document.querySelectorAll('.section');
+
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active from all buttons
+      navButtons.forEach(b => b.classList.remove('active'));
+      // Hide all sections
+      sections.forEach(s => s.classList.remove('active'));
+
+      // Activate clicked button and related section
+      btn.classList.add('active');
+      const targetId = btn.getAttribute('data-target');
+      document.getElementById(targetId).classList.add('active');
+    });
+  });
+
+  // Sales report data and filtering
   const salesData = [
     { date: '2025-06-01', amount: 150.00 },
     { date: '2025-06-02', amount: 200.00 },
@@ -124,7 +164,6 @@
   const filterBtn = document.getElementById('filterBtn');
   const salesSummary = document.getElementById('salesSummary');
 
-  // Initialize date inputs with default range (last 10 days)
   function setDefaultDates() {
     const today = new Date();
     const priorDate = new Date();
@@ -134,7 +173,6 @@
     endDateInput.value = today.toISOString().split('T')[0];
   }
 
-  // Filter sales by date range
   function filterSales() {
     const start = new Date(startDateInput.value);
     const end = new Date(endDateInput.value);
@@ -149,10 +187,7 @@
       return saleDate >= start && saleDate <= end;
     });
 
-    // Calculate total
     const total = filteredSales.reduce((acc, sale) => acc + sale.amount, 0);
-
-    // Update UI
     salesSummary.textContent = `Total Sales: $${total.toFixed(2)}`;
   }
 
