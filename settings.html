@@ -3,22 +3,18 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard with Users, Company & Sales Report</title>
+<title>Dashboard with Sales Report</title>
 <style>
-  * {
-    box-sizing: border-box;
-  }
   body {
-    margin: 0;
     font-family: Arial, sans-serif;
-    background: #f9faff;
+    margin: 0; padding: 0;
+    background-color: #f4f6f8;
     display: flex;
     height: 100vh;
   }
-  /* Sidebar styles */
   .sidebar {
     width: 220px;
-    background-color: #2c3e50;
+    background-color: #34495e;
     color: white;
     display: flex;
     flex-direction: column;
@@ -27,417 +23,143 @@
     text-align: center;
     padding: 20px 0;
     margin: 0;
-    border-bottom: 1px solid #34495e;
-  }
-  .sidebar nav {
-    flex-grow: 1;
+    border-bottom: 1px solid #2c3e50;
   }
   .sidebar nav button {
-    width: 100%;
-    padding: 15px 20px;
-    border: none;
     background: none;
+    border: none;
     color: white;
-    font-size: 16px;
+    padding: 15px 20px;
     text-align: left;
+    font-size: 16px;
     cursor: pointer;
-    border-bottom: 1px solid #34495e;
+    border-bottom: 1px solid #2c3e50;
     transition: background-color 0.3s ease;
   }
-  .sidebar nav button:hover, .sidebar nav button.active {
-    background-color: #34495e;
+  .sidebar nav button.active,
+  .sidebar nav button:hover {
+    background-color: #2c3e50;
   }
-
-  /* Main content styles */
   .main-content {
     flex-grow: 1;
     padding: 30px;
     overflow-y: auto;
+    background: #fff;
   }
-
   .section {
     display: none;
   }
   .section.active {
     display: block;
   }
-
-  /* User section styles */
-  #userSection form,
-  #companySection form {
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    margin-bottom: 30px;
-    max-width: 400px;
-  }
-  #userSection form input,
-  #userSection form select,
-  #companySection form input {
-    width: 100%;
-    padding: 10px 12px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 16px;
-  }
-  #userSection form button,
-  #companySection form button {
-    width: 100%;
-    padding: 12px;
-    background-color: #2980b9;
-    border: none;
-    color: white;
-    font-weight: bold;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-  }
-  #userSection form button:hover,
-  #companySection form button:hover {
-    background-color: #1c5980;
-  }
-  #userList table,
-  #companyList table {
-    width: 100%;
+  /* Sales report styles */
+  #salesSection {
     max-width: 700px;
-    border-collapse: collapse;
-    background: white;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
-    border-radius: 6px;
-    overflow: hidden;
   }
-  #userList th, #userList td,
-  #companyList th, #companyList td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
-    text-align: left;
+  #salesSection h1 {
+    margin-bottom: 20px;
+  }
+  #dateFilters {
+    margin-bottom: 25px;
+  }
+  #dateFilters label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+  #dateFilters input {
+    padding: 7px 10px;
     font-size: 16px;
+    margin-right: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
   }
-  #userList th,
-  #companyList th {
-    background-color: #2980b9;
-    color: white;
-  }
-  #userList tr:hover,
-  #companyList tr:hover {
-    background-color: #f1f1f1;
-  }
-  .action-btn {
-    cursor: pointer;
-    padding: 6px 10px;
-    margin-right: 5px;
-    border: none;
-    border-radius: 4px;
-    font-size: 14px;
-    color: white;
-    transition: background-color 0.3s ease;
-  }
-  .edit-btn {
-    background-color: #27ae60;
-  }
-  .edit-btn:hover {
-    background-color: #1e8449;
-  }
-  .delete-btn {
-    background-color: #c0392b;
-  }
-  .delete-btn:hover {
-    background-color: #922b21;
-  }
-
-  /* Sales Report placeholder */
-  .placeholder {
-    max-width: 600px;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    font-size: 18px;
-    color: #444;
+  #salesSummary {
+    font-size: 20px;
+    font-weight: bold;
+    color: #2c3e50;
   }
 </style>
 </head>
 <body>
 
-  <div class="sidebar">
-    <h2>Dashboard</h2>
-    <nav>
-      <button class="active" data-target="userSection" type="button">Users</button>
-      <button data-target="companySection" type="button">Company</button>
-      <button data-target="salesSection" type="button">Sales Report</button>
-    </nav>
-  </div>
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <nav>
+    <button class="active" data-target="salesSection" type="button">Sales Report</button>
+    <!-- Other sections can go here -->
+  </nav>
+</div>
 
-  <div class="main-content">
-    <!-- Users Section -->
-    <section id="userSection" class="section active">
-      <h1>Users Management</h1>
-      <form id="userForm">
-        <input type="hidden" id="editIndexUser" value="" />
-        <input type="text" id="username" placeholder="Enter username" required />
-        <input type="email" id="email" placeholder="Enter email" required />
-        <select id="role" required>
-          <option value="" disabled selected>Select role</option>
-          <option value="Admin">Admin</option>
-          <option value="User">User</option>
-          <option value="Manager">Manager</option>
-        </select>
-        <input type="password" id="password" placeholder="Enter password" required />
-        <button type="submit">Add User</button>
-      </form>
-      <div id="userList">
-        <h2>Users List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Password</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="usersTbody"></tbody>
-        </table>
-      </div>
-    </section>
+<div class="main-content">
+  <section id="salesSection" class="section active">
+    <h1>Sales Report</h1>
 
-    <!-- Company Section -->
-    <section id="companySection" class="section">
-      <h1>Company Management</h1>
-      <form id="companyForm">
-        <input type="hidden" id="editIndexCompany" value="" />
-        <input type="text" id="companyName" placeholder="Enter company name" required />
-        <button type="submit">Add Company</button>
-      </form>
-      <div id="companyList">
-        <h2>Companies List</h2>
-        <table>
-          <thead>
-            <tr>
-              <th>Company Name</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody id="companiesTbody"></tbody>
-        </table>
-      </div>
-    </section>
+    <div id="dateFilters">
+      <label for="startDate">Start Date:</label>
+      <input type="date" id="startDate" />
+      <label for="endDate">End Date:</label>
+      <input type="date" id="endDate" />
+      <button id="filterBtn" type="button">Filter</button>
+    </div>
 
-    <!-- Sales Report Section -->
-    <section id="salesSection" class="section">
-      <h1>Sales Report</h1>
-      <div class="placeholder">
-        <p>This section will display sales reports and analytics.</p>
-      </div>
-    </section>
-  </div>
+    <div id="salesSummary">
+      Total Sales: $0.00
+    </div>
+  </section>
+</div>
 
 <script>
-  // Sidebar tab switching logic fixed
-  const buttons = document.querySelectorAll('.sidebar nav button');
-  const sections = document.querySelectorAll('.section');
+  // Dummy sales data - each with date and amount
+  const salesData = [
+    { date: '2025-06-01', amount: 150.00 },
+    { date: '2025-06-02', amount: 200.00 },
+    { date: '2025-06-03', amount: 120.50 },
+    { date: '2025-06-05', amount: 350.00 },
+    { date: '2025-06-07', amount: 500.00 },
+    { date: '2025-06-10', amount: 450.25 },
+  ];
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
+  const startDateInput = document.getElementById('startDate');
+  const endDateInput = document.getElementById('endDate');
+  const filterBtn = document.getElementById('filterBtn');
+  const salesSummary = document.getElementById('salesSummary');
 
-      sections.forEach(sec => sec.classList.remove('active'));
-      const target = btn.getAttribute('data-target');
-      document.getElementById(target).classList.add('active');
-    });
-  });
+  // Initialize date inputs with default range (last 10 days)
+  function setDefaultDates() {
+    const today = new Date();
+    const priorDate = new Date();
+    priorDate.setDate(today.getDate() - 10);
 
-  // User management logic
-  const userForm = document.getElementById('userForm');
-  const usernameInput = document.getElementById('username');
-  const emailInput = document.getElementById('email');
-  const roleSelect = document.getElementById('role');
-  const passwordInput = document.getElementById('password');
-  const editIndexUser = document.getElementById('editIndexUser');
-  const usersTbody = document.getElementById('usersTbody');
-
-  let users = JSON.parse(localStorage.getItem('users')) || [];
-
-  function renderUsers() {
-    usersTbody.innerHTML = '';
-    users.forEach((user, index) => {
-      const tr = document.createElement('tr');
-      const maskedPassword = '•'.repeat(user.password.length);
-
-      tr.innerHTML = `
-        <td>${user.username}</td>
-        <td>${user.email}</td>
-        <td>${user.role}</td>
-        <td>${maskedPassword}</td>
-        <td>
-          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
-          <button class="action-btn delete-btn" data-index="${index}">Delete</button>
-        </td>
-      `;
-      usersTbody.appendChild(tr);
-    });
-
-    document.querySelectorAll('.edit-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        editUser(idx);
-      });
-    });
-    document.querySelectorAll('.delete-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        deleteUser(idx);
-      });
-    });
+    startDateInput.value = priorDate.toISOString().split('T')[0];
+    endDateInput.value = today.toISOString().split('T')[0];
   }
 
-  function saveUsers() {
-    localStorage.setItem('users', JSON.stringify(users));
-  }
+  // Filter sales by date range
+  function filterSales() {
+    const start = new Date(startDateInput.value);
+    const end = new Date(endDateInput.value);
 
-  function editUser(index) {
-    const user = users[index];
-    usernameInput.value = user.username;
-    emailInput.value = user.email;
-    roleSelect.value = user.role;
-    passwordInput.value = user.password;
-    editIndexUser.value = index;
-    userForm.querySelector('button').textContent = 'Update User';
-  }
-
-  function deleteUser(index) {
-    if (confirm('Are you sure you want to delete this user?')) {
-      users.splice(index, 1);
-      saveUsers();
-      renderUsers();
-      resetUserForm();
-    }
-  }
-
-  function resetUserForm() {
-    userForm.reset();
-    editIndexUser.value = '';
-    userForm.querySelector('button').textContent = 'Add User';
-  }
-
-  userForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const username = usernameInput.value.trim();
-    const email = emailInput.value.trim();
-    const role = roleSelect.value;
-    const password = passwordInput.value;
-
-    if (!username || !email || !role || !password) {
-      alert('Please fill in all fields.');
+    if (start > end) {
+      alert('Start date cannot be after end date.');
       return;
     }
 
-    const idx = editIndexUser.value;
-    if (idx === '') {
-      // Add new user
-      users.push({ username, email, role, password });
-    } else {
-      // Update existing user
-      users[idx] = { username, email, role, password };
-    }
-
-    saveUsers();
-    renderUsers();
-    resetUserForm();
-  });
-
-  renderUsers();
-
-  // Company management logic
-  const companyForm = document.getElementById('companyForm');
-  const companyNameInput = document.getElementById('companyName');
-  const editIndexCompany = document.getElementById('editIndexCompany');
-  const companiesTbody = document.getElementById('companiesTbody');
-
-  let companies = JSON.parse(localStorage.getItem('companies')) || [];
-
-  function renderCompanies() {
-    companiesTbody.innerHTML = '';
-    companies.forEach((company, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${company.name}</td>
-        <td>
-          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
-          <button class="action-btn delete-btn" data-index="${index}">Delete</button>
-        </td>
-      `;
-      companiesTbody.appendChild(tr);
+    const filteredSales = salesData.filter(sale => {
+      const saleDate = new Date(sale.date);
+      return saleDate >= start && saleDate <= end;
     });
 
-    document.querySelectorAll('#companyList .edit-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        editCompany(idx);
-      });
-    });
-    document.querySelectorAll('#companyList .delete-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        deleteCompany(idx);
-      });
-    });
+    // Calculate total
+    const total = filteredSales.reduce((acc, sale) => acc + sale.amount, 0);
+
+    // Update UI
+    salesSummary.textContent = `Total Sales: $${total.toFixed(2)}`;
   }
 
-  function saveCompanies() {
-    localStorage.setItem('companies', JSON.stringify(companies));
-  }
+  filterBtn.addEventListener('click', filterSales);
 
-  function editCompany(index) {
-    const company = companies[index];
-    companyNameInput.value = company.name;
-    editIndexCompany.value = index;
-    companyForm.querySelector('button').textContent = 'Update Company';
-  }
-
-  function deleteCompany(index) {
-    if (confirm('Are you sure you want to delete this company?')) {
-      companies.splice(index, 1);
-      saveCompanies();
-      renderCompanies();
-      resetCompanyForm();
-    }
-  }
-
-  function resetCompanyForm() {
-    companyForm.reset();
-    editIndexCompany.value = '';
-    companyForm.querySelector('button').textContent = 'Add Company';
-  }
-
-  companyForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const name = companyNameInput.value.trim();
-    if (!name) {
-      alert('Please enter a company name.');
-      return;
-    }
-
-    const idx = editIndexCompany.value;
-    if (idx === '') {
-      companies.push({ name });
-    } else {
-      companies[idx] = { name };
-    }
-
-    saveCompanies();
-    renderCompanies();
-    resetCompanyForm();
-  });
-
-  renderCompanies();
+  setDefaultDates();
+  filterSales();
 </script>
 
 </body>
