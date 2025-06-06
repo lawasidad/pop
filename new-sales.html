@@ -13,17 +13,17 @@
     }
 
     body {
-      background-color: #f0f2f5;
+      background-color: #f5f7fa;
       padding: 20px;
     }
 
     .container {
-      max-width: 600px;
+      max-width: 800px;
+      margin: auto;
       background: #fff;
       padding: 25px;
-      margin: auto;
       border-radius: 10px;
-      box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
     }
 
     h1 {
@@ -32,28 +32,63 @@
       color: #333;
     }
 
-    label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-      color: #444;
-    }
-
-    input[type="text"],
-    input[type="number"] {
+    .search-section input {
       width: 100%;
       padding: 10px;
-      margin-bottom: 15px;
+      font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 6px;
-      font-size: 14px;
+      margin-bottom: 20px;
     }
 
-    input[readonly] {
-      background-color: #f9f9f9;
+    .product-list {
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      max-height: 200px;
+      overflow-y: auto;
+      margin-bottom: 20px;
+    }
+
+    .product-item {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      cursor: pointer;
+    }
+
+    .product-item:last-child {
+      border-bottom: none;
+    }
+
+    .product-item:hover {
+      background-color: #f0f0f0;
+    }
+
+    .form-section {
+      display: none;
+      margin-top: 20px;
+    }
+
+    .form-section label {
+      display: block;
+      margin-top: 12px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .form-section input {
+      width: 100%;
+      padding: 10px;
+      font-size: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .form-section input[readonly] {
+      background-color: #f5f5f5;
     }
 
     button {
+      margin-top: 20px;
       width: 100%;
       padding: 12px;
       background-color: #007bff;
@@ -85,54 +120,101 @@
 </head>
 <body>
 
-  <div class="container">
-    <h1>New Sale</h1>
+<div class="container">
+  <h1>New Sale</h1>
 
-    <form id="salesForm">
-      <label for="customer">Customer Name</label>
-      <input type="text" id="customer" name="customer" required>
-
-      <label for="item">Item Name</label>
-      <input type="text" id="item" name="item" required>
-
-      <label for="price">Unit Price</label>
-      <input type="number" id="price" name="price" min="0" step="0.01" required>
-
-      <label for="quantity">Quantity</label>
-      <input type="number" id="quantity" name="quantity" min="1" required>
-
-      <label for="total">Total</label>
-      <input type="number" id="total" name="total" readonly>
-
-      <button type="submit">Submit Sale</button>
-    </form>
-
-    <div class="back-link">
-      <a href="dashboard.html">← Back to Dashboard</a>
-    </div>
+  <div class="search-section">
+    <input type="text" id="searchInput" placeholder="Search product by name...">
   </div>
 
-  <script>
-    const priceInput = document.getElementById("price");
-    const quantityInput = document.getElementById("quantity");
-    const totalInput = document.getElementById("total");
+  <div class="product-list" id="productList">
+    <!-- Items will be populated by JS -->
+  </div>
 
-    function calculateTotal() {
-      const price = parseFloat(priceInput.value) || 0;
-      const qty = parseInt(quantityInput.value) || 0;
-      const total = price * qty;
-      totalInput.value = total.toFixed(2);
-    }
+  <div class="form-section" id="saleForm">
+    <label for="selectedItem">Selected Item</label>
+    <input type="text" id="selectedItem" readonly>
 
-    priceInput.addEventListener("input", calculateTotal);
-    quantityInput.addEventListener("input", calculateTotal);
+    <label for="price">Unit Price</label>
+    <input type="number" id="price" step="0.01" required>
 
-    document.getElementById("salesForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      alert("Sale Submitted Successfully!");
-      this.reset();
-      totalInput.value = "";
+    <label for="quantity">Quantity</label>
+    <input type="number" id="quantity" min="1" value="1" required>
+
+    <label for="discount">Discount</label>
+    <input type="number" id="discount" min="0" value="0" step="0.01">
+
+    <label for="total">Total</label>
+    <input type="number" id="total" readonly>
+
+    <button onclick="submitSale()">Submit Sale</button>
+  </div>
+
+  <div class="back-link">
+    <a href="dashboard.html">← Back to Dashboard</a>
+  </div>
+</div>
+
+<script>
+  const products = [
+    { name: "Pepsi", price: 500 },
+    { name: "Water 1L", price: 250 },
+    { name: "Chips", price: 300 },
+    { name: "Sugar 1kg", price: 1000 },
+    { name: "Milk", price: 750 }
+  ];
+
+  const productList = document.getElementById("productList");
+  const searchInput = document.getElementById("searchInput");
+  const saleForm = document.getElementById("saleForm");
+  const selectedItem = document.getElementById("selectedItem");
+  const priceInput = document.getElementById("price");
+  const quantityInput = document.getElementById("quantity");
+  const discountInput = document.getElementById("discount");
+  const totalInput = document.getElementById("total");
+
+  function renderProducts(filter = "") {
+    productList.innerHTML = "";
+    const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+    filtered.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "product-item";
+      div.textContent = `${p.name} - ${p.price} IQD`;
+      div.onclick = () => selectProduct(p);
+      productList.appendChild(div);
     });
-  </script>
+  }
+
+  function selectProduct(product) {
+    selectedItem.value = product.name;
+    priceInput.value = product.price;
+    quantityInput.value = 1;
+    discountInput.value = 0;
+    calculateTotal();
+    saleForm.style.display = "block";
+  }
+
+  function calculateTotal() {
+    const price = parseFloat(priceInput.value) || 0;
+    const quantity = parseInt(quantityInput.value) || 1;
+    const discount = parseFloat(discountInput.value) || 0;
+    const total = (price * quantity) - discount;
+    totalInput.value = total.toFixed(2);
+  }
+
+  function submitSale() {
+    alert("Sale submitted for: " + selectedItem.value + " — Total: " + totalInput.value + " IQD");
+    saleForm.reset();
+    saleForm.style.display = "none";
+  }
+
+  searchInput.addEventListener("input", () => renderProducts(searchInput.value));
+  priceInput.addEventListener("input", calculateTotal);
+  quantityInput.addEventListener("input", calculateTotal);
+  discountInput.addEventListener("input", calculateTotal);
+
+  renderProducts();
+</script>
+
 </body>
 </html>
