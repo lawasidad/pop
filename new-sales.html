@@ -20,6 +20,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.1);
       padding: 30px 25px;
       box-sizing: border-box;
+      position: relative;
     }
     h2 {
       text-align: right;
@@ -149,23 +150,28 @@
       margin-bottom: 30px;
       min-height: 32px;
     }
+
+    /* New smaller submit button style and position */
     #submitBtn {
-      width: 100%;
-      padding: 22px 0;
-      font-size: 30px;
-      font-weight: 900;
+      position: absolute;
+      top: 15px;
+      left: 25px;
+      padding: 10px 22px;
+      font-size: 18px;
+      font-weight: 700;
       color: white;
       background-color: #1976d2;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       cursor: pointer;
+      box-shadow: 0 4px 10px rgba(25, 118, 210, 0.7);
       transition: background-color 0.35s, box-shadow 0.35s;
-      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
-      margin-top: 0;
+      z-index: 10;
+      user-select: none;
     }
     #submitBtn:hover {
       background-color: #155a9c;
-      box-shadow: 0 7px 20px rgba(21, 90, 156, 0.85);
+      box-shadow: 0 6px 14px rgba(21, 90, 156, 0.85);
     }
 
     /* Responsive adjustments */
@@ -204,8 +210,12 @@
         font-size: 20px;
       }
       #submitBtn {
+        position: static;
+        width: 100%;
         font-size: 24px;
         padding: 18px 0;
+        margin-bottom: 15px;
+        box-shadow: none;
       }
     }
 
@@ -226,6 +236,8 @@
 </head>
 <body>
   <div class="container">
+    <button id="submitBtn">Submit Sale</button>
+
     <h2>New Sales Form</h2>
 
     <label for="customer">Customer Name</label>
@@ -240,7 +252,6 @@
 
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
 
-    <button id="submitBtn">Submit Sale</button>
   </div>
 
 <script>
@@ -321,67 +332,4 @@
     filterProducts();
   }
 
-  function updateTotalSummary() {
-    const total = cart.reduce((sum, item) => {
-      return sum + (item.quantity * item.price * (1 - item.discount / 100));
-    }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toFixed(2)}`;
-  }
-
-  function filterProducts() {
-    const query = searchInput.value.trim().toLowerCase();
-    if (query === "") {
-      filteredCart = [...cart];
-    } else {
-      filteredCart = cart.filter(item => item.name.toLowerCase().includes(query));
-    }
-    renderItems();
-  }
-
-  submitBtn.onclick = () => {
-    const customerName = customerInput.value.trim();
-    if (customerName === "") {
-      alert("Please enter the customer's name.");
-      return;
-    }
-
-    const itemsToSell = cart.filter(item => item.quantity > 0);
-
-    if (itemsToSell.length === 0) {
-      alert("Please select at least one product with quantity greater than zero.");
-      return;
-    }
-
-    const saleData = {
-      customer: customerName,
-      items: itemsToSell.map(item => ({
-        productId: item.id,
-        productName: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        discountPercent: item.discount,
-        total: item.quantity * item.price * (1 - item.discount / 100)
-      })),
-      grandTotal: itemsToSell.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0)
-    };
-
-    console.log("Sale submitted:", saleData);
-    alert(`Sale completed!\nCustomer: ${saleData.customer}\nTotal: IQD ${saleData.grandTotal.toFixed(2)}`);
-
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-    customerInput.value = "";
-    searchInput.value = "";
-    filterProducts();
-  };
-
-  // Initial render
-  filterProducts();
-
-  // Make functions global for inline event handlers
-  window.changeQuantity = changeQuantity;
-  window.setQuantity = setQuantity;
-  window.setDiscount = setDiscount;
-  window.filterProducts = filterProducts;
-</script>
-</body>
-</html>
+  function updateTotal
