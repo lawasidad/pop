@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard with Users, Company, Sales Report</title>
+<title>Dashboard - Users, Company, Sales Report</title>
 <style>
   * { box-sizing: border-box; }
   body {
@@ -20,8 +20,7 @@
   }
   .sidebar h2 {
     text-align: center;
-    margin: 0;
-    padding: 20px;
+    margin: 0; padding: 20px;
     border-bottom: 1px solid #34495e;
   }
   .sidebar button {
@@ -52,8 +51,7 @@
     display: block;
   }
   h1 {
-    margin-top: 0;
-    margin-bottom: 20px;
+    margin-top: 0; margin-bottom: 20px;
     color: #333;
   }
   form {
@@ -117,7 +115,6 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  /* Filter input style */
   #filterInput {
     margin-bottom: 15px;
     padding: 8px 10px;
@@ -126,7 +123,6 @@
     border: 1px solid #ccc;
     border-radius: 4px;
   }
-  /* Date filter container style */
   .date-filter {
     max-width: 420px;
     margin-bottom: 20px;
@@ -190,9 +186,7 @@
             <th>Mobile Number</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Users will be added here dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </section>
 
@@ -284,52 +278,47 @@
   </div>
 
 <script>
-  // Sidebar button click handler
+  // Sidebar navigation handling
   const sidebarButtons = document.querySelectorAll('.sidebar button');
   const sections = document.querySelectorAll('.section');
 
-  sidebarButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      // Remove active class from all buttons
-      sidebarButtons.forEach(btn => btn.classList.remove('active'));
-      // Add active to clicked button
-      button.classList.add('active');
+  sidebarButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active class from buttons
+      sidebarButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-      // Hide all sections
-      sections.forEach(section => section.classList.remove('active'));
-      // Show targeted section
-      const target = button.getAttribute('data-target');
+      // Show only selected section
+      sections.forEach(sec => sec.classList.remove('active'));
+      const target = btn.getAttribute('data-target');
       document.getElementById(target).classList.add('active');
     });
   });
 
-  // Set default active section (Users)
+  // Set default active section as Users
   sidebarButtons[0].click();
 
-  // USER FORM HANDLING with localStorage
+
+  // ------------- USERS SECTION -------------
+
   const userForm = document.getElementById('userForm');
   const userListTableBody = document.querySelector('#userListTable tbody');
 
-  // Load users from localStorage on page load
+  // Load users from localStorage
   function loadUsers() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     userListTableBody.innerHTML = '';
     users.forEach(user => {
-      const newRow = document.createElement('tr');
-      newRow.innerHTML = `
-        <td>${user.name}</td>
-        <td>${user.role}</td>
-        <td>${user.mobile}</td>
-      `;
-      userListTableBody.appendChild(newRow);
+      const row = document.createElement('tr');
+      row.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
+      userListTableBody.appendChild(row);
     });
   }
   loadUsers();
 
-  userForm.addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    // Get input values
+  userForm.addEventListener('submit', e => {
+    e.preventDefault();
+    // Get form data
     const name = document.getElementById('userName').value.trim();
     const password = document.getElementById('userPassword').value; // Not stored for privacy
     const role = document.getElementById('userRole').value;
@@ -340,20 +329,19 @@
       return;
     }
 
-    // Retrieve existing users
+    // Get existing users and add new one
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-
-    // Add new user (password not stored)
     users.push({ name, role, mobile });
     localStorage.setItem('users', JSON.stringify(users));
 
+    // Reload user list and reset form
     loadUsers();
-
-    // Reset form
     userForm.reset();
   });
 
-  // COMPANY FORM HANDLING
+
+  // ------------- COMPANY SECTION -------------
+
   const companyForm = document.getElementById('companyForm');
   const logoInput = document.getElementById('companyLogo');
   const logoPreview = document.getElementById('logoPreview');
@@ -362,60 +350,4 @@
   function loadCompany() {
     const company = JSON.parse(localStorage.getItem('company') || '{}');
     if (company.name) document.getElementById('companyName').value = company.name;
-    if (company.address) document.getElementById('companyAddress').value = company.address;
-    if (company.logo) {
-      logoPreview.src = company.logo;
-      logoPreview.style.display = 'block';
-    }
-  }
-  loadCompany();
-
-  logoInput.addEventListener('change', () => {
-    const file = logoInput.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        logoPreview.src = e.target.result;
-        logoPreview.style.display = 'block';
-      };
-      reader.readAsDataURL(file);
-    }
-  });
-
-  companyForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const name = document.getElementById('companyName').value.trim();
-    const address = document.getElementById('companyAddress').value.trim();
-    const logo = logoPreview.src || '';
-
-    if (!name || !address) {
-      alert('Please fill all fields.');
-      return;
-    }
-
-    localStorage.setItem('company', JSON.stringify({ name, address, logo }));
-    alert('Company information saved!');
-  });
-
-  // SALES REPORT - Filter Sales by Item
-  const filterInput = document.getElementById('filterInput');
-  const salesByItemTable = document.getElementById('salesByItemTable');
-
-  filterInput.addEventListener('input', () => {
-    const filter = filterInput.value.toLowerCase();
-    const rows = salesByItemTable.tBodies[0].rows;
-    for (let row of rows) {
-      const itemName = row.cells[0].textContent.toLowerCase();
-      row.style.display = itemName.includes(filter) ? '' : 'none';
-    }
-  });
-
-  // SALES BY INVOICE - Filter by Date Range
-  const fromDateInput = document.getElementById('fromDate');
-  const toDateInput = document.getElementById('toDate');
-  const salesByInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
-
-  function filterSalesByDate() {
-    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
-    const toDate = toDateInput.value ? new Date(toDateInput.value) :
+    if (company.address) document.getElementBy
