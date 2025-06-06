@@ -161,6 +161,7 @@
 <script>
   const { jsPDF } = window.jspdf;
 
+  // Sample products for testing
   const products = [
     { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
     { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
@@ -176,6 +177,7 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
+  // Cart array with quantity and discount for each product
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
@@ -297,4 +299,53 @@
       doc.text(item.quantity.toString(), leftMargin + 150, y);
       doc.text(`IQD ${item.unitPrice.toLocaleString()}`, leftMargin + 200, y);
       doc.text(item.discountPercent.toString(), leftMargin + 320, y);
-      doc.text(`IQD ${
+      doc.text(`IQD ${item.total.toLocaleString()}`, leftMargin + 420, y);
+      y += 20;
+    });
+
+    y += 10;
+    doc.setLineWidth(0.8);
+    doc.line(leftMargin, y, 550, y);
+    y += 25;
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, "bold");
+    doc.text(`Grand Total: IQD ${saleData.grandTotal.toLocaleString()}`, leftMargin, y);
+
+    doc.save(`sale_${Date.now()}.pdf`);
+  }
+
+  submitBtn.onclick = () => {
+    const customer = customerInput.value.trim();
+    if (customer === "") {
+      alert("Please enter customer name");
+      return;
+    }
+
+    const items = cart.filter(item => item.quantity > 0).map(item => {
+      const total = item.quantity * item.price * (1 - item.discount / 100);
+      return {
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discountPercent: item.discount,
+        total: Math.round(total)
+      };
+    });
+
+    if (items.length === 0) {
+      alert("No products selected");
+      return;
+    }
+
+    const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
+
+    generatePDF({ customer, items, grandTotal });
+  };
+
+  // Initial render
+  renderItems();
+
+</script>
+</body>
+</html>
