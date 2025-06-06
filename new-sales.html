@@ -1,236 +1,149 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Responsive Sales Form</title>
+  <title>Sales Form</title>
   <style>
     body {
-      font-family: Tahoma, sans-serif;
-      background-color: #f9f9f9;
+      font-family: "Tahoma", sans-serif;
+      background: #f0f0f0;
       padding: 20px;
-      direction: rtl;
-      margin: 0;
+      direction: ltr;
+      text-align: left;
     }
     .container {
-      max-width: 900px;
+      max-width: 800px;
       margin: auto;
       background: white;
-      border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      padding: 30px 25px;
-      box-sizing: border-box;
+      padding: 20px 30px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
     }
     h2 {
-      text-align: right;
-      margin-bottom: 25px;
-      color: #333;
-      font-size: 2.2rem;
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
     }
     label {
       display: block;
-      margin-bottom: 8px;
+      margin: 12px 0 6px;
       font-weight: bold;
-      text-align: right;
-      font-size: 1.1rem;
+      color: #34495e;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
-      padding: 10px 14px;
-      margin-bottom: 20px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 18px;
-      text-align: right;
+      padding: 8px 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
       box-sizing: border-box;
-      transition: border-color 0.3s;
-    }
-    input[type="text"]:focus, input[type="number"]:focus {
-      border-color: #1976d2;
-      outline: none;
     }
     .items-list {
-      max-height: 420px;
+      margin-top: 15px;
+      max-height: 350px;
       overflow-y: auto;
       border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      margin-bottom: 10px; /* کمتر بۆ بڕگەی دابینکراو */
-      background: #fff;
-      box-sizing: border-box;
+      border-radius: 5px;
+      padding: 10px;
+      background: #fafafa;
     }
     .item {
       display: flex;
       align-items: center;
-      margin-bottom: 18px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #fafafa;
-      border: 1px solid #ccc;
-      gap: 15px;
-      flex-wrap: wrap;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .item:last-child {
+      border-bottom: none;
     }
     .item img {
       width: 60px;
       height: 60px;
-      object-fit: contain;
       border-radius: 6px;
-      background: white;
-      border: 1px solid #bbb;
-      flex-shrink: 0;
+      margin-right: 10px;
+      object-fit: cover;
     }
     .item-info {
       flex-grow: 1;
-      text-align: right;
-      min-width: 150px;
+      margin-left: 10px;
     }
     .item-name {
       font-weight: bold;
-      font-size: 20px;
-      color: #333;
+      font-size: 17px;
+      color: #2c3e50;
+      margin-bottom: 5px;
     }
     .item-price {
-      font-size: 15px;
+      font-size: 14px;
       color: #555;
-      margin-top: 6px;
     }
     .controls {
       display: flex;
+      gap: 12px;
       align-items: center;
-      gap: 20px;
-      min-width: 220px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
+      min-width: 250px;
+      font-size: 14px;
     }
-    .qty-control, .discount-control {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .qty-control button, .discount-control input {
-      font-size: 18px;
-    }
-    button {
-      width: 34px;
-      height: 34px;
-      font-size: 22px;
-      font-weight: bold;
-      border: none;
-      border-radius: 6px;
-      background-color: #1976d2;
-      color: white;
+    .qty-control button,
+    .discount-control input[type="number"] {
       cursor: pointer;
-      user-select: none;
-      transition: background-color 0.25s;
-    }
-    button:hover {
-      background-color: #155a9c;
-    }
-    input[type="number"] {
-      width: 60px;
-      padding: 6px 8px;
-      border-radius: 6px;
+      padding: 5px 10px;
       border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: white;
+      user-select: none;
+    }
+    .qty-control input[type="number"] {
+      width: 50px;
       text-align: center;
-      font-size: 18px;
-      box-sizing: border-box;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+    }
+    .discount-control {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 90px;
     }
     .discount-control label {
-      font-size: 16px;
-      font-weight: normal;
-      margin-right: 6px;
-      user-select: none;
+      margin-bottom: 2px;
+      font-size: 13px;
     }
     .total-summary {
-      text-align: right;
+      margin-top: 20px;
+      font-size: 20px;
       font-weight: bold;
-      font-size: 26px;
-      color: #1976d2;
-      margin-bottom: 30px;
-      min-height: 32px;
+      color: #1a3e72;
+      border-top: 2px solid #2c3e50;
+      padding-top: 10px;
+      text-align: left;
     }
-    /* دابینکردنی بۆردە شینەکە بە ناوەراست */
     #submitBtn {
-      display: block;
-      margin: 0 auto 0 auto; /* بۆ ناوەراستی شینەکە */
-      padding: 22px 0;
-      font-size: 30px;
-      font-weight: 900;
+      margin-top: 25px;
+      width: 100%;
+      background: #2c3e50;
       color: white;
-      background-color: #1976d2;
+      padding: 14px 0;
+      font-size: 18px;
+      font-weight: bold;
       border: none;
-      border-radius: 10px;
+      border-radius: 7px;
       cursor: pointer;
-      transition: background-color 0.35s, box-shadow 0.35s;
-      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
-      width: 100%; /* ئاسان کردنەوەی گەورەبوون */
-      max-width: 300px;
+      transition: background-color 0.3s ease;
     }
     #submitBtn:hover {
-      background-color: #155a9c;
-      box-shadow: 0 7px 20px rgba(21, 90, 156, 0.85);
-    }
-
-    /* Responsive adjustments */
-    @media (max-width: 768px) {
-      .container {
-        padding: 20px 15px;
-      }
-      h2 {
-        font-size: 1.8rem;
-      }
-      .item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .item-info {
-        width: 100%;
-        text-align: right;
-        margin-bottom: 12px;
-      }
-      .controls {
-        width: 100%;
-        justify-content: flex-start;
-        gap: 15px;
-      }
-      .qty-control, .discount-control {
-        gap: 6px;
-      }
-      input[type="number"] {
-        width: 50px;
-        font-size: 16px;
-        padding: 5px 7px;
-      }
-      button {
-        width: 30px;
-        height: 30px;
-        font-size: 20px;
-      }
-      #submitBtn {
-        font-size: 24px;
-        padding: 18px 0;
-        max-width: 100%;
-      }
-    }
-
-    @media (max-width: 400px) {
-      input[type="text"], input[type="number"] {
-        font-size: 16px;
-        padding: 8px 10px;
-      }
-      #submitBtn {
-        font-size: 22px;
-        padding: 16px 0;
-      }
-      .total-summary {
-        font-size: 22px;
-      }
+      background: #1a2a3a;
     }
   </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>New Sales Form</h2>
+    <h2>Sales Form</h2>
 
     <label for="customer">Customer Name</label>
     <input type="text" id="customer" placeholder="Enter customer name" />
@@ -238,9 +151,7 @@
     <label for="searchProduct">Search Product</label>
     <input type="text" id="searchProduct" placeholder="Type product name to search" oninput="filterProducts()" />
 
-    <div class="items-list" id="itemsList">
-      <!-- Items will be rendered here -->
-    </div>
+    <div class="items-list" id="itemsList"></div>
 
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
 
@@ -248,13 +159,15 @@
   </div>
 
 <script>
+  const { jsPDF } = window.jspdf;
+
   const products = [
-    { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/60?text=A" },
-    { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/60?text=B" },
-    { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/60?text=C" },
-    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/60?text=D" },
-    { id: 5, name: "Product E", price: 40, image: "https://via.placeholder.com/60?text=E" },
-    { id: 6, name: "Product F", price: 60, image: "https://via.placeholder.com/60?text=F" }
+    { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
+    { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
+    { id: 3, name: "Product C", price: 50000, image: "https://via.placeholder.com/60?text=C" },
+    { id: 4, name: "Product D", price: 15000, image: "https://via.placeholder.com/60?text=D" },
+    { id: 5, name: "Product E", price: 40000, image: "https://via.placeholder.com/60?text=E" },
+    { id: 6, name: "Product F", price: 60000, image: "https://via.placeholder.com/60?text=F" }
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -275,7 +188,7 @@
         <img src="${item.image}" alt="${item.name}" />
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toFixed(2)}</div>
+          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
         </div>
         <div class="controls">
           <div class="qty-control">
@@ -287,8 +200,8 @@
             <label>Discount %:</label>
             <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${item.id}, this.value)" />
           </div>
-          <div style="margin-top:8px; font-weight:bold;">
-            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toFixed(2)}
+          <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
+            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toLocaleString()}
           </div>
         </div>
       `;
@@ -329,7 +242,7 @@
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toFixed(2)}`;
+    totalSummary.textContent = `Total: IQD ${total.toLocaleString()}`;
   }
 
   function filterProducts() {
@@ -342,50 +255,46 @@
     renderItems();
   }
 
-  submitBtn.onclick = () => {
-    const customerName = customerInput.value.trim();
-    if (customerName === "") {
-      alert("Please enter the customer's name.");
-      return;
-    }
+  function generatePDF(saleData) {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: "a4"
+    });
 
-    const itemsToSell = cart.filter(item => item.quantity > 0);
+    let y = 40;
+    const leftMargin = 40;
+    doc.setFontSize(22);
+    doc.text("Sales Receipt", leftMargin + 150, y);
+    y += 30;
 
-    if (itemsToSell.length === 0) {
-      alert("Please select at least one product with quantity greater than zero.");
-      return;
-    }
+    doc.setFontSize(16);
+    doc.text(`Customer: ${saleData.customer}`, leftMargin, y);
+    y += 25;
 
-    const saleData = {
-      customer: customerName,
-      items: itemsToSell.map(item => ({
-        productId: item.id,
-        productName: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        discountPercent: item.discount,
-        total: item.quantity * item.price * (1 - item.discount / 100)
-      })),
-      grandTotal: itemsToSell.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0)
-    };
+    doc.setFontSize(14);
+    doc.text("Items:", leftMargin, y);
+    y += 20;
 
-    console.log("Sale submitted:", saleData);
-    alert(`Sale completed!\nCustomer: ${saleData.customer}\nTotal: IQD ${saleData.grandTotal.toFixed(2)}`);
+    doc.setFont(undefined, "bold");
+    doc.text("Name", leftMargin, y);
+    doc.text("Qty", leftMargin + 150, y);
+    doc.text("Price", leftMargin + 200, y);
+    doc.text("Discount %", leftMargin + 320, y);
+    doc.text("Total", leftMargin + 420, y);
+    y += 15;
+    doc.setLineWidth(0.5);
+    doc.line(leftMargin, y, 550, y);
+    y += 15;
 
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-    customerInput.value = "";
-    searchInput.value = "";
-    filterProducts();
-  };
-
-  // Initial render
-  filterProducts();
-
-  // Make functions global for inline event handlers
-  window.changeQuantity = changeQuantity;
-  window.setQuantity = setQuantity;
-  window.setDiscount = setDiscount;
-  window.filterProducts = filterProducts;
-</script>
-</body>
-</html>
+    doc.setFont(undefined, "normal");
+    saleData.items.forEach(item => {
+      if (y > 750) {
+        doc.addPage();
+        y = 40;
+      }
+      doc.text(item.productName, leftMargin, y);
+      doc.text(item.quantity.toString(), leftMargin + 150, y);
+      doc.text(`IQD ${item.unitPrice.toLocaleString()}`, leftMargin + 200, y);
+      doc.text(item.discountPercent.toString(), leftMargin + 320, y);
+      doc.text(`IQD ${
