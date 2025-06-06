@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Login</title>
+<title>Modern Blue Login</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
 
@@ -33,7 +33,22 @@
     color: #1e3c72;
     letter-spacing: 1.2px;
   }
-  button {
+  .login-box input[type="text"],
+  .login-box input[type="password"] {
+    width: 100%;
+    padding: 14px 18px;
+    margin: 12px 0 20px 0;
+    border: 2px solid #2a5298;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+  }
+  .login-box input[type="text"]:focus,
+  .login-box input[type="password"]:focus {
+    border-color: #145da0;
+    outline: none;
+  }
+  .login-box button {
     background-color: #1e3c72;
     color: white;
     border: none;
@@ -46,8 +61,21 @@
     letter-spacing: 0.8px;
     transition: background-color 0.3s ease;
   }
-  button:hover {
+  .login-box button:hover {
     background-color: #144d7f;
+  }
+  .login-box .forgot-password {
+    margin-top: 15px;
+    font-size: 14px;
+    color: #2a5298;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: underline;
+  }
+  .error-message {
+    color: #e74c3c;
+    margin-bottom: 15px;
+    font-weight: 600;
   }
 </style>
 </head>
@@ -55,16 +83,47 @@
 
 <div class="login-box">
   <h2>Login to Dashboard</h2>
-  <form id="loginForm">
+  <form id="loginForm" novalidate>
+    <div id="errorMsg" class="error-message" style="display:none;"></div>
+    <input type="text" id="username" placeholder="Username" required autocomplete="off" />
+    <input type="password" id="password" placeholder="Password" required autocomplete="off" />
     <button type="submit">Log In</button>
   </form>
+  <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span>
 </div>
 
 <script>
-  document.getElementById('loginForm').addEventListener('submit', function(e){
+  const users = [
+    { username: 'admin', password: '1234' },
+    { username: 'user', password: 'password' }
+  ];
+
+  const loginForm = document.getElementById('loginForm');
+  const errorMsg = document.getElementById('errorMsg');
+
+  loginForm.addEventListener('submit', function(e){
     e.preventDefault();
-    // مستقیم بۆ داشبۆرد بەرەوە
-    window.location.href = 'dashboard.html';
+    errorMsg.style.display = 'none';
+    errorMsg.textContent = '';
+
+    const username = document.getElementById('username').value.trim();
+    const password = document.getElementById('password').value.trim();
+
+    if (!username || !password) {
+      errorMsg.textContent = '❗ Please fill in both username and password.';
+      errorMsg.style.display = 'block';
+      return;
+    }
+
+    const userFound = users.find(u => u.username === username && u.password === password);
+
+    if(userFound){
+      alert('✅ Login successful!');
+      window.location.href = 'dashboard.html';
+    } else {
+      errorMsg.textContent = '❌ Invalid username or password.';
+      errorMsg.style.display = 'block';
+    }
   });
 </script>
 
