@@ -18,8 +18,9 @@
       background: white;
       border-radius: 10px;
       box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      padding: 30px 25px;
+      padding: 30px 25px 80px; /* extra bottom padding for button space */
       box-sizing: border-box;
+      position: relative; /* for absolute button */
     }
     h2 {
       text-align: right;
@@ -149,19 +150,24 @@
       margin-bottom: 30px;
       min-height: 32px;
     }
+    
+    /* New style for submit button */
     #submitBtn {
-      width: 100%;
-      padding: 22px 0;
-      font-size: 30px;
+      position: absolute;
+      top: 10px;
+      right: 25px;
+      width: 130px;
+      padding: 10px 0;
+      font-size: 18px;
       font-weight: 900;
       color: white;
       background-color: #1976d2;
       border: none;
       border-radius: 10px;
       cursor: pointer;
-      transition: background-color 0.35s, box-shadow 0.35s;
       box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
-      margin-top: 0;
+      transition: background-color 0.35s, box-shadow 0.35s;
+      z-index: 10;
     }
     #submitBtn:hover {
       background-color: #155a9c;
@@ -171,7 +177,7 @@
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .container {
-        padding: 20px 15px;
+        padding: 30px 15px 80px;
       }
       h2 {
         font-size: 1.8rem;
@@ -204,8 +210,12 @@
         font-size: 20px;
       }
       #submitBtn {
+        position: static;
+        width: 100%;
         font-size: 24px;
         padding: 18px 0;
+        margin-top: 0;
+        box-shadow: none;
       }
     }
 
@@ -226,6 +236,8 @@
 </head>
 <body>
   <div class="container">
+    <button id="submitBtn">Submit Sale</button>
+
     <h2>New Sales Form</h2>
 
     <label for="customer">Customer Name</label>
@@ -239,8 +251,6 @@
     </div>
 
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
-
-    <button id="submitBtn">Submit Sale</button>
   </div>
 
 <script>
@@ -384,4 +394,4 @@
   window.filterProducts = filterProducts;
 </script>
 </body>
-</html>
+</
