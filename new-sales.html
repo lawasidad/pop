@@ -1,25 +1,27 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Responsive Sales Form</title>
+  <title>فۆرمی فرۆشتن</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       background-color: #f9f9f9;
       padding: 20px;
-      direction: rtl;
       margin: 0;
+      direction: rtl;
     }
     .container {
       max-width: 900px;
       margin: auto;
       background: white;
       border-radius: 10px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
-      padding: 30px 25px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 30px 25px 60px 25px; /* پاشان padding زیاد کردووە بۆ دەمەوێ بۆ شینەکە */
       box-sizing: border-box;
+      position: relative;
+      min-height: 600px;
     }
     h2 {
       text-align: right;
@@ -55,7 +57,7 @@
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 15px;
-      margin-bottom: 10px; /* کمتر بۆ بڕگەی دابینکراو */
+      margin-bottom: 10px;
       background: #fff;
       box-sizing: border-box;
     }
@@ -151,30 +153,36 @@
     }
     /* دابینکردنی بۆردە شینەکە بە ناوەراست */
     #submitBtn {
-      display: block;
-      margin: 0 auto 0 auto; /* بۆ ناوەراستی شینەکە */
-      padding: 22px 0;
+      position: absolute;
+      bottom: 25px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 20px 0;
       font-size: 30px;
       font-weight: 900;
       color: white;
       background-color: #1976d2;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       cursor: pointer;
       transition: background-color 0.35s, box-shadow 0.35s;
-      box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
-      width: 100%; /* ئاسان کردنەوەی گەورەبوون */
-      max-width: 300px;
+      box-shadow: 0 6px 18px rgba(25, 118, 210, 0.8);
+      width: 320px;
+      max-width: 90vw;
+      text-align: center;
+      user-select: none;
+      z-index: 10;
     }
     #submitBtn:hover {
       background-color: #155a9c;
-      box-shadow: 0 7px 20px rgba(21, 90, 156, 0.85);
+      box-shadow: 0 8px 24px rgba(21, 90, 156, 0.9);
     }
 
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .container {
-        padding: 20px 15px;
+        padding: 30px 15px 80px 15px;
+        min-height: 650px;
       }
       h2 {
         font-size: 1.8rem;
@@ -207,8 +215,9 @@
         font-size: 20px;
       }
       #submitBtn {
-        font-size: 24px;
+        font-size: 26px;
         padding: 18px 0;
+        width: 100%;
         max-width: 100%;
       }
     }
@@ -230,31 +239,31 @@
 </head>
 <body>
   <div class="container">
-    <h2>New Sales Form</h2>
+    <h2>فۆرمی فرۆشتن</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" />
+    <label for="customer">ناوی کڕیار</label>
+    <input type="text" id="customer" placeholder="ناوی کڕیار بنوسە" />
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" oninput="filterProducts()" />
+    <label for="searchProduct">گەڕان لە ناو بەرهەمەکان</label>
+    <input type="text" id="searchProduct" placeholder="ناوی بەرهەم بنوسە" oninput="filterProducts()" />
 
     <div class="items-list" id="itemsList">
-      <!-- Items will be rendered here -->
+      <!-- Items here -->
     </div>
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+    <div class="total-summary" id="totalSummary">کۆی گشتی: IQD 0.00</div>
 
     <button id="submitBtn">Submit Sale</button>
   </div>
 
 <script>
   const products = [
-    { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/60?text=A" },
-    { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/60?text=B" },
-    { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/60?text=C" },
-    { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/60?text=D" },
-    { id: 5, name: "Product E", price: 40, image: "https://via.placeholder.com/60?text=E" },
-    { id: 6, name: "Product F", price: 60, image: "https://via.placeholder.com/60?text=F" }
+    { id: 1, name: "بەرهەم A", price: 2000, image: "https://via.placeholder.com/60?text=A" },
+    { id: 2, name: "بەرهەم B", price: 3500, image: "https://via.placeholder.com/60?text=B" },
+    { id: 3, name: "بەرهەم C", price: 5000, image: "https://via.placeholder.com/60?text=C" },
+    { id: 4, name: "بەرهەم D", price: 1500, image: "https://via.placeholder.com/60?text=D" },
+    { id: 5, name: "بەرهەم E", price: 4000, image: "https://via.placeholder.com/60?text=E" },
+    { id: 6, name: "بەرهەم F", price: 6000, image: "https://via.placeholder.com/60?text=F" }
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -275,7 +284,7 @@
         <img src="${item.image}" alt="${item.name}" />
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toFixed(2)}</div>
+          <div class="item-price">نرخ: IQD ${item.price.toLocaleString()}</div>
         </div>
         <div class="controls">
           <div class="qty-control">
@@ -284,11 +293,11 @@
             <button onclick="changeQuantity(${item.id}, 1)">+</button>
           </div>
           <div class="discount-control">
-            <label>Discount %:</label>
+            <label>داشکاندن %:</label>
             <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${item.id}, this.value)" />
           </div>
           <div style="margin-top:8px; font-weight:bold;">
-            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toFixed(2)}
+            کۆی: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toLocaleString()}
           </div>
         </div>
       `;
@@ -329,7 +338,7 @@
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toFixed(2)}`;
+    totalSummary.textContent = `کۆی گشتی: IQD ${total.toLocaleString()}`;
   }
 
   function filterProducts() {
@@ -342,50 +351,4 @@
     renderItems();
   }
 
-  submitBtn.onclick = () => {
-    const customerName = customerInput.value.trim();
-    if (customerName === "") {
-      alert("Please enter the customer's name.");
-      return;
-    }
-
-    const itemsToSell = cart.filter(item => item.quantity > 0);
-
-    if (itemsToSell.length === 0) {
-      alert("Please select at least one product with quantity greater than zero.");
-      return;
-    }
-
-    const saleData = {
-      customer: customerName,
-      items: itemsToSell.map(item => ({
-        productId: item.id,
-        productName: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        discountPercent: item.discount,
-        total: item.quantity * item.price * (1 - item.discount / 100)
-      })),
-      grandTotal: itemsToSell.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0)
-    };
-
-    console.log("Sale submitted:", saleData);
-    alert(`Sale completed!\nCustomer: ${saleData.customer}\nTotal: IQD ${saleData.grandTotal.toFixed(2)}`);
-
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-    customerInput.value = "";
-    searchInput.value = "";
-    filterProducts();
-  };
-
-  // Initial render
-  filterProducts();
-
-  // Make functions global for inline event handlers
-  window.changeQuantity = changeQuantity;
-  window.setQuantity = setQuantity;
-  window.setDiscount = setDiscount;
-  window.filterProducts = filterProducts;
-</script>
-</body>
-</html>
+  submitBtn
