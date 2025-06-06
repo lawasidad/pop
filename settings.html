@@ -260,7 +260,7 @@
     userTableBody.innerHTML = '';
     users.forEach(u => {
       const tr = document.createElement('tr');
-      tr.innerHTML = <td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>;
+      tr.innerHTML = `<td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>`;
       userTableBody.appendChild(tr);
     });
   }
