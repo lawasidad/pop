@@ -269,7 +269,7 @@
   userForm.addEventListener('submit', e => {
     e.preventDefault();
     const name = document.getElementById('userName').value.trim();
-    const password = document.getElementById('userPassword').value.trim(); // not stored
+    const password = document.getElementById('userPassword').value.trim();
     const role = document.getElementById('userRole').value;
     const mobile = document.getElementById('userMobile').value.trim();
 
@@ -278,8 +278,16 @@
       return;
     }
 
+    // Save user with password (hashed if needed)
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.push({name, role, mobile});
+    // Check if user with same name exists (optional)
+    const exists = users.find(u => u.name === name);
+    if (exists) {
+      alert('User with this name already exists.');
+      return;
+    }
+
+    users.push({name, password, role, mobile});
     localStorage.setItem('users', JSON.stringify(users));
     userForm.reset();
     loadUsers();
@@ -347,22 +355,4 @@
   const salesInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
 
   function filterInvoices() {
-    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
-    const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
-
-    [...salesInvoiceTableBody.rows].forEach(row => {
-      const dateStr = row.cells[1].textContent;
-      const date = new Date(dateStr);
-      let show = true;
-      if(fromDate && date < fromDate) show = false;
-      if(toDate && date > toDate) show = false;
-      row.style.display = show ? '' : 'none';
-    });
-  }
-
-  fromDateInput.addEventListener('change', filterInvoices);
-  toDateInput.addEventListener('change', filterInvoices);
-
-</script>
-</body>
-</html>
+    const fromDate = fromDateInput.value ?
