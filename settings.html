@@ -63,7 +63,8 @@
   }
 
   /* User section styles */
-  #userSection form {
+  #userSection form,
+  #companySection form {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -72,7 +73,8 @@
     max-width: 400px;
   }
   #userSection form input,
-  #userSection form select {
+  #userSection form select,
+  #companySection form input {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 15px;
@@ -80,7 +82,8 @@
     border-radius: 6px;
     font-size: 16px;
   }
-  #userSection form button {
+  #userSection form button,
+  #companySection form button {
     width: 100%;
     padding: 12px;
     background-color: #2980b9;
@@ -92,10 +95,12 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  #userSection form button:hover {
+  #userSection form button:hover,
+  #companySection form button:hover {
     background-color: #1c5980;
   }
-  #userList table {
+  #userList table,
+  #companyList table {
     width: 100%;
     max-width: 700px;
     border-collapse: collapse;
@@ -104,17 +109,20 @@
     border-radius: 6px;
     overflow: hidden;
   }
-  #userList th, #userList td {
+  #userList th, #userList td,
+  #companyList th, #companyList td {
     padding: 12px 15px;
     border-bottom: 1px solid #ddd;
     text-align: left;
     font-size: 16px;
   }
-  #userList th {
+  #userList th,
+  #companyList th {
     background-color: #2980b9;
     color: white;
   }
-  #userList tr:hover {
+  #userList tr:hover,
+  #companyList tr:hover {
     background-color: #f1f1f1;
   }
   .action-btn {
@@ -140,7 +148,7 @@
     background-color: #922b21;
   }
 
-  /* Company and Sales Report placeholder */
+  /* Sales Report placeholder */
   .placeholder {
     max-width: 600px;
     background: white;
@@ -168,7 +176,7 @@
     <section id="userSection" class="section active">
       <h1>Users Management</h1>
       <form id="userForm">
-        <input type="hidden" id="editIndex" value="" />
+        <input type="hidden" id="editIndexUser" value="" />
         <input type="text" id="username" placeholder="Enter username" required />
         <input type="email" id="email" placeholder="Enter email" required />
         <select id="role" required>
@@ -199,9 +207,23 @@
 
     <!-- Company Section -->
     <section id="companySection" class="section">
-      <h1>Company Information</h1>
-      <div class="placeholder">
-        <p>This section will hold company details and management features.</p>
+      <h1>Company Management</h1>
+      <form id="companyForm">
+        <input type="hidden" id="editIndexCompany" value="" />
+        <input type="text" id="companyName" placeholder="Enter company name" required />
+        <button type="submit">Add Company</button>
+      </form>
+      <div id="companyList">
+        <h2>Companies List</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Company Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="companiesTbody"></tbody>
+        </table>
       </div>
     </section>
 
@@ -236,7 +258,7 @@
   const emailInput = document.getElementById('email');
   const roleSelect = document.getElementById('role');
   const passwordInput = document.getElementById('password');
-  const editIndexInput = document.getElementById('editIndex');
+  const editIndexUser = document.getElementById('editIndexUser');
   const usersTbody = document.getElementById('usersTbody');
 
   let users = JSON.parse(localStorage.getItem('users')) || [];
@@ -245,8 +267,6 @@
     usersTbody.innerHTML = '';
     users.forEach((user, index) => {
       const tr = document.createElement('tr');
-
-      // Show password masked with bullets for security in UI
       const maskedPassword = '•'.repeat(user.password.length);
 
       tr.innerHTML = `
@@ -262,7 +282,6 @@
       usersTbody.appendChild(tr);
     });
 
-    // Attach edit and delete event listeners after rendering
     document.querySelectorAll('.edit-btn').forEach(btn => {
       btn.addEventListener('click', e => {
         const idx = e.target.getAttribute('data-index');
@@ -287,7 +306,7 @@
     emailInput.value = user.email;
     roleSelect.value = user.role;
     passwordInput.value = user.password;
-    editIndexInput.value = index;
+    editIndexUser.value = index;
     userForm.querySelector('button').textContent = 'Update User';
   }
 
@@ -296,21 +315,15 @@
       users.splice(index, 1);
       saveUsers();
       renderUsers();
-      resetForm();
+      resetUserForm();
     }
   }
 
-  function resetForm() {
+  function resetUserForm() {
     userForm.reset();
-    editIndexInput.value = '';
+    editIndexUser.value = '';
     userForm.querySelector('button').textContent = 'Add User';
   }
 
   userForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const username = usernameInput.value.trim();
-    const email = emailInput.value.trim();
-    const role = roleSelect.value;
-    const password = passwordInput.value;
-
-    if
+   
