@@ -1,192 +1,340 @@
-<!-- Sales Report Section -->
-<section id="salesSection" class="section">
-  <h1>Sales Report</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dashboard with Users, Company, Sales Report</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      display: flex;
+      height: 100vh;
+      background-color: #f0f2f5;
+    }
+    .sidebar {
+      width: 220px;
+      background-color: #2c3e50;
+      color: white;
+      display: flex;
+      flex-direction: column;
+    }
+    .sidebar h2 {
+      text-align: center;
+      margin: 0;
+      padding: 20px;
+      border-bottom: 1px solid #34495e;
+    }
+    .sidebar button {
+      padding: 15px 20px;
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      text-align: left;
+      cursor: pointer;
+      border-bottom: 1px solid #34495e;
+      transition: background-color 0.3s ease;
+    }
+    .sidebar button:hover,
+    .sidebar button.active {
+      background-color: #34495e;
+    }
+    .main-content {
+      flex-grow: 1;
+      padding: 30px;
+      background: white;
+      overflow-y: auto;
+    }
+    .section {
+      display: none;
+    }
+    .section.active {
+      display: block;
+    }
+    h1 {
+      margin-top: 0;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    form {
+      margin-bottom: 30px;
+      max-width: 600px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #555;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="tel"],
+    input[type="file"],
+    select {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+    button.submit-btn {
+      background-color: #2980b9;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      font-size: 15px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+    button.submit-btn:hover {
+      background-color: #3498db;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      color: #444;
+    }
+    th {
+      background-color: #f7f7f7;
+    }
+    /* No black rows - clean look */
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    /* Logo preview */
+    #logoPreview {
+      max-width: 150px;
+      max-height: 80px;
+      display: block;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
 
-  <!-- Date range filter inputs -->
-  <div class="date-filter-container" style="display:flex; gap:20px; max-width:400px; margin-bottom:20px;">
-    <label>
-      From:
-      <input type="date" id="dateFrom" />
-    </label>
-    <label>
-      To:
-      <input type="date" id="dateTo" />
-    </label>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2>Dashboard</h2>
+    <button data-target="usersSection">Users</button>
+    <button data-target="companySection">Company</button>
+    <button data-target="salesSection">Sales Report</button>
   </div>
 
-  <!-- Sales by Item -->
-  <h2>Sales by Item</h2>
-  <input type="text" id="filterSalesByItem" class="filter-input" placeholder="Filter by item name..." />
-  <table id="salesByItemTable" style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Item</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Quantity Sold</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Total Sales</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td style="padding:8px;">Example Item 1</td><td style="padding:8px;">10</td><td style="padding:8px;">$100</td><td style="padding:8px;">2025-06-01</td></tr>
-      <tr><td style="padding:8px;">Example Item 2</td><td style="padding:8px;">5</td><td style="padding:8px;">$50</td><td style="padding:8px;">2025-06-05</td></tr>
-      <tr><td style="padding:8px;">Example Item 3</td><td style="padding:8px;">7</td><td style="padding:8px;">$70</td><td style="padding:8px;">2025-06-03</td></tr>
-    </tbody>
-  </table>
+  <!-- Main content -->
+  <div class="main-content">
 
-  <!-- Sales by Invoice -->
-  <h2>Sales by Invoice</h2>
-  <input type="text" id="filterSalesByInvoice" class="filter-input" placeholder="Filter by invoice number..." />
-  <table id="salesByInvoiceTable" style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Invoice Number</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Date</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Amount</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td style="padding:8px;">INV001</td><td style="padding:8px;">2025-06-01</td><td style="padding:8px;">$150</td></tr>
-      <tr><td style="padding:8px;">INV002</td><td style="padding:8px;">2025-06-02</td><td style="padding:8px;">$100</td></tr>
-      <tr><td style="padding:8px;">INV003</td><td style="padding:8px;">2025-06-06</td><td style="padding:8px;">$200</td></tr>
-    </tbody>
-  </table>
+    <!-- Users Section -->
+    <section id="usersSection" class="section">
+      <h1>Users</h1>
+      <form id="userForm">
+        <label for="userName">Name</label>
+        <input type="text" id="userName" required />
 
-  <!-- Sales by Amount -->
-  <h2>Sales by Amount</h2>
-  <input type="text" id="filterSalesByAmount" class="filter-input" placeholder="Filter by customer name..." />
-  <table id="salesByAmountTable" style="width: 100%; border-collapse: collapse;">
-    <thead>
-      <tr>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Customer</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Total Amount</th>
-        <th style="border-bottom:1px solid #ddd; padding:8px;">Date</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td style="padding:8px;">Customer A</td><td style="padding:8px;">$250</td><td style="padding:8px;">2025-06-01</td></tr>
-      <tr><td style="padding:8px;">Customer B</td><td style="padding:8px;">$100</td><td style="padding:8px;">2025-06-04</td></tr>
-      <tr><td style="padding:8px;">Customer C</td><td style="padding:8px;">$300</td><td style="padding:8px;">2025-06-06</td></tr>
-    </tbody>
-  </table>
-</section>
+        <label for="userPassword">Password</label>
+        <input type="password" id="userPassword" required />
 
-<style>
-  /* Filter input styles */
-  .filter-input {
-    width: 100%;
-    max-width: 300px;
-    margin-bottom: 10px;
-    padding: 6px 10px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-  }
-  /* Table row hover with no dark colors */
-  #salesByItemTable tbody tr:hover,
-  #salesByInvoiceTable tbody tr:hover,
-  #salesByAmountTable tbody tr:hover {
-    background-color: #f2f2f2; /* light grey */
-  }
-</style>
+        <label for="userRole">Role</label>
+        <select id="userRole" required>
+          <option value="">Select role</option>
+          <option value="Admin">Admin</option>
+          <option value="Manager">Manager</option>
+          <option value="Sales">Sales</option>
+        </select>
 
-<script>
-  // Utility function to check if date is within range (inclusive)
-  function isDateInRange(dateStr, from, to) {
-    if (!from && !to) return true;
-    const date = new Date(dateStr);
-    if (from && date < new Date(from)) return false;
-    if (to && date > new Date(to)) return false;
-    return true;
-  }
+        <label for="userMobile">Mobile Number</label>
+        <input type="tel" id="userMobile" pattern="[0-9]{10,15}" placeholder="e.g. 1234567890" required />
 
-  // Generic filter function for table rows
-  function filterTableRows(tableId, filterText, dateFrom, dateTo, dateColumnIndex, filterColumnsIndexes) {
-    const table = document.getElementById(tableId);
-    const tbody = table.tBodies[0];
-    const rows = Array.from(tbody.rows);
+        <button type="submit" class="submit-btn">Add User</button>
+      </form>
 
-    rows.forEach(row => {
-      // Filter text check (search on specified columns)
-      const textMatch = filterColumnsIndexes.some(colIndex => {
-        const cellText = row.cells[colIndex].textContent.toLowerCase();
-        return cellText.includes(filterText.toLowerCase());
+      <h2>User List</h2>
+      <table id="userListTable">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Role</th>
+            <th>Mobile Number</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Users will be added here dynamically -->
+        </tbody>
+      </table>
+    </section>
+
+    <!-- Company Section -->
+    <section id="companySection" class="section">
+      <h1>Company</h1>
+      <form id="companyForm">
+        <label for="companyName">Company Name</label>
+        <input type="text" id="companyName" required />
+
+        <label for="companyAddress">Address</label>
+        <input type="text" id="companyAddress" required />
+
+        <label for="companyLogo">Logo</label>
+        <input type="file" id="companyLogo" accept="image/*" />
+
+        <img id="logoPreview" alt="Logo Preview" src="" style="display:none" />
+
+        <button type="submit" class="submit-btn">Save Company Info</button>
+      </form>
+    </section>
+
+    <!-- Sales Report Section -->
+    <section id="salesSection" class="section">
+      <h1>Sales Report</h1>
+
+      <h2>Sales by Item</h2>
+      <table id="salesByItemTable">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Quantity Sold</th>
+            <th>Total Sales</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
+          <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Sales by Invoice</h2>
+      <table id="salesByInvoiceTable">
+        <thead>
+          <tr>
+            <th>Invoice Number</th>
+            <th>Date</th>
+            <th>Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
+          <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+        </tbody>
+      </table>
+
+      <h2>Sales by Amount</h2>
+      <table id="salesByAmountTable">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Total Amount</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Customer A</td><td>$250</td></tr>
+          <tr><td>Customer B</td><td>$100</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </div>
+
+  <script>
+    // Sidebar button click handler
+    const sidebarButtons = document.querySelectorAll('.sidebar button');
+    const sections = document.querySelectorAll('.section');
+
+    sidebarButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons
+        sidebarButtons.forEach(btn => btn.classList.remove('active'));
+        // Add active to clicked button
+        button.classList.add('active');
+
+        // Hide all sections
+        sections.forEach(section => section.classList.remove('active'));
+        // Show targeted section
+        const target = button.getAttribute('data-target');
+        document.getElementById(target).classList.add('active');
       });
+    });
 
-      // Filter date check
-      const dateText = row.cells[dateColumnIndex].textContent;
-      const dateMatch = isDateInRange(dateText, dateFrom, dateTo);
+    // USER FORM HANDLING
+    const userForm = document.getElementById('userForm');
+    const userListTableBody = document.querySelector('#userListTable tbody');
 
-      // Show row only if both match
-      if (textMatch && dateMatch) {
-        row.style.display = '';
-        row.style.backgroundColor = '';  // Reset background
+    userForm.addEventListener('submit', function(event) {
+      event.preventDefault();
+
+      // Get input values
+      const name = document.getElementById('userName').value.trim();
+      const password = document.getElementById('userPassword').value; // Not shown in table for privacy
+      const role = document.getElementById('userRole').value;
+      const mobile = document.getElementById('userMobile').value.trim();
+
+      if (!name || !password || !role || !mobile) {
+        alert('Please fill all fields correctly.');
+        return;
+      }
+
+      // Add new row to user list
+      const newRow = document.createElement('tr');
+      newRow.innerHTML = `
+        <td>${name}</td>
+        <td>${role}</td>
+        <td>${mobile}</td>
+      `;
+      userListTableBody.appendChild(newRow);
+
+      // Reset form
+      userForm.reset();
+    });
+
+    // COMPANY FORM HANDLING
+    const companyForm = document.getElementById('companyForm');
+    const logoInput = document.getElementById('companyLogo');
+    const logoPreview = document.getElementById('logoPreview');
+
+    logoInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          logoPreview.src = e.target.result;
+          logoPreview.style.display = 'block';
+        }
+        reader.readAsDataURL(file);
       } else {
-        row.style.display = 'none';
+        logoPreview.src = '';
+        logoPreview.style.display = 'none';
       }
     });
-  }
 
-  // Setup filter event listeners for each sales table
-  function setupSalesFilters() {
-    // Sales by Item
-    const filterItemInput = document.getElementById('filterSalesByItem');
-    const dateFromInput = document.getElementById('dateFrom');
-    const dateToInput = document.getElementById('dateTo');
+    companyForm.addEventListener('submit', function(event) {
+      event.preventDefault();
 
-    function applyFiltersSalesByItem() {
-      filterTableRows(
-        'salesByItemTable',
-        filterItemInput.value,
-        dateFromInput.value,
-        dateToInput.value,
-        3, // Date column index in salesByItemTable
-        [0] // Filter only by Item column
-      );
-    }
+      const companyName = document.getElementById('companyName').value.trim();
+      const companyAddress = document.getElementById('companyAddress').value.trim();
 
-    filterItemInput.addEventListener('input', applyFiltersSalesByItem);
-    dateFromInput.addEventListener('change', applyFiltersSalesByItem);
-    dateToInput.addEventListener('change', applyFiltersSalesByItem);
+      if (!companyName || !companyAddress) {
+        alert('Please fill company name and address.');
+        return;
+      }
 
-    // Sales by Invoice
-    const filterInvoiceInput = document.getElementById('filterSalesByInvoice');
+      alert('Company info saved successfully!');
+      // Here you can add code to send/save company info as needed
+    });
 
-    function applyFiltersSalesByInvoice() {
-      filterTableRows(
-        'salesByInvoiceTable',
-        filterInvoiceInput.value,
-        dateFromInput.value,
-        dateToInput.value,
-        1, // Date column index in salesByInvoiceTable
-        [0] // Filter by Invoice Number column
-      );
-    }
+    // Optionally: activate first section by default
+    // sidebarButtons[0].click();
+  </script>
 
-    filterInvoiceInput.addEventListener('input', applyFiltersSalesByInvoice);
-    dateFromInput.addEventListener('change', applyFiltersSalesByInvoice);
-    dateToInput.addEventListener('change', applyFiltersSalesByInvoice);
-
-    // Sales by Amount
-    const filterAmountInput = document.getElementById('filterSalesByAmount');
-
-    function applyFiltersSalesByAmount() {
-      filterTableRows(
-        'salesByAmountTable',
-        filterAmountInput.value,
-        dateFromInput.value,
-        dateToInput.value,
-        2, // Date column index in salesByAmountTable
-        [0] // Filter by Customer column
-      );
-    }
-
-    filterAmountInput.addEventListener('input', applyFiltersSalesByAmount);
-    dateFromInput.addEventListener('change', applyFiltersSalesByAmount);
-    dateToInput.addEventListener('change', applyFiltersSalesByAmount);
-  }
-
-  // Initialize filters when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    setupSalesFilters();
-  });
-</script>
+</body>
+</html>
