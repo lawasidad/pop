@@ -128,6 +128,20 @@
       text-align: right;
       margin-top: 10px;
     }
+    #submitBtn {
+      width: 100%;
+      padding: 10px;
+      background-color: #1976d2;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #submitBtn:hover {
+      background-color: #155a9c;
+    }
   </style>
 </head>
 <body>
@@ -172,6 +186,8 @@
       </div>
 
       <div class="total-price" id="totalPrice">Total: 0</div>
+
+      <button id="submitBtn">فرۆشتن</button>
     </div>
   </div>
 
@@ -195,6 +211,8 @@
     const totalPriceEl = document.getElementById("totalPrice");
     const decreaseQtyBtn = document.getElementById("decreaseQty");
     const increaseQtyBtn = document.getElementById("increaseQty");
+    const submitBtn = document.getElementById("submitBtn");
+    const customerInput = document.getElementById("customer");
 
     let selectedProduct = null;
 
@@ -255,6 +273,41 @@
     discountInput.oninput = updateTotal;
     searchInput.oninput = () => {
       renderItems(searchInput.value);
+    };
+
+    submitBtn.onclick = () => {
+      if (!selectedProduct) {
+        alert("تکایە هەرشتێک هەڵبژێرە بۆ فرۆشتن");
+        return;
+      }
+
+      const customerName = customerInput.value.trim();
+      if (customerName === "") {
+        alert("تکایە ناوی کڕیار بنووسە");
+        return;
+      }
+
+      const saleData = {
+        customer: customerName,
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        quantity: Number(quantityInput.value),
+        unitPrice: Number(priceInput.value),
+        discountPercent: Number(discountInput.value),
+        total: Number(quantityInput.value) * Number(priceInput.value) * (1 - Number(discountInput.value) / 100)
+      };
+
+      console.log("Sale submitted:", saleData);
+      alert(`فرۆشتن تەواوە!\n\nکڕیار: ${saleData.customer}\nکالا: ${saleData.productName}\nکۆی گشتی: IQD ${saleData.total.toFixed(2)}`);
+
+      // لێرە دەتوانیت کۆدەکەت زیاد بکەیت بۆ ناردنی ئەم داتایە بۆ سێرڤەر یان هەر کاری تر
+
+      // دووبارە دانانەوەی فۆڕمەکان و هەڵبژاردنی کالا:
+      selectedProduct = null;
+      selectedItemSection.style.display = "none";
+      customerInput.value = "";
+      searchInput.value = "";
+      renderItems();
     };
 
     // initial render
