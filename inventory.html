@@ -44,6 +44,15 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      background-color: white; /* prevent black background on input */
+      color: #333;
+      outline-offset: 2px;
+      transition: background-color 0.3s;
+    }
+
+    form input:focus {
+      border-color: #3498db;
+      background-color: #eef6fc;
     }
 
     form button {
@@ -54,6 +63,10 @@
       border-radius: 8px;
       cursor: pointer;
       flex-shrink: 0;
+      transition: background-color 0.3s;
+    }
+    form button:hover {
+      background: #2980b9;
     }
 
     .search-box {
@@ -67,12 +80,15 @@
       max-width: 300px;
       border: 1px solid #ccc;
       border-radius: 8px;
+      background-color: white; /* prevent black background */
+      color: #333;
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
+      background-color: white; /* table background white */
     }
 
     th, td {
@@ -80,6 +96,8 @@
       border-bottom: 1px solid #eee;
       text-align: left;
       vertical-align: middle;
+      background-color: white; /* prevent black */
+      color: #333;
     }
 
     th {
@@ -106,6 +124,7 @@
       object-fit: contain;
       border: 1px solid #ccc;
       border-radius: 6px;
+      background-color: white; /* keep white behind images */
     }
 
     @media (max-width: 768px) {
@@ -153,7 +172,7 @@
   <form id="inventoryForm">
     <input type="text" id="name" placeholder="Product Name" required />
     <input type="text" id="code" placeholder="Product Code" required />
-    <input type="number" id="quantity" placeholder="Quantity" required />
+    <input type="number" id="quantity" placeholder="Quantity" required min="0" />
     <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
     <input type="file" id="image" accept="image/*" />
     <button type="submit">Add</button>
@@ -196,8 +215,8 @@
     const quantity = parseInt(document.getElementById("quantity").value);
     const price = parseFloat(document.getElementById("price").value);
 
-    // Handle image upload - convert to base64 data URL if file selected
     const file = imageInput.files[0];
+
     if (file) {
       const reader = new FileReader();
       reader.onload = function(event) {
@@ -206,7 +225,6 @@
       }
       reader.readAsDataURL(file);
     } else {
-      // No image selected
       saveProduct({ name, code, quantity, price, image: null });
     }
   });
@@ -219,6 +237,7 @@
       products.push(product);
     }
     form.reset();
+    imageInput.value = ""; // clear file input after submit
     updateTable(products);
   }
 
@@ -230,26 +249,78 @@
       return;
     }
 
-    data.forEach((item, index) => {
-      const imgHtml = item.image 
-        ? `<img src="${item.image}" alt="${item.name}" class="thumbnail" />` 
-        : `<div style="width:50px; height:50px; background:#eee; border-radius:6px;"></div>`;
+    // Use document fragment to avoid multiple innerHTML appends (reduce flicker)
+    const fragment = document.createDocumentFragment();
 
-      const row = `
-        <tr>
-          <td data-label="Image">${imgHtml}</td>
-          <td data-label="Name">${item.name}</td>
-          <td data-label="Code">${item.code}</td>
-          <td data-label="Qty">${item.quantity}</td>
-          <td data-label="Price">${item.price.toLocaleString()}</td>
-          <td data-label="Total">${(item.quantity * item.price).toLocaleString()}</td>
-          <td data-label="Action">
-            <button class="action-btn" onclick="editItem(${index})" title="Edit">✏️</button>
-            <button class="action-btn" onclick="deleteItem(${index})" title="Delete">🗑️</button>
-          </td>
-        </tr>`;
-      inventoryList.innerHTML += row;
+    data.forEach((item, index) => {
+      const tr = document.createElement('tr');
+
+      const imgTd = document.createElement('td');
+      imgTd.setAttribute('data-label', 'Image');
+      if (item.image) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.name;
+        img.className = 'thumbnail';
+        imgTd.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.style.width = '50px';
+        placeholder.style.height = '50px';
+        placeholder.style.background = '#eee';
+        placeholder.style.borderRadius = '6px';
+        imgTd.appendChild(placeholder);
+      }
+      tr.appendChild(imgTd);
+
+      const nameTd = document.createElement('td');
+      nameTd.setAttribute('data-label', 'Name');
+      nameTd.textContent = item.name;
+      tr.appendChild(nameTd);
+
+      const codeTd = document.createElement('td');
+      codeTd.setAttribute('data-label', 'Code');
+      codeTd.textContent = item.code;
+      tr.appendChild(codeTd);
+
+      const qtyTd = document.createElement('td');
+      qtyTd.setAttribute('data-label', 'Qty');
+      qtyTd.textContent = item.quantity;
+      tr.appendChild(qtyTd);
+
+      const priceTd = document.createElement('td');
+      priceTd.setAttribute('data-label', 'Price');
+      priceTd.textContent = item.price.toLocaleString();
+      tr.appendChild(priceTd);
+
+      const totalTd = document.createElement('td');
+      totalTd.setAttribute('data-label', 'Total');
+      totalTd.textContent = (item.quantity * item.price).toLocaleString();
+      tr.appendChild(totalTd);
+
+      const actionTd = document.createElement('td');
+      actionTd.setAttribute('data-label', 'Action');
+
+      const editBtn = document.createElement('button');
+      editBtn.className = 'action-btn';
+      editBtn.title = "Edit";
+      editBtn.innerHTML = '✏️';
+      editBtn.addEventListener('click', () => editItem(index));
+      actionTd.appendChild(editBtn);
+
+      const deleteBtn = document.createElement('button');
+      deleteBtn.className = 'action-btn';
+      deleteBtn.title = "Delete";
+      deleteBtn.innerHTML = '🗑️';
+      deleteBtn.addEventListener('click', () => deleteItem(index));
+      actionTd.appendChild(deleteBtn);
+
+      tr.appendChild(actionTd);
+
+      fragment.appendChild(tr);
     });
+
+    inventoryList.appendChild(fragment);
   }
 
   function editItem(index) {
@@ -258,7 +329,7 @@
     document.getElementById("code").value = item.code;
     document.getElementById("quantity").value = item.quantity;
     document.getElementById("price").value = item.price;
-    imageInput.value = ""; // Reset file input on edit, no direct way to set file input value programmatically
+    imageInput.value = ""; // clear file input on edit (cannot set value programmatically)
     editIndex = index;
   }
 
