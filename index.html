@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>چوونەژوورەوە</title>
+  <title>Login</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
     body {
@@ -41,21 +41,34 @@
 <body>
 
   <div class="login-container">
-    <h2>فرۆشگای سۆفیا</h2>
+    <h2>Sophia Market</h2>
     <form id="loginForm">
       <div class="mb-3">
-        <label for="username" class="form-label">ناوی بەکارهێنەر</label>
-        <input type="text" class="form-control" id="username" placeholder="ناوی بەکارهێنەر بنووسە" required>
+        <label for="username" class="form-label">Username</label>
+        <input type="text" class="form-control" id="username" placeholder="Enter your username" required>
       </div>
       <div class="mb-3">
-        <label for="password" class="form-label">وشەی نهێنی</label>
-        <input type="password" class="form-control" id="password" placeholder="وشەی نهێنی بنووسە" required>
+        <label for="password" class="form-label">Password</label>
+        <input type="password" class="form-control" id="password" placeholder="Enter your password" required>
       </div>
-      <button type="submit" class="btn btn-primary w-100">چوونەژوورەوە</button>
+      <button type="submit" class="btn btn-primary w-100">Login</button>
     </form>
   </div>
 
   <script>
+    // Sample demo users stored in localStorage if not already present
+    window.addEventListener("load", () => {
+      const existingUsers = localStorage.getItem("users");
+      if (!existingUsers) {
+        const demoUsers = [
+          { username: "admin", password: "1234" },
+          { username: "sofia", password: "pass" }
+        ];
+        localStorage.setItem("users", JSON.stringify(demoUsers));
+      }
+    });
+
+    // Handle form submission
     document.getElementById("loginForm").addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -63,33 +76,19 @@
       const password = document.getElementById("password").value.trim();
 
       if (!username || !password) {
-        alert("تکایە هەموو خانەکان پڕبکەوە.");
+        alert("Please fill in both fields.");
         return;
       }
 
-      // دابینکردنی بەکارهێنەرە فەرمییەکان لە localStorage
       const users = JSON.parse(localStorage.getItem("users")) || [];
 
-      // دۆزینەوەی بەکارهێنەری هەمان ناو
       const user = users.find(u => u.username === username && u.password === password);
 
       if (!user) {
-        alert("⚠️ ناوی بەکارهێنەر یان وشەی نهێنی هەڵەیە.");
+        alert("❌ Invalid username or password.");
       } else {
-        alert("✅ سەرکەوتوو چوویتە ژوورەوە!");
+        alert("✅ Login successful!");
         window.location.href = "dashboard.html";
-      }
-    });
-
-    // بۆ تاقی کردنەوە داتاکان زیاد بکە
-    window.addEventListener("load", () => {
-      const existing = localStorage.getItem("users");
-      if (!existing) {
-        const demoUsers = [
-          { username: "admin", password: "1234" },
-          { username: "sofia", password: "pass" }
-        ];
-        localStorage.setItem("users", JSON.stringify(demoUsers));
       }
     });
   </script>
