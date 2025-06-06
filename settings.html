@@ -44,7 +44,8 @@
     border-bottom: 1px solid #34495e;
     transition: background-color 0.3s ease;
   }
-  .sidebar nav button:hover, .sidebar nav button.active {
+  .sidebar nav button:hover,
+  .sidebar nav button.active {
     background-color: #34495e;
   }
 
@@ -62,9 +63,8 @@
     display: block;
   }
 
-  /* User section styles */
-  #userSection form,
-  #companySection form {
+  /* User and Company forms */
+  form {
     background: white;
     padding: 20px;
     border-radius: 8px;
@@ -72,9 +72,8 @@
     margin-bottom: 30px;
     max-width: 400px;
   }
-  #userSection form input,
-  #userSection form select,
-  #companySection form input {
+  form input,
+  form select {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 15px;
@@ -82,8 +81,7 @@
     border-radius: 6px;
     font-size: 16px;
   }
-  #userSection form button,
-  #companySection form button {
+  form button {
     width: 100%;
     padding: 12px;
     background-color: #2980b9;
@@ -95,12 +93,12 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
   }
-  #userSection form button:hover,
-  #companySection form button:hover {
+  form button:hover {
     background-color: #1c5980;
   }
-  #userList table,
-  #companyList table {
+
+  /* Tables */
+  table {
     width: 100%;
     max-width: 700px;
     border-collapse: collapse;
@@ -109,20 +107,17 @@
     border-radius: 6px;
     overflow: hidden;
   }
-  #userList th, #userList td,
-  #companyList th, #companyList td {
+  th, td {
     padding: 12px 15px;
     border-bottom: 1px solid #ddd;
     text-align: left;
     font-size: 16px;
   }
-  #userList th,
-  #companyList th {
+  th {
     background-color: #2980b9;
     color: white;
   }
-  #userList tr:hover,
-  #companyList tr:hover {
+  tr:hover {
     background-color: #f1f1f1;
   }
   .action-btn {
@@ -148,36 +143,31 @@
     background-color: #922b21;
   }
 
-  /* Sales Report Tabs */
-  #salesTabs {
-    display: flex;
+  /* Sales Report section tabs */
+  .sales-tabs {
     margin-bottom: 20px;
   }
-  #salesTabs button {
-    padding: 10px 20px;
-    border: none;
+  .sales-tabs button {
     background: #2980b9;
+    border: none;
     color: white;
+    padding: 10px 20px;
+    margin-right: 8px;
+    border-radius: 6px 6px 0 0;
     cursor: pointer;
     font-size: 16px;
-    border-radius: 6px 6px 0 0;
-    margin-right: 5px;
     transition: background-color 0.3s ease;
   }
-  #salesTabs button.active {
+  .sales-tabs button.active {
     background-color: #1c5980;
   }
-  #salesTabs button:hover:not(.active) {
-    background-color: #3a89c9;
-  }
-  .salesTabContent {
+  .sales-tab-content {
     background: white;
     padding: 20px;
     border-radius: 0 6px 6px 6px;
-    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
     max-width: 700px;
   }
-
 </style>
 </head>
 <body>
@@ -247,23 +237,23 @@
       </div>
     </section>
 
-    <!-- Sales Report Section with Tabs -->
+    <!-- Sales Report Section -->
     <section id="salesSection" class="section">
       <h1>Sales Report</h1>
-      <div id="salesTabs">
-        <button class="active" data-tab="salesItems">Sales Items</button>
-        <button data-tab="salesInvoices">Sales Invoices</button>
-        <button data-tab="salesByUser">Sales by User</button>
+      <div class="sales-tabs">
+        <button class="active" data-subtarget="saleItems">Sale Items</button>
+        <button data-subtarget="saleInvoices">Sale Invoices</button>
+        <button data-subtarget="saleByUser">Sale by User</button>
       </div>
 
-      <div id="salesItems" class="salesTabContent">
-        <p>Sales Items report and analytics will be shown here.</p>
+      <div id="saleItems" class="sales-tab-content">
+        <p>This section displays Sale Items report and analytics.</p>
       </div>
-      <div id="salesInvoices" class="salesTabContent" style="display:none;">
-        <p>Sales Invoices report and details will be shown here.</p>
+      <div id="saleInvoices" class="sales-tab-content" style="display:none;">
+        <p>This section displays Sale Invoices report and analytics.</p>
       </div>
-      <div id="salesByUser" class="salesTabContent" style="display:none;">
-        <p>Sales by User report and statistics will be shown here.</p>
+      <div id="saleByUser" class="sales-tab-content" style="display:none;">
+        <p>This section displays Sale by User report and analytics.</p>
       </div>
     </section>
   </div>
@@ -284,27 +274,22 @@
     });
   });
 
-  // Sales Report tabs switching logic
-  const salesTabButtons = document.querySelectorAll('#salesTabs button');
-  const salesTabContents = document.querySelectorAll('.salesTabContent');
+  // Sales Report inner tabs logic
+  const salesTabButtons = document.querySelectorAll('.sales-tabs button');
+  const salesTabContents = document.querySelectorAll('.sales-tab-content');
 
   salesTabButtons.forEach(btn => {
     btn.addEventListener('click', () => {
       salesTabButtons.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
 
-      const tab = btn.getAttribute('data-tab');
-      salesTabContents.forEach(content => {
-        if (content.id === tab) {
-          content.style.display = 'block';
-        } else {
-          content.style.display = 'none';
-        }
-      });
+      salesTabContents.forEach(content => content.style.display = 'none');
+      const subtarget = btn.getAttribute('data-subtarget');
+      document.getElementById(subtarget).style.display = 'block';
     });
   });
 
-  // User management logic (unchanged)
+  // User management logic
   const userForm = document.getElementById('userForm');
   const usernameInput = document.getElementById('username');
   const emailInput = document.getElementById('email');
@@ -394,4 +379,32 @@
     if (idx === '') {
       // Add new user
       users.push({ username, email, role, password });
-    } else
+    } else {
+      // Update existing user
+      users[idx] = { username, email, role, password };
+    }
+
+    saveUsers();
+    renderUsers();
+    resetUserForm();
+  });
+
+  renderUsers();
+
+  // Company management logic
+  const companyForm = document.getElementById('companyForm');
+  const companyNameInput = document.getElementById('companyName');
+  const editIndexCompany = document.getElementById('editIndexCompany');
+  const companiesTbody = document.getElementById('companiesTbody');
+
+  let companies = JSON.parse(localStorage.getItem('companies')) || [];
+
+  function renderCompanies() {
+    companiesTbody.innerHTML = '';
+    companies.forEach((company, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${company.name}</td>
+        <td>
+          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
+          <button class="action-btn delete-btn" data-index="${index
