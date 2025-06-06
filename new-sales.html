@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form with Multiple Items</title>
+  <title>Sales Form with Quantity & Discount Controls</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -30,7 +30,7 @@
       font-weight: bold;
       text-align: right;
     }
-    input[type="text"], input[type="number"] {
+    input[type="text"] {
       width: 100%;
       padding: 8px 10px;
       margin-bottom: 15px;
@@ -39,11 +39,8 @@
       font-size: 16px;
       text-align: right;
     }
-    .search-box {
-      margin-bottom: 20px;
-    }
     .items-list {
-      max-height: 250px;
+      max-height: 300px;
       overflow-y: auto;
       border: 1px solid #ddd;
       border-radius: 6px;
@@ -52,23 +49,20 @@
     .item {
       display: flex;
       align-items: center;
-      margin-bottom: 10px;
-      cursor: pointer;
-      padding: 6px;
-      border-radius: 5px;
-      transition: background-color 0.2s;
-    }
-    .item:hover {
-      background-color: #e3f2fd;
+      margin-bottom: 15px;
+      padding: 8px;
+      border-radius: 6px;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      gap: 10px;
     }
     .item img {
       width: 50px;
       height: 50px;
       object-fit: contain;
-      margin-left: 10px;
-      border: 1px solid #ccc;
       border-radius: 4px;
       background: white;
+      border: 1px solid #bbb;
     }
     .item-info {
       flex-grow: 1;
@@ -76,95 +70,68 @@
     }
     .item-name {
       font-weight: bold;
+      font-size: 18px;
       color: #333;
     }
     .item-price {
       font-size: 14px;
       color: #555;
+      margin-top: 4px;
     }
-    .cart {
-      margin-top: 20px;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-    .cart-item {
+    .controls {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 6px;
-      background: #fafafa;
+      gap: 6px;
+      min-width: 130px;
     }
-    .cart-item-info {
-      flex-grow: 1;
-      text-align: right;
-    }
-    .cart-item-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .qty-control {
+    .qty-control, .discount-control {
       display: flex;
       align-items: center;
       gap: 5px;
     }
-    .qty-control button {
-      width: 25px;
-      height: 25px;
+    button {
+      width: 28px;
+      height: 28px;
       font-size: 18px;
       font-weight: bold;
-      cursor: pointer;
+      border: none;
+      border-radius: 5px;
       background-color: #1976d2;
-      border: none;
       color: white;
-      border-radius: 4px;
-      user-select: none;
-    }
-    .qty-control input {
-      width: 50px;
-      text-align: center;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 6px;
-      padding: 4px 6px;
-    }
-    .discount-input {
-      width: 60px;
-      padding: 4px 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      text-align: center;
-      font-size: 16px;
-    }
-    .remove-btn {
-      background-color: #d32f2f;
-      border: none;
-      color: white;
-      padding: 4px 8px;
-      border-radius: 4px;
       cursor: pointer;
-      font-weight: bold;
+      user-select: none;
+      transition: background-color 0.2s;
+    }
+    button:hover {
+      background-color: #155a9c;
+    }
+    input[type="number"] {
+      width: 55px;
+      padding: 4px 6px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      text-align: center;
+      font-size: 16px;
     }
     .total-summary {
       margin-top: 20px;
       text-align: right;
       font-weight: bold;
-      font-size: 20px;
+      font-size: 22px;
       color: #1976d2;
     }
     #submitBtn {
+      margin-top: 20px;
       width: 100%;
       padding: 12px;
-      background-color: #1976d2;
-      color: white;
       font-size: 18px;
+      font-weight: bold;
+      color: white;
+      background-color: #1976d2;
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 15px;
     }
     #submitBtn:hover {
       background-color: #155a9c;
@@ -175,27 +142,15 @@
   <div class="container">
     <h2>New Sales Form</h2>
 
-    <div class="form-row">
-      <label for="customer">Customer Name</label>
-      <input type="text" id="customer" placeholder="Enter customer name" />
-    </div>
-
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search product..." />
-    </div>
+    <label for="customer">Customer Name</label>
+    <input type="text" id="customer" placeholder="Enter customer name" />
 
     <div class="items-list" id="itemsList">
-      <!-- Products listed here -->
+      <!-- Items will be rendered here -->
     </div>
 
-    <div class="cart" id="cart">
-      <h3>Cart Items</h3>
-      <div id="cartItemsContainer">
-        <!-- Cart items appear here -->
-      </div>
-      <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
-      <button id="submitBtn">Submit Sale</button>
-    </div>
+    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+    <button id="submitBtn">Submit Sale</button>
   </div>
 
 <script>
@@ -207,126 +162,91 @@
   ];
 
   const itemsList = document.getElementById("itemsList");
-  const searchInput = document.getElementById("searchInput");
-  const cartItemsContainer = document.getElementById("cartItemsContainer");
   const totalSummary = document.getElementById("totalSummary");
   const submitBtn = document.getElementById("submitBtn");
   const customerInput = document.getElementById("customer");
 
-  let cart = [];
+  // Cart is basically products with adjustable quantity and discount
+  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
 
-  function renderItems(filter = "") {
+  function renderItems() {
     itemsList.innerHTML = "";
-    const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-    filtered.forEach(product => {
+    cart.forEach((item, index) => {
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
-        <img src="${product.image}" alt="${product.name}" />
+        <img src="${item.image}" alt="${item.name}" />
         <div class="item-info">
-          <div class="item-name">${product.name}</div>
-          <div class="item-price">Price: IQD ${product.price.toFixed(2)}</div>
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">Price: IQD ${item.price.toFixed(2)}</div>
+        </div>
+        <div class="controls">
+          <div class="qty-control">
+            <button onclick="changeQuantity(${index}, -1)">-</button>
+            <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${index}, this.value)" />
+            <button onclick="changeQuantity(${index}, 1)">+</button>
+          </div>
+          <div class="discount-control">
+            <label>Discount %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${index}, this.value)" />
+          </div>
+          <div style="margin-top:8px; font-weight:bold;">
+            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toFixed(2)}
+          </div>
         </div>
       `;
-      itemDiv.onclick = () => addToCart(product);
       itemsList.appendChild(itemDiv);
-    });
-  }
-
-  function addToCart(product) {
-    const existing = cart.find(i => i.id === product.id);
-    if (existing) {
-      existing.quantity++;
-    } else {
-      cart.push({
-        ...product,
-        quantity: 1,
-        discount: 0
-      });
-    }
-    renderCart();
-  }
-
-  function renderCart() {
-    cartItemsContainer.innerHTML = "";
-    cart.forEach((item, index) => {
-      const cartItemDiv = document.createElement("div");
-      cartItemDiv.className = "cart-item";
-      cartItemDiv.innerHTML = `
-        <div class="cart-item-info">
-          <div><strong>${item.name}</strong></div>
-          <div>Unit Price: IQD ${item.price.toFixed(2)}</div>
-          <div>
-            Quantity: 
-            <span class="qty-control">
-              <button onclick="changeQty(${index}, -1)">-</button>
-              <input type="number" min="1" value="${item.quantity}" onchange="changeQty(${index}, 0, this.value)" />
-              <button onclick="changeQty(${index}, 1)">+</button>
-            </span>
-          </div>
-          <div>
-            Discount (%): 
-            <input class="discount-input" type="number" min="0" max="100" value="${item.discount}" onchange="changeDiscount(${index}, this.value)" />
-          </div>
-          <div>Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toFixed(2)}</div>
-        </div>
-        <button class="remove-btn" onclick="removeFromCart(${index})">X</button>
-      `;
-      cartItemsContainer.appendChild(cartItemDiv);
     });
     updateTotalSummary();
   }
 
-  function changeQty(index, delta, inputValue) {
-    if (delta !== 0) {
-      const newQty = cart[index].quantity + delta;
-      if (newQty >= 1) {
-        cart[index].quantity = newQty;
-      }
-    } else {
-      const val = Number(inputValue);
-      if (val >= 1) {
-        cart[index].quantity = val;
-      }
-    }
-    renderCart();
+  function changeQuantity(index, delta) {
+    let newQty = cart[index].quantity + delta;
+    if (newQty < 0) newQty = 0;
+    cart[index].quantity = newQty;
+    renderItems();
   }
 
-  function changeDiscount(index, value) {
+  function setQuantity(index, value) {
     let val = Number(value);
-    if (val < 0) val = 0;
+    if (isNaN(val) || val < 0) val = 0;
+    cart[index].quantity = val;
+    renderItems();
+  }
+
+  function setDiscount(index, value) {
+    let val = Number(value);
+    if (isNaN(val) || val < 0) val = 0;
     if (val > 100) val = 100;
     cart[index].discount = val;
-    renderCart();
-  }
-
-  function removeFromCart(index) {
-    cart.splice(index, 1);
-    renderCart();
+    renderItems();
   }
 
   function updateTotalSummary() {
-    let total = 0;
-    cart.forEach(item => {
-      total += item.quantity * item.price * (1 - item.discount / 100);
-    });
+    const total = cart.reduce((sum, item) => {
+      return sum + (item.quantity * item.price * (1 - item.discount / 100));
+    }, 0);
     totalSummary.textContent = `Total: IQD ${total.toFixed(2)}`;
   }
 
   submitBtn.onclick = () => {
-    if (cart.length === 0) {
-      alert("Please add at least one product to the cart.");
-      return;
-    }
     const customerName = customerInput.value.trim();
     if (customerName === "") {
       alert("Please enter the customer's name.");
       return;
     }
 
+    // Only send items with quantity > 0
+    const itemsToSell = cart.filter(item => item.quantity > 0);
+
+    if (itemsToSell.length === 0) {
+      alert("Please select at least one product with quantity greater than zero.");
+      return;
+    }
+
     const saleData = {
       customer: customerName,
-      items: cart.map(item => ({
+      items: itemsToSell.map(item => ({
         productId: item.id,
         productName: item.name,
         quantity: item.quantity,
@@ -334,31 +254,24 @@
         discountPercent: item.discount,
         total: item.quantity * item.price * (1 - item.discount / 100)
       })),
-      grandTotal: cart.reduce((sum, item) => sum + item.quantity * item.price * (1 - item.discount / 100), 0)
+      grandTotal: itemsToSell.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0)
     };
 
     console.log("Sale submitted:", saleData);
     alert(`Sale completed!\nCustomer: ${saleData.customer}\nTotal: IQD ${saleData.grandTotal.toFixed(2)}`);
 
-    // Reset all
-    cart = [];
-    renderCart();
+    // Reset quantities and discounts
+    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
     customerInput.value = "";
-    searchInput.value = "";
     renderItems();
   };
 
-  searchInput.oninput = () => {
-    renderItems(searchInput.value);
-  };
-
   renderItems();
-  renderCart();
 
-  // Make functions global so they can be called from inline HTML events
-  window.changeQty = changeQty;
-  window.changeDiscount = changeDiscount;
-  window.removeFromCart = removeFromCart;
+  // Make functions global so they work on inline handlers
+  window.changeQuantity = changeQuantity;
+  window.setQuantity = setQuantity;
+  window.setDiscount = setDiscount;
 </script>
 </body>
 </html>
