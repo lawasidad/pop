@@ -1,187 +1,164 @@
 <!DOCTYPE html>
 <html lang="en" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sales Form</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sales Form - Multi Item</title>
   <style>
-    /* ——— CSS is unchanged, your styles were good ——— */
-    body { font-family: Tahoma, sans-serif; background-color: #f9f9f9; padding: 20px; direction: rtl; }
-    .container { max-width: 600px; margin: auto; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; }
-    h2 { text-align: right; margin-bottom: 15px; color: #333; }
-    label { display: block; margin-bottom: 6px; font-weight: bold; text-align: right; }
-    input[type="text"], input[type="number"] { width: 100%; padding: 8px 10px; margin-bottom: 15px; border: 1px solid #ccc; border-radius: 6px; font-size: 16px; text-align: right; }
-    .search-box { margin-bottom: 20px; }
-    .items-list { max-height: 250px; overflow-y: auto; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
-    .item { display: flex; align-items: center; margin-bottom: 10px; cursor: pointer; padding: 6px; border-radius: 5px; transition: background-color 0.2s; }
-    .item:hover { background-color: #e3f2fd; }
-    .item img { width: 50px; height: 50px; object-fit: contain; margin-left: 10px; border: 1px solid #ccc; border-radius: 4px; background: white; }
-    .item-info { flex-grow: 1; text-align: right; }
-    .item-name { font-weight: bold; color: #333; }
-    .item-price { font-size: 14px; color: #555; }
-    .selected-item { margin-top: 20px; border-top: 1px solid #ddd; padding-top: 15px; }
-    .qty-control { display: flex; align-items: center; gap: 10px; margin-bottom: 15px; justify-content: flex-end; }
-    .qty-control button { width: 30px; height: 30px; font-size: 20px; font-weight: bold; cursor: pointer; background-color: #1976d2; border: none; color: white; border-radius: 4px; user-select: none; }
-    .qty-control input { width: 60px; text-align: center; font-size: 16px; border: 1px solid #ccc; border-radius: 6px; padding: 4px 6px; }
-    .form-row { margin-bottom: 12px; text-align: right; }
-    .form-row label { margin-bottom: 4px; }
-    .total-price { font-weight: bold; font-size: 18px; color: #1976d2; text-align: right; margin-top: 10px; }
-    #submitBtn { width: 100%; padding: 10px; background-color: #1976d2; color: white; font-size: 18px; border: none; border-radius: 6px; cursor: pointer; margin-top: 15px; }
-    #submitBtn:hover { background-color: #155a9c; }
+    body {
+      font-family: Tahoma, sans-serif;
+      background-color: #f0f0f0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #333;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .product {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+    }
+    .product button {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 6px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .total {
+      font-weight: bold;
+      font-size: 18px;
+      text-align: right;
+      margin-top: 20px;
+    }
+    button.sell-all {
+      width: 100%;
+      padding: 12px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 4px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>New Sales Form</h2>
-    <div class="form-row">
-      <label for="customer">Customer Name</label>
-      <input type="text" id="customer" placeholder="Enter customer name" />
-    </div>
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Search product..." />
-    </div>
-    <div class="items-list" id="itemsList"></div>
+    <h2>Multi-Item Sales Form</h2>
+    <label>Customer Name</label>
+    <input type="text" id="customerName" placeholder="Enter customer name">
 
-    <div class="selected-item" id="selectedItemSection" style="display:none;">
-      <div class="item-info">
-        <img id="selectedItemImage" src="" alt="Item Image" />
-        <div id="selectedItemName" class="item-name"></div>
-        <div id="selectedItemPrice" class="item-price"></div>
-      </div>
-      <div class="qty-control">
-        <label for="quantity" style="margin: 0;">Quantity:</label>
-        <button id="decreaseQty">-</button>
-        <input type="number" id="quantity" value="1" min="1" />
-        <button id="increaseQty">+</button>
-      </div>
-      <div class="form-row">
-        <label for="price">Price (per unit)</label>
-        <input type="number" id="price" step="0.01" min="0" />
-      </div>
-      <div class="form-row">
-        <label for="discount">Discount (%)</label>
-        <input type="number" id="discount" step="0.01" min="0" max="100" value="0" />
-      </div>
-      <div class="total-price" id="totalPrice">Total: 0</div>
-      <button id="submitBtn">Sell</button>
-    </div>
+    <h3>Products</h3>
+    <div id="productList"></div>
+
+    <h3>Cart</h3>
+    <div id="cart"></div>
+    <div class="total" id="totalDisplay">Total: 0 IQD</div>
+
+    <button class="sell-all" onclick="sellAll()">Sell All</button>
   </div>
 
   <script>
     const products = [
-      { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/50?text=A" },
-      { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/50?text=B" },
-      { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/50?text=C" },
-      { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" }
+      { id: 1, name: "Product A", price: 20 },
+      { id: 2, name: "Product B", price: 35 },
+      { id: 3, name: "Product C", price: 50 },
+      { id: 4, name: "Product D", price: 15 }
     ];
 
-    const itemsList = document.getElementById("itemsList");
-    const searchInput = document.getElementById("searchInput");
-    const selectedItemSection = document.getElementById("selectedItemSection");
-    const selectedItemName = document.getElementById("selectedItemName");
-    const selectedItemPrice = document.getElementById("selectedItemPrice");
-    const selectedItemImage = document.getElementById("selectedItemImage");
-    const quantityInput = document.getElementById("quantity");
-    const priceInput = document.getElementById("price");
-    const discountInput = document.getElementById("discount");
-    const totalPriceEl = document.getElementById("totalPrice");
-    const decreaseQtyBtn = document.getElementById("decreaseQty");
-    const increaseQtyBtn = document.getElementById("increaseQty");
-    const submitBtn = document.getElementById("submitBtn");
-    const customerInput = document.getElementById("customer");
+    let cart = [];
 
-    let selectedProduct = null;
-
-    function renderItems(filter = "") {
-      itemsList.innerHTML = "";
-      const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
-      filtered.forEach(product => {
-        const itemDiv = document.createElement("div");
-        itemDiv.className = "item";
-        itemDiv.innerHTML = `
-          <img src="${product.image}" alt="${product.name}" />
-          <div class="item-info">
-            <div class="item-name">${product.name}</div>
-            <div class="item-price">Price: IQD ${product.price.toFixed(2)}</div>
-          </div>
+    function renderProducts() {
+      const productList = document.getElementById('productList');
+      productList.innerHTML = '';
+      products.forEach(product => {
+        const div = document.createElement('div');
+        div.className = 'product';
+        div.innerHTML = `
+          <span>${product.name} - ${product.price} IQD</span>
+          <button onclick="addToCart(${product.id})">Add</button>
         `;
-        itemDiv.onclick = () => selectProduct(product);
-        itemsList.appendChild(itemDiv);
+        productList.appendChild(div);
       });
     }
 
-    function selectProduct(product) {
-      selectedProduct = { ...product };
-      selectedItemName.textContent = product.name;
-      selectedItemPrice.textContent = `Price: IQD ${product.price.toFixed(2)}`;
-      selectedItemImage.src = product.image;
-      quantityInput.value = 1;
-      priceInput.value = product.price.toFixed(2);
-      discountInput.value = 0;
-      updateTotal();
-      selectedItemSection.style.display = "block";
+    function addToCart(productId) {
+      const existing = cart.find(item => item.id === productId);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        const product = products.find(p => p.id === productId);
+        cart.push({ ...product, quantity: 1 });
+      }
+      renderCart();
     }
 
-    function updateTotal() {
-      const qty = Number(quantityInput.value);
-      const price = Number(priceInput.value);
-      const discount = Number(discountInput.value);
-      const total = qty * price * (1 - discount / 100);
-      totalPriceEl.textContent = `Total: IQD ${total.toFixed(2)}`;
+    function renderCart() {
+      const cartDiv = document.getElementById('cart');
+      cartDiv.innerHTML = '';
+      let total = 0;
+      cart.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'cart-item';
+        const itemTotal = item.price * item.quantity;
+        total += itemTotal;
+        div.innerHTML = `${item.name} x ${item.quantity} = ${itemTotal} IQD`;
+        cartDiv.appendChild(div);
+      });
+      document.getElementById('totalDisplay').innerText = `Total: ${total} IQD`;
     }
 
-    decreaseQtyBtn.onclick = () => {
-      let currentQty = Number(quantityInput.value);
-      if (currentQty > 1) {
-        quantityInput.value = currentQty - 1;
-        updateTotal();
-      }
-    };
-
-    increaseQtyBtn.onclick = () => {
-      let currentQty = Number(quantityInput.value);
-      quantityInput.value = currentQty + 1;
-      updateTotal();
-    };
-
-    quantityInput.oninput = updateTotal;
-    priceInput.oninput = updateTotal;
-    discountInput.oninput = updateTotal;
-    searchInput.oninput = () => renderItems(searchInput.value);
-
-    submitBtn.onclick = () => {
-      if (!selectedProduct) {
-        alert("Please select a product to sell");
+    function sellAll() {
+      const customer = document.getElementById('customerName').value.trim();
+      if (!customer) {
+        alert("Please enter customer name");
         return;
       }
-      const customerName = customerInput.value.trim();
-      if (customerName === "") {
-        alert("Please enter the customer's name");
+      if (cart.length === 0) {
+        alert("No items in cart");
         return;
       }
-      const saleData = {
-        customer: customerName,
-        productId: selectedProduct.id,
-        productName: selectedProduct.name,
-        quantity: Number(quantityInput.value),
-        unitPrice: Number(priceInput.value),
-        discountPercent: Number(discountInput.value),
-        total: Number(quantityInput.value) * Number(priceInput.value) * (1 - Number(discountInput.value) / 100)
-      };
 
-      console.log("Sale submitted:", saleData);
-      alert(`Sale completed!\n\nCustomer: ${saleData.customer}\nProduct: ${saleData.productName}\nTotal: IQD ${saleData.total.toFixed(2)}`);
+      console.log("Sale:", {
+        customer,
+        items: cart,
+        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0)
+      });
 
-      // Reset form
-      selectedProduct = null;
-      selectedItemSection.style.display = "none";
-      customerInput.value = "";
-      searchInput.value = "";
-      renderItems();
-    };
+      alert("Sale completed for " + customer);
+      cart = [];
+      renderCart();
+      document.getElementById('customerName').value = '';
+    }
 
-    // Initial render
-    renderItems();
+    renderProducts();
   </script>
 </body>
 </html>
