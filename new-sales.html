@@ -1,138 +1,317 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>فرۆشتنی بەرهەم</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Sales Form</title>
   <style>
-    body { font-family: Arial; padding: 20px; background-color: #f9f9f9; }
-    input, button { margin: 5px 0; padding: 8px; width: 100%; }
-    #selectedItem, #cartSection { margin-top: 20px; padding: 10px; border: 1px solid #ccc; background: #fff; }
-    #cartList li { margin-bottom: 5px; }
+    body {
+      font-family: Tahoma, sans-serif;
+      background-color: #f9f9f9;
+      padding: 20px;
+      direction: rtl;
+    }
+    .container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 20px;
+    }
+    h2 {
+      text-align: right;
+      margin-bottom: 15px;
+      color: #333;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      text-align: right;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+      text-align: right;
+    }
+    .search-box {
+      margin-bottom: 20px;
+    }
+    .items-list {
+      max-height: 250px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 10px;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 5px;
+      transition: background-color 0.2s;
+    }
+    .item:hover {
+      background-color: #e3f2fd;
+    }
+    .item img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      margin-left: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: white;
+    }
+    .item-info {
+      flex-grow: 1;
+      text-align: right;
+    }
+    .item-name {
+      font-weight: bold;
+      color: #333;
+    }
+    .item-price {
+      font-size: 14px;
+      color: #555;
+    }
+    .selected-item {
+      margin-top: 20px;
+      border-top: 1px solid #ddd;
+      padding-top: 15px;
+    }
+    .qty-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+      justify-content: flex-end;
+    }
+    .qty-control button {
+      width: 30px;
+      height: 30px;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      background-color: #1976d2;
+      border: none;
+      color: white;
+      border-radius: 4px;
+      user-select: none;
+    }
+    .qty-control input {
+      width: 60px;
+      text-align: center;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 4px 6px;
+    }
+    .form-row {
+      margin-bottom: 12px;
+      text-align: right;
+    }
+    .form-row label {
+      margin-bottom: 4px;
+    }
+    .total-price {
+      font-weight: bold;
+      font-size: 18px;
+      color: #1976d2;
+      text-align: right;
+      margin-top: 10px;
+    }
+    #submitBtn {
+      width: 100%;
+      padding: 10px;
+      background-color: #1976d2;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-top: 15px;
+    }
+    #submitBtn:hover {
+      background-color: #155a9c;
+    }
   </style>
 </head>
 <body>
+  <div class="container">
+    <h2>New Sales Form</h2>
 
-  <h2>فرۆشتن</h2>
+    <div class="form-row">
+      <label for="customer">Customer Name</label>
+      <input type="text" id="customer" placeholder="Enter customer name" />
+    </div>
 
-  <label>ناوی کریار</label>
-  <input type="text" id="customer" placeholder="ناوی کریار بنوسە" />
+    <div class="search-box">
+      <input type="text" id="searchInput" placeholder="Search product..." />
+    </div>
 
-  <label>بارکۆد</label>
-  <input type="text" id="barcode" placeholder="بارکۆدی بەرهەم بنوسە" />
+    <div class="items-list" id="itemsList">
+      <!-- Items will be listed here -->
+    </div>
 
-  <div id="selectedItem" style="display: none;">
-    <p><strong>ناوی بەرهەم:</strong> <span id="productName"></span></p>
-    <label>ژمارە</label>
-    <input type="number" id="quantity" value="1" />
+    <div class="selected-item" id="selectedItemSection" style="display:none;">
+      <div class="item-info">
+        <img id="selectedItemImage" src="" alt="Item Image" style="float:left; margin-left: 10px; width:80px; height:80px; object-fit: contain; border:1px solid #ccc; border-radius:4px;" />
+        <div id="selectedItemName" class="item-name"></div>
+        <div id="selectedItemPrice" class="item-price"></div>
+      </div>
 
-    <label>نرخی یەکە (کەم)</label>
-    <input type="number" id="price" />
+      <div class="qty-control">
+        <label for="quantity" style="margin: 0;">Quantity:</label>
+        <button id="decreaseQty">-</button>
+        <input type="number" id="quantity" value="1" min="1" />
+        <button id="increaseQty">+</button>
+      </div>
 
-    <label>داشکاندن (%)</label>
-    <input type="number" id="discount" value="0" />
+      <div class="form-row">
+        <label for="price">Price (per unit)</label>
+        <input type="number" id="price" step="0.01" min="0" />
+      </div>
 
-    <button id="addToCartBtn">زیادکردن بۆ لیست</button>
-  </div>
+      <div class="form-row">
+        <label for="discount">Discount (%)</label>
+        <input type="number" id="discount" step="0.01" min="0" max="100" value="0" />
+      </div>
 
-  <div id="cartSection">
-    <h3>بەرهەمەکان بۆ فرۆشتن</h3>
-    <ul id="cartList"></ul>
-    <button id="sellAllBtn">فرۆشتنی هەموو</button>
+      <div class="total-price" id="totalPrice">Total: 0</div>
+
+      <button id="submitBtn">Sell</button>
+    </div>
   </div>
 
   <script>
-    const customerInput = document.getElementById("customer");
-    const barcodeInput = document.getElementById("barcode");
-    const productNameSpan = document.getElementById("productName");
+    const products = [
+      { id: 1, name: "Product A", price: 20, image: "https://via.placeholder.com/50?text=A" },
+      { id: 2, name: "Product B", price: 35, image: "https://via.placeholder.com/50?text=B" },
+      { id: 3, name: "Product C", price: 50, image: "https://via.placeholder.com/50?text=C" },
+      { id: 4, name: "Product D", price: 15, image: "https://via.placeholder.com/50?text=D" }
+    ];
+
+    const itemsList = document.getElementById("itemsList");
+    const searchInput = document.getElementById("searchInput");
+    const selectedItemSection = document.getElementById("selectedItemSection");
+    const selectedItemName = document.getElementById("selectedItemName");
+    const selectedItemPrice = document.getElementById("selectedItemPrice");
+    const selectedItemImage = document.getElementById("selectedItemImage");
     const quantityInput = document.getElementById("quantity");
     const priceInput = document.getElementById("price");
     const discountInput = document.getElementById("discount");
-    const selectedItemSection = document.getElementById("selectedItem");
-    const addToCartBtn = document.getElementById("addToCartBtn");
-    const cartList = document.getElementById("cartList");
-    const sellAllBtn = document.getElementById("sellAllBtn");
+    const totalPriceEl = document.getElementById("totalPrice");
+    const decreaseQtyBtn = document.getElementById("decreaseQty");
+    const increaseQtyBtn = document.getElementById("increaseQty");
+    const submitBtn = document.getElementById("submitBtn");
+    const customerInput = document.getElementById("customer");
 
     let selectedProduct = null;
-    const cart = [];
 
-    // نمونەی داتای بەرهەمەکان بە بارکۆد
-    const products = [
-      { id: 1, name: "شیر", barcode: "111", price: 500 },
-      { id: 2, name: "نان", barcode: "222", price: 250 },
-      { id: 3, name: "ئاو", barcode: "333", price: 300 }
-    ];
-
-    barcodeInput.addEventListener("input", () => {
-      const barcode = barcodeInput.value.trim();
-      selectedProduct = products.find(p => p.barcode === barcode);
-
-      if (selectedProduct) {
-        productNameSpan.textContent = selectedProduct.name;
-        priceInput.value = selectedProduct.price;
-        quantityInput.value = 1;
-        discountInput.value = 0;
-        selectedItemSection.style.display = "block";
-      } else {
-        selectedItemSection.style.display = "none";
-      }
-    });
-
-    function renderCart() {
-      cartList.innerHTML = "";
-      cart.forEach(item => {
-        const li = document.createElement("li");
-        li.textContent = `${item.productName} - ژمارە: ${item.quantity}, کۆی گشتی: ${item.total.toFixed(2)} IQD`;
-        cartList.appendChild(li);
+    function renderItems(filter = "") {
+      itemsList.innerHTML = "";
+      const filtered = products.filter(p => p.name.toLowerCase().includes(filter.toLowerCase()));
+      filtered.forEach(product => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = 
+          <img src="${product.image}" alt="${product.name}" />
+          <div class="item-info">
+            <div class="item-name">${product.name}</div>
+            <div class="item-price">Price: IQD ${product.price.toFixed(2)}</div>
+          </div>
+        ;
+        itemDiv.onclick = () => selectProduct(product);
+        itemsList.appendChild(itemDiv);
       });
     }
 
-    function addToCart() {
-      if (!selectedProduct) return alert("هیچ بەرهەمێک نەهاتووە");
+    function selectProduct(product) {
+      selectedProduct = {...product};
+      selectedItemName.textContent = product.name;
+      selectedItemPrice.textContent = Price: IQD ${product.price.toFixed(2)};
+      selectedItemImage.src = product.image;
+      quantityInput.value = 1;
+      priceInput.value = product.price.toFixed(2);
+      discountInput.value = 0;
+      updateTotal();
+      selectedItemSection.style.display = "block";
+    }
 
-      const quantity = Number(quantityInput.value);
-      const unitPrice = Number(priceInput.value);
+    function updateTotal() {
+      const qty = Number(quantityInput.value);
+      const price = Number(priceInput.value);
       const discount = Number(discountInput.value);
-
-      const total = quantity * unitPrice * (1 - discount / 100);
-
-      cart.push({
-        productId: selectedProduct.id,
-        productName: selectedProduct.name,
-        quantity,
-        unitPrice,
-        discountPercent: discount,
-        total
-      });
-
-      renderCart();
-      selectedItemSection.style.display = "none";
-      barcodeInput.value = "";
-      selectedProduct = null;
+      const total = qty * price * (1 - discount / 100);
+      totalPriceEl.textContent = Total: IQD ${total.toFixed(2)};
     }
 
-    function sellAll() {
+    decreaseQtyBtn.onclick = () => {
+      let currentQty = Number(quantityInput.value);
+      if(currentQty > 1) {
+        quantityInput.value = currentQty - 1;
+        updateTotal();
+      }
+    };
+
+    increaseQtyBtn.onclick = () => {
+      let currentQty = Number(quantityInput.value);
+      quantityInput.value = currentQty + 1;
+      updateTotal();
+    };
+
+    quantityInput.oninput = updateTotal;
+    priceInput.oninput = updateTotal;
+    discountInput.oninput = updateTotal;
+    searchInput.oninput = () => {
+      renderItems(searchInput.value);
+    };
+
+    submitBtn.onclick = () => {
+      if (!selectedProduct) {
+        alert("Please select a product to sell");
+        return;
+      }
+
       const customerName = customerInput.value.trim();
-      if (!customerName) return alert("ناوی کریار بنوسە");
-      if (cart.length === 0) return alert("هیچ بەرهەمێکت نەزیاد کردووە!");
+      if (customerName === "") {
+        alert("Please enter the customer's name");
+        return;
+      }
 
       const saleData = {
         customer: customerName,
-        items: cart,
-        total: cart.reduce((sum, item) => sum + item.total, 0)
+        productId: selectedProduct.id,
+        productName: selectedProduct.name,
+        quantity: Number(quantityInput.value),
+        unitPrice: Number(priceInput.value),
+        discountPercent: Number(discountInput.value),
+        total: Number(quantityInput.value) * Number(priceInput.value) * (1 - Number(discountInput.value) / 100)
       };
 
-      console.log("فرۆشتن:", saleData);
-      alert(`فرۆشتن بە سەرکەوتووی بۆ ${saleData.customer} بە کۆی گشتی ${saleData.total.toFixed(2)} IQD`);
+      console.log("Sale submitted:", saleData);
+      alert(Sale completed!\n\nCustomer: ${saleData.customer}\nProduct: ${saleData.productName}\nTotal: IQD ${saleData.total.toFixed(2)});
 
-      // ڕیستی cart پاک بکە
-      cart.length = 0;
-      renderCart();
+      // Here you can add your code to send this data to the server or any other action
+
+      // Reset form and selections:
+      selectedProduct = null;
+      selectedItemSection.style.display = "none";
       customerInput.value = "";
-    }
+      searchInput.value = "";
+      renderItems();
+    };
 
-    addToCartBtn.onclick = addToCart;
-    sellAllBtn.onclick = sellAll;
+    // initial render
+    renderItems();
   </script>
 </body>
 </html>
