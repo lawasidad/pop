@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form with Quantity & Discount Controls</title>
+  <title>Sales Form with Search, Quantity & Discount Controls</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -30,7 +30,7 @@
       font-weight: bold;
       text-align: right;
     }
-    input[type="text"] {
+    input[type="text"], input[type="number"] {
       width: 100%;
       padding: 8px 10px;
       margin-bottom: 15px;
@@ -38,6 +38,7 @@
       border-radius: 6px;
       font-size: 16px;
       text-align: right;
+      box-sizing: border-box;
     }
     .items-list {
       max-height: 300px;
@@ -45,6 +46,7 @@
       border: 1px solid #ddd;
       border-radius: 6px;
       padding: 10px;
+      margin-bottom: 20px;
     }
     .item {
       display: flex;
@@ -115,14 +117,13 @@
       font-size: 16px;
     }
     .total-summary {
-      margin-top: 20px;
       text-align: right;
       font-weight: bold;
       font-size: 22px;
       color: #1976d2;
+      margin-bottom: 20px;
     }
     #submitBtn {
-      margin-top: 20px;
       width: 100%;
       padding: 16px 0;
       font-size: 24px;
@@ -133,6 +134,7 @@
       border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s;
+      margin-top: 0;
     }
     #submitBtn:hover {
       background-color: #155a9c;
@@ -146,11 +148,15 @@
     <label for="customer">Customer Name</label>
     <input type="text" id="customer" placeholder="Enter customer name" />
 
+    <label for="searchProduct">Search Product</label>
+    <input type="text" id="searchProduct" placeholder="Type product name to search" oninput="filterProducts()" />
+
     <div class="items-list" id="itemsList">
       <!-- Items will be rendered here -->
     </div>
 
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+
     <button id="submitBtn">Submit Sale</button>
   </div>
 
@@ -168,12 +174,14 @@
   const totalSummary = document.getElementById("totalSummary");
   const submitBtn = document.getElementById("submitBtn");
   const customerInput = document.getElementById("customer");
+  const searchInput = document.getElementById("searchProduct");
 
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+  let filteredCart = [...cart];
 
   function renderItems() {
     itemsList.innerHTML = "";
-    cart.forEach((item, index) => {
+    filteredCart.forEach((item, index) => {
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
@@ -184,13 +192,13 @@
         </div>
         <div class="controls">
           <div class="qty-control">
-            <button onclick="changeQuantity(${index}, -1)">-</button>
-            <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${index}, this.value)" />
-            <button onclick="changeQuantity(${index}, 1)">+</button>
+            <button onclick="changeQuantity(${item.id}, -1)">-</button>
+            <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" />
+            <button onclick="changeQuantity(${item.id}, 1)">+</button>
           </div>
           <div class="discount-control">
             <label>Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${index}, this.value)" />
+            <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${item.id}, this.value)" />
           </div>
           <div style="margin-top:8px; font-weight:bold;">
             Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toFixed(2)}
@@ -202,26 +210,32 @@
     updateTotalSummary();
   }
 
-  function changeQuantity(index, delta) {
+  function changeQuantity(id, delta) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
     let newQty = cart[index].quantity + delta;
     if (newQty < 0) newQty = 0;
     cart[index].quantity = newQty;
-    renderItems();
+    filterProducts(); // refresh filteredCart and render
   }
 
-  function setQuantity(index, value) {
+  function setQuantity(id, value) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
     let val = Number(value);
     if (isNaN(val) || val < 0) val = 0;
     cart[index].quantity = val;
-    renderItems();
+    filterProducts(); // refresh filteredCart and render
   }
 
-  function setDiscount(index, value) {
+  function setDiscount(id, value) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
     let val = Number(value);
     if (isNaN(val) || val < 0) val = 0;
     if (val > 100) val = 100;
     cart[index].discount = val;
-    renderItems();
+    filterProducts(); // refresh filteredCart and render
   }
 
   function updateTotalSummary() {
@@ -229,6 +243,16 @@
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
     totalSummary.textContent = `Total: IQD ${total.toFixed(2)}`;
+  }
+
+  function filterProducts() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (query === "") {
+      filteredCart = [...cart];
+    } else {
+      filteredCart = cart.filter(item => item.name.toLowerCase().includes(query));
+    }
+    renderItems();
   }
 
   submitBtn.onclick = () => {
@@ -263,14 +287,18 @@
 
     cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
     customerInput.value = "";
-    renderItems();
+    searchInput.value = "";
+    filterProducts();
   };
 
-  renderItems();
+  // Initial render
+  filterProducts();
 
+  // Make functions available globally for inline handlers
   window.changeQuantity = changeQuantity;
   window.setQuantity = setQuantity;
   window.setDiscount = setDiscount;
+  window.filterProducts = filterProducts;
 </script>
 </body>
 </html>
