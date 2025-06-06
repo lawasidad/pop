@@ -74,8 +74,7 @@
     input[type="password"],
     input[type="tel"],
     input[type="file"],
-    select,
-    input[type="date"] {
+    select {
       width: 100%;
       padding: 8px 10px;
       margin-bottom: 15px;
@@ -118,6 +117,15 @@
       max-height: 80px;
       display: block;
       margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    /* Filter input style */
+    #filterInput {
+      margin-bottom: 15px;
+      padding: 8px 10px;
+      width: 300px;
+      font-size: 14px;
       border: 1px solid #ccc;
       border-radius: 4px;
     }
@@ -198,13 +206,9 @@
     <section id="salesSection" class="section">
       <h1>Sales Report</h1>
 
-      <!-- Date filter -->
-      <form id="salesFilterForm">
-        <label for="filterDate">Filter by Date:</label>
-        <input type="date" id="filterDate" />
-        <button type="submit" class="submit-btn" style="width: auto;">Filter</button>
-        <button type="button" id="clearFilter" class="submit-btn" style="background-color: #7f8c8d; margin-left: 10px;">Clear</button>
-      </form>
+      <!-- Filter input for Sales by Item -->
+      <label for="filterInput">Filter Items:</label>
+      <input type="text" id="filterInput" placeholder="Type to filter items..." />
 
       <h2>Sales by Item</h2>
       <table id="salesByItemTable">
@@ -213,12 +217,13 @@
             <th>Item</th>
             <th>Quantity Sold</th>
             <th>Total Sales</th>
-            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Example Item 1</td><td>10</td><td>$100</td><td>2025-06-01</td></tr>
-          <tr><td>Example Item 2</td><td>5</td><td>$50</td><td>2025-06-02</td></tr>
+          <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
+          <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+          <tr><td>Sample Product</td><td>7</td><td>$70</td></tr>
+          <tr><td>Test Item</td><td>3</td><td>$30</td></tr>
         </tbody>
       </table>
 
@@ -243,12 +248,11 @@
           <tr>
             <th>Customer</th>
             <th>Total Amount</th>
-            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Customer A</td><td>$250</td><td>2025-06-01</td></tr>
-          <tr><td>Customer B</td><td>$100</td><td>2025-06-02</td></tr>
+          <tr><td>Customer A</td><td>$250</td></tr>
+          <tr><td>Customer B</td><td>$100</td></tr>
         </tbody>
       </table>
     </section>
@@ -384,4 +388,38 @@
         return;
       }
 
-      const companyInfo = JSON.parse(localStorage.getItem('companyInfo
+      // Get existing company info or new object
+      const companyInfo = JSON.parse(localStorage.getItem('companyInfo') || '{}');
+
+      companyInfo.name = companyName;
+      companyInfo.address = companyAddress;
+
+      localStorage.setItem('companyInfo', JSON.stringify(companyInfo));
+
+      alert('Company info saved successfully!');
+    });
+
+    // SALES REPORT FILTER FUNCTIONALITY (for Sales by Item Table)
+    const filterInput = document.getElementById('filterInput');
+    const salesByItemTable = document.getElementById('salesByItemTable');
+    const salesByItemRows = salesByItemTable.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+    filterInput.addEventListener('input', function() {
+      const filterValue = this.value.toLowerCase();
+
+      for (let i = 0; i < salesByItemRows.length; i++) {
+        const itemCell = salesByItemRows[i].getElementsByTagName('td')[0];
+        if (itemCell) {
+          const itemText = itemCell.textContent.toLowerCase();
+          if (itemText.indexOf(filterValue) > -1) {
+            salesByItemRows[i].style.display = '';
+          } else {
+            salesByItemRows[i].style.display = 'none';
+          }
+        }
+      }
+    });
+  </script>
+
+</body>
+</html>
