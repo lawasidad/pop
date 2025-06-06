@@ -71,7 +71,8 @@
     margin-bottom: 30px;
     max-width: 400px;
   }
-  #userSection form input {
+  #userSection form input,
+  #userSection form select {
     width: 100%;
     padding: 10px 12px;
     margin-bottom: 15px;
@@ -94,18 +95,49 @@
   #userSection form button:hover {
     background-color: #1c5980;
   }
-  #userList ul {
-    list-style: none;
-    padding-left: 0;
-    max-width: 400px;
-  }
-  #userList ul li {
+  #userList table {
+    width: 100%;
+    max-width: 700px;
+    border-collapse: collapse;
     background: white;
-    margin-bottom: 8px;
-    padding: 10px 15px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
     border-radius: 6px;
-    border: 1px solid #ddd;
+    overflow: hidden;
+  }
+  #userList th, #userList td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
     font-size: 16px;
+  }
+  #userList th {
+    background-color: #2980b9;
+    color: white;
+  }
+  #userList tr:hover {
+    background-color: #f1f1f1;
+  }
+  .action-btn {
+    cursor: pointer;
+    padding: 6px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    color: white;
+    transition: background-color 0.3s ease;
+  }
+  .edit-btn {
+    background-color: #27ae60;
+  }
+  .edit-btn:hover {
+    background-color: #1e8449;
+  }
+  .delete-btn {
+    background-color: #c0392b;
+  }
+  .delete-btn:hover {
+    background-color: #922b21;
   }
 
   /* Company and Sales Report placeholder */
@@ -136,13 +168,30 @@
     <section id="userSection" class="section active">
       <h1>Users Management</h1>
       <form id="userForm">
+        <input type="hidden" id="editIndex" value="" />
         <input type="text" id="username" placeholder="Enter username" required />
         <input type="email" id="email" placeholder="Enter email" required />
+        <select id="role" required>
+          <option value="" disabled selected>Select role</option>
+          <option value="Admin">Admin</option>
+          <option value="User">User</option>
+          <option value="Manager">Manager</option>
+        </select>
         <button type="submit">Add User</button>
       </form>
       <div id="userList">
         <h2>Users List</h2>
-        <ul id="usersUl"></ul>
+        <table>
+          <thead>
+            <tr>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Role</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="usersTbody"></tbody>
+        </table>
       </div>
     </section>
 
@@ -163,73 +212,129 @@
     </section>
   </div>
 
-  <script>
-    // Sidebar tab switching logic
-    const buttons = document.querySelectorAll('.sidebar nav button');
-    const sections = document.querySelectorAll('.section');
+<script>
+  // Sidebar tab switching logic
+  const buttons = document.querySelectorAll('.sidebar nav button');
+  const sections = document.querySelectorAll('.section');
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        // Remove active class from all buttons
-        buttons.forEach(b => b.classList.remove('active'));
-        // Add active class to clicked button
-        btn.classList.add('active');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
 
-        // Hide all sections
-        sections.forEach(sec => sec.classList.remove('active'));
+      sections.forEach(sec => sec.classList.remove('active'));
+      const target = btn.getAttribute('data-target');
+      document.getElementById(target).classList.add('active');
+    });
+  });
 
-        // Show selected section
-        const target = btn.getAttribute('data-target');
-        document.getElementById(target).classList.add('active');
-      });
+  // User management logic
+  const userForm = document.getElementById('userForm');
+  const usernameInput = document.getElementById('username');
+  const emailInput = document.getElementById('email');
+  const roleSelect = document.getElementById('role');
+  const editIndexInput = document.getElementById('editIndex');
+  const usersTbody = document.getElementById('usersTbody');
+
+  let users = JSON.parse(localStorage.getItem('users')) || [];
+
+  function renderUsers() {
+    usersTbody.innerHTML = '';
+    users.forEach((user, index) => {
+      const tr = document.createElement('tr');
+
+      tr.innerHTML = `
+        <td>${user.username}</td>
+        <td>${user.email}</td>
+        <td>${user.role}</td>
+        <td>
+          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
+          <button class="action-btn delete-btn" data-index="${index}">Delete</button>
+        </td>
+      `;
+      usersTbody.appendChild(tr);
     });
 
-    // User management logic
-    const userForm = document.getElementById('userForm');
-    const usersUl = document.getElementById('usersUl');
-
-    // Load users from localStorage or empty array
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    function renderUsers() {
-      usersUl.innerHTML = '';
-      users.forEach(user => {
-        const li = document.createElement('li');
-        li.textContent = `${user.username} — ${user.email}`;
-        usersUl.appendChild(li);
+    // Attach edit and delete event listeners after rendering
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const idx = e.target.getAttribute('data-index');
+        editUser(idx);
       });
-    }
+    });
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const idx = e.target.getAttribute('data-index');
+        deleteUser(idx);
+      });
+    });
+  }
 
-    function saveUsers() {
-      localStorage.setItem('users', JSON.stringify(users));
-    }
+  function saveUsers() {
+    localStorage.setItem('users', JSON.stringify(users));
+  }
 
-    userForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const username = document.getElementById('username').value.trim();
-      const email = document.getElementById('email').value.trim();
+  function editUser(index) {
+    const user = users[index];
+    usernameInput.value = user.username;
+    emailInput.value = user.email;
+    roleSelect.value = user.role;
+    editIndexInput.value = index;
+    userForm.querySelector('button').textContent = 'Update User';
+  }
 
-      if (!username || !email) {
-        alert('Please fill in both username and email.');
-        return;
-      }
-
-      // Check duplicate username
-      if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-        alert('Username already exists!');
-        return;
-      }
-
-      users.push({ username, email });
+  function deleteUser(index) {
+    if (confirm('Are you sure you want to delete this user?')) {
+      users.splice(index, 1);
       saveUsers();
       renderUsers();
+      resetForm();
+    }
+  }
 
-      userForm.reset();
-    });
+  function resetForm() {
+    userForm.reset();
+    editIndexInput.value = '';
+    userForm.querySelector('button').textContent = 'Add User';
+  }
 
-    // Initial render
+  userForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+    const role = roleSelect.value;
+
+    if (!username || !email || !role) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    const editingIndex = editIndexInput.value;
+
+    // Check duplicates only if adding new or changing username
+    const duplicate = users.some((u, idx) => u.username.toLowerCase() === username.toLowerCase() && idx != editingIndex);
+
+    if (duplicate) {
+      alert('Username already exists!');
+      return;
+    }
+
+    if (editingIndex === '') {
+      // Add new user
+      users.push({ username, email, role });
+    } else {
+      // Update existing user
+      users[editingIndex] = { username, email, role };
+    }
+
+    saveUsers();
     renderUsers();
-  </script>
+    resetForm();
+  });
+
+  // Initial render
+  renderUsers();
+</script>
 
 </body>
 </html>
