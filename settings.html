@@ -74,7 +74,8 @@
     input[type="password"],
     input[type="tel"],
     input[type="file"],
-    select {
+    select,
+    input[type="date"] {
       width: 100%;
       padding: 8px 10px;
       margin-bottom: 15px;
@@ -113,7 +114,6 @@
     tr:hover {
       background-color: #f1f1f1;
     }
-    /* Logo preview */
     #logoPreview {
       max-width: 150px;
       max-height: 80px;
@@ -122,11 +122,34 @@
       border: 1px solid #ccc;
       border-radius: 4px;
     }
+    /* Filter input styling */
+    .filter-input {
+      margin-bottom: 10px;
+      padding: 6px 8px;
+      width: 100%;
+      max-width: 300px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .date-filter-container {
+      display: flex;
+      gap: 15px;
+      max-width: 400px;
+      margin-bottom: 20px;
+    }
+    .date-filter-container label {
+      flex-grow: 1;
+      font-weight: normal;
+      color: #555;
+    }
+    .date-filter-container input {
+      width: 100%;
+    }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
   <div class="sidebar">
     <h2>Dashboard</h2>
     <button data-target="usersSection">Users</button>
@@ -134,7 +157,6 @@
     <button data-target="salesSection">Sales Report</button>
   </div>
 
-  <!-- Main content -->
   <div class="main-content">
 
     <!-- Users Section -->
@@ -170,9 +192,7 @@
             <th>Mobile Number</th>
           </tr>
         </thead>
-        <tbody>
-          <!-- Users will be added here dynamically -->
-        </tbody>
+        <tbody></tbody>
       </table>
     </section>
 
@@ -199,22 +219,40 @@
     <section id="salesSection" class="section">
       <h1>Sales Report</h1>
 
+      <!-- Date range filter -->
+      <div class="date-filter-container">
+        <label>
+          From:
+          <input type="date" id="dateFrom" />
+        </label>
+        <label>
+          To:
+          <input type="date" id="dateTo" />
+        </label>
+      </div>
+
+      <!-- Sales by Item -->
       <h2>Sales by Item</h2>
+      <input type="text" id="filterSalesByItem" class="filter-input" placeholder="Filter by item name..." />
       <table id="salesByItemTable">
         <thead>
           <tr>
             <th>Item</th>
             <th>Quantity Sold</th>
             <th>Total Sales</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
-          <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+          <tr><td>Example Item 1</td><td>10</td><td>$100</td><td>2025-06-01</td></tr>
+          <tr><td>Example Item 2</td><td>5</td><td>$50</td><td>2025-06-05</td></tr>
+          <tr><td>Example Item 3</td><td>7</td><td>$70</td><td>2025-06-03</td></tr>
         </tbody>
       </table>
 
+      <!-- Sales by Invoice -->
       <h2>Sales by Invoice</h2>
+      <input type="text" id="filterSalesByInvoice" class="filter-input" placeholder="Filter by invoice number..." />
       <table id="salesByInvoiceTable">
         <thead>
           <tr>
@@ -226,20 +264,25 @@
         <tbody>
           <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
           <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+          <tr><td>INV003</td><td>2025-06-06</td><td>$200</td></tr>
         </tbody>
       </table>
 
+      <!-- Sales by Amount -->
       <h2>Sales by Amount</h2>
+      <input type="text" id="filterSalesByAmount" class="filter-input" placeholder="Filter by customer name..." />
       <table id="salesByAmountTable">
         <thead>
           <tr>
             <th>Customer</th>
             <th>Total Amount</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td>Customer A</td><td>$250</td></tr>
-          <tr><td>Customer B</td><td>$100</td></tr>
+          <tr><td>Customer A</td><td>$250</td><td>2025-06-01</td></tr>
+          <tr><td>Customer B</td><td>$100</td><td>2025-06-04</td></tr>
+          <tr><td>Customer C</td><td>$300</td><td>2025-06-06</td></tr>
         </tbody>
       </table>
     </section>
@@ -247,24 +290,23 @@
   </div>
 
   <script>
-    // Sidebar button click handler
+    // Sidebar button toggle
     const sidebarButtons = document.querySelectorAll('.sidebar button');
     const sections = document.querySelectorAll('.section');
 
     sidebarButtons.forEach(button => {
       button.addEventListener('click', () => {
-        // Remove active class from all buttons
         sidebarButtons.forEach(btn => btn.classList.remove('active'));
-        // Add active to clicked button
         button.classList.add('active');
 
-        // Hide all sections
         sections.forEach(section => section.classList.remove('active'));
-        // Show targeted section
         const target = button.getAttribute('data-target');
         document.getElementById(target).classList.add('active');
       });
     });
+
+    // Activate first section by default
+    sidebarButtons[0].click();
 
     // USER FORM HANDLING
     const userForm = document.getElementById('userForm');
@@ -273,9 +315,8 @@
     userForm.addEventListener('submit', function(event) {
       event.preventDefault();
 
-      // Get input values
       const name = document.getElementById('userName').value.trim();
-      const password = document.getElementById('userPassword').value; // Not shown in table for privacy
+      const password = document.getElementById('userPassword').value;
       const role = document.getElementById('userRole').value;
       const mobile = document.getElementById('userMobile').value.trim();
 
@@ -284,7 +325,6 @@
         return;
       }
 
-      // Add new row to user list
       const newRow = document.createElement('tr');
       newRow.innerHTML = `
         <td>${name}</td>
@@ -293,7 +333,6 @@
       `;
       userListTableBody.appendChild(newRow);
 
-      // Reset form
       userForm.reset();
     });
 
@@ -329,12 +368,19 @@
       }
 
       alert('Company info saved successfully!');
-      // Here you can add code to send/save company info as needed
     });
 
-    // Optionally: activate first section by default
-    // sidebarButtons[0].click();
-  </script>
+    // SALES REPORT FILTERING LOGIC
 
-</body>
-</html>
+    // Utility: check if a date string is between from and to dates (inclusive)
+    function isDateInRange(dateStr, from, to) {
+      if (!from && !to) return true;
+      const date = new Date(dateStr);
+      if (from && date < new Date(from)) return false;
+      if (to && date > new Date(to)) return false;
+      return true;
+    }
+
+    // Filter function for tables with date and text filter inputs
+    function filterTable(tableId, textInputId, dateFromId, dateToId, dateColIndex, textColIndexes) {
+      const table = document
