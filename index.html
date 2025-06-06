@@ -1,10 +1,16 @@
-<section id="loginSection" class="active">
-  <h1>Login</h1>
-  <form id="loginForm">
-    <label for="loginName">Name</label>
-    <input type="text" id="loginName" required />
-    <label for="loginPassword">Password</label>
-    <input type="password" id="loginPassword" required />
-    <button type="submit" class="submit-btn">Login</button>
-  </form>
-</section>
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600">
+  <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-sm">
+    <h2 class="text-2xl font-bold text-center mb-6 text-gray-800">Welcome Back</h2>
+    <form id="loginForm" class="space-y-4">
+      <div>
+        <label for="loginName" class="block text-sm font-medium text-gray-700">Username</label>
+        <input type="text" id="loginName" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required />
+      </div>
+      <div>
+        <label for="loginPassword" class="block text-sm font-medium text-gray-700">Password</label>
+        <input type="password" id="loginPassword" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-xl shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required />
+      </div>
+      <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-xl transition duration-200">Login</button>
+    </form>
+  </div>
+</div>
