@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard with Sidebar Navigation</title>
+  <title>Dashboard with Hidden Sections</title>
   <style>
-    /* Basic Reset */
+    /* Basic reset */
     * {
       box-sizing: border-box;
     }
@@ -16,7 +16,7 @@
       height: 100vh;
     }
 
-    /* Sidebar styling */
+    /* Sidebar styles */
     .sidebar {
       width: 220px;
       background-color: #2c3e50;
@@ -46,7 +46,7 @@
       background-color: #34495e;
     }
 
-    /* Main content */
+    /* Main content styles */
     .main-content {
       flex-grow: 1;
       padding: 30px;
@@ -54,10 +54,12 @@
       overflow-y: auto;
     }
 
-    /* Sections: only active section is visible */
+    /* Sections: hidden by default */
     .section {
       display: none;
     }
+
+    /* Only active section is visible */
     .section.active {
       display: block;
     }
@@ -68,14 +70,14 @@
   <!-- Sidebar -->
   <div class="sidebar">
     <h2>Dashboard</h2>
-    <button class="active" data-target="usersSection">Users</button>
+    <button data-target="usersSection">Users</button>
     <button data-target="companySection">Company</button>
     <button data-target="salesSection">Sales Report</button>
   </div>
 
   <!-- Main content -->
   <div class="main-content">
-    <section id="usersSection" class="section active">
+    <section id="usersSection" class="section">
       <h1>Users Section</h1>
       <p>Manage users here...</p>
     </section>
@@ -105,11 +107,16 @@
 
         // Hide all sections
         sections.forEach(section => section.classList.remove('active'));
-        // Show the targeted section
+        // Show the target section
         const targetId = button.getAttribute('data-target');
         document.getElementById(targetId).classList.add('active');
       });
     });
+
+    // Optional: To make no section visible on page load, no section has 'active' class initially
+    // But if you want to show one by default, uncomment this:
+    // sidebarButtons[0].classList.add('active');
+    // sections[0].classList.add('active');
   </script>
 
 </body>
