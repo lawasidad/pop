@@ -187,7 +187,7 @@
 
       <div class="total-price" id="totalPrice">Total: 0</div>
 
-      <button id="submitBtn">فرۆشتن</button>
+      <button id="submitBtn">Sell</button>
     </div>
   </div>
 
@@ -277,13 +277,13 @@
 
     submitBtn.onclick = () => {
       if (!selectedProduct) {
-        alert("تکایە هەرشتێک هەڵبژێرە بۆ فرۆشتن");
+        alert("Please select a product to sell");
         return;
       }
 
       const customerName = customerInput.value.trim();
       if (customerName === "") {
-        alert("تکایە ناوی کڕیار بنووسە");
+        alert("Please enter the customer's name");
         return;
       }
 
@@ -298,11 +298,11 @@
       };
 
       console.log("Sale submitted:", saleData);
-      alert(`فرۆشتن تەواوە!\n\nکڕیار: ${saleData.customer}\nکالا: ${saleData.productName}\nکۆی گشتی: IQD ${saleData.total.toFixed(2)}`);
+      alert(`Sale completed!\n\nCustomer: ${saleData.customer}\nProduct: ${saleData.productName}\nTotal: IQD ${saleData.total.toFixed(2)}`);
 
-      // لێرە دەتوانیت کۆدەکەت زیاد بکەیت بۆ ناردنی ئەم داتایە بۆ سێرڤەر یان هەر کاری تر
+      // Here you can add your code to send this data to the server or any other action
 
-      // دووبارە دانانەوەی فۆڕمەکان و هەڵبژاردنی کالا:
+      // Reset form and selections:
       selectedProduct = null;
       selectedItemSection.style.display = "none";
       customerInput.value = "";
