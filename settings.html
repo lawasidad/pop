@@ -148,16 +148,36 @@
     background-color: #922b21;
   }
 
-  /* Sales Report placeholder */
-  .placeholder {
-    max-width: 600px;
-    background: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
-    font-size: 18px;
-    color: #444;
+  /* Sales Report Tabs */
+  #salesTabs {
+    display: flex;
+    margin-bottom: 20px;
   }
+  #salesTabs button {
+    padding: 10px 20px;
+    border: none;
+    background: #2980b9;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 6px 6px 0 0;
+    margin-right: 5px;
+    transition: background-color 0.3s ease;
+  }
+  #salesTabs button.active {
+    background-color: #1c5980;
+  }
+  #salesTabs button:hover:not(.active) {
+    background-color: #3a89c9;
+  }
+  .salesTabContent {
+    background: white;
+    padding: 20px;
+    border-radius: 0 6px 6px 6px;
+    box-shadow: 0 0 12px rgba(0,0,0,0.1);
+    max-width: 700px;
+  }
+
 </style>
 </head>
 <body>
@@ -227,17 +247,29 @@
       </div>
     </section>
 
-    <!-- Sales Report Section -->
+    <!-- Sales Report Section with Tabs -->
     <section id="salesSection" class="section">
       <h1>Sales Report</h1>
-      <div class="placeholder">
-        <p>This section will display sales reports and analytics.</p>
+      <div id="salesTabs">
+        <button class="active" data-tab="salesItems">Sales Items</button>
+        <button data-tab="salesInvoices">Sales Invoices</button>
+        <button data-tab="salesByUser">Sales by User</button>
+      </div>
+
+      <div id="salesItems" class="salesTabContent">
+        <p>Sales Items report and analytics will be shown here.</p>
+      </div>
+      <div id="salesInvoices" class="salesTabContent" style="display:none;">
+        <p>Sales Invoices report and details will be shown here.</p>
+      </div>
+      <div id="salesByUser" class="salesTabContent" style="display:none;">
+        <p>Sales by User report and statistics will be shown here.</p>
       </div>
     </section>
   </div>
 
 <script>
-  // Sidebar tab switching logic fixed
+  // Sidebar tab switching logic
   const buttons = document.querySelectorAll('.sidebar nav button');
   const sections = document.querySelectorAll('.section');
 
@@ -252,7 +284,27 @@
     });
   });
 
-  // User management logic
+  // Sales Report tabs switching logic
+  const salesTabButtons = document.querySelectorAll('#salesTabs button');
+  const salesTabContents = document.querySelectorAll('.salesTabContent');
+
+  salesTabButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      salesTabButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const tab = btn.getAttribute('data-tab');
+      salesTabContents.forEach(content => {
+        if (content.id === tab) {
+          content.style.display = 'block';
+        } else {
+          content.style.display = 'none';
+        }
+      });
+    });
+  });
+
+  // User management logic (unchanged)
   const userForm = document.getElementById('userForm');
   const usernameInput = document.getElementById('username');
   const emailInput = document.getElementById('email');
@@ -342,103 +394,4 @@
     if (idx === '') {
       // Add new user
       users.push({ username, email, role, password });
-    } else {
-      // Update existing user
-      users[idx] = { username, email, role, password };
-    }
-
-    saveUsers();
-    renderUsers();
-    resetUserForm();
-  });
-
-  renderUsers();
-
-  // Company management logic
-  const companyForm = document.getElementById('companyForm');
-  const companyNameInput = document.getElementById('companyName');
-  const editIndexCompany = document.getElementById('editIndexCompany');
-  const companiesTbody = document.getElementById('companiesTbody');
-
-  let companies = JSON.parse(localStorage.getItem('companies')) || [];
-
-  function renderCompanies() {
-    companiesTbody.innerHTML = '';
-    companies.forEach((company, index) => {
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${company.name}</td>
-        <td>
-          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
-          <button class="action-btn delete-btn" data-index="${index}">Delete</button>
-        </td>
-      `;
-      companiesTbody.appendChild(tr);
-    });
-
-    document.querySelectorAll('#companyList .edit-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        editCompany(idx);
-      });
-    });
-    document.querySelectorAll('#companyList .delete-btn').forEach(btn => {
-      btn.addEventListener('click', e => {
-        const idx = e.target.getAttribute('data-index');
-        deleteCompany(idx);
-      });
-    });
-  }
-
-  function saveCompanies() {
-    localStorage.setItem('companies', JSON.stringify(companies));
-  }
-
-  function editCompany(index) {
-    const company = companies[index];
-    companyNameInput.value = company.name;
-    editIndexCompany.value = index;
-    companyForm.querySelector('button').textContent = 'Update Company';
-  }
-
-  function deleteCompany(index) {
-    if (confirm('Are you sure you want to delete this company?')) {
-      companies.splice(index, 1);
-      saveCompanies();
-      renderCompanies();
-      resetCompanyForm();
-    }
-  }
-
-  function resetCompanyForm() {
-    companyForm.reset();
-    editIndexCompany.value = '';
-    companyForm.querySelector('button').textContent = 'Add Company';
-  }
-
-  companyForm.addEventListener('submit', e => {
-    e.preventDefault();
-
-    const name = companyNameInput.value.trim();
-    if (!name) {
-      alert('Please enter a company name.');
-      return;
-    }
-
-    const idx = editIndexCompany.value;
-    if (idx === '') {
-      companies.push({ name });
-    } else {
-      companies[idx] = { name };
-    }
-
-    saveCompanies();
-    renderCompanies();
-    resetCompanyForm();
-  });
-
-  renderCompanies();
-</script>
-
-</body>
-</html>
+    } else
