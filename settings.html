@@ -4,10 +4,159 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Settings</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      background-color: #f5f7fa;
+      padding: 20px;
+      direction: rtl;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #333;
+    }
+    .tabs {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 20px;
+    }
+    .tab {
+      padding: 12px 30px;
+      cursor: pointer;
+      background-color: #e2e8f0;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #555;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      user-select: none;
+    }
+    .tab.active {
+      background-color: #667eea;
+      color: white;
+    }
+    .content {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 25px 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgb(0 0 0 / 0.1);
+      min-height: 300px;
+    }
+    /* User Form */
+    form label {
+      display: block;
+      margin-bottom: 8px;
+      color: #444;
+      font-weight: bold;
+    }
+    form input, form select {
+      width: 100%;
+      padding: 10px 12px;
+      margin-bottom: 20px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 15px;
+    }
+    form button {
+      padding: 12px 20px;
+      background-color: #667eea;
+      border: none;
+      color: white;
+      font-weight: bold;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    form button:hover {
+      background-color: #5563c1;
+    }
+    /* Report content */
+    .report-section {
+      font-size: 16px;
+      color: #333;
+      line-height: 1.5;
+    }
+  </style>
 </head>
 <body>
-  <h1>Settings Page</h1>
-  <p>Welcome to the settings page.</p>
-  <button onclick="location.href='dashboard.html'">Back to Dashboard</button>
+
+  <h1>Settings</h1>
+
+  <div class="tabs">
+    <div class="tab active" id="tab-user">User</div>
+    <div class="tab" id="tab-report">Report</div>
+  </div>
+
+  <div class="content" id="content-user">
+    <form id="userForm">
+      <label for="username">ناوی بەکارهێنەر</label>
+      <input type="text" id="username" placeholder="ناوی بەکارهێنەر داخڵ بکە" required />
+
+      <label for="email">ئیمەیڵ</label>
+      <input type="email" id="email" placeholder="نمونە: user@example.com" required />
+
+      <label for="role">ڕۆڵ</label>
+      <select id="role" required>
+        <option value="" disabled selected>ڕۆڵ هەڵبژێرە</option>
+        <option value="admin">ئادمین</option>
+        <option value="user">بەکارهێنەر</option>
+        <option value="guest">میوان</option>
+      </select>
+
+      <button type="submit">پاشکەوتکردن</button>
+    </form>
+  </div>
+
+  <div class="content" id="content-report" style="display:none;">
+    <div class="report-section">
+      <h2>گزارشی سیستەم</h2>
+      <p>لە ئێستادا هیچ گزارشی تۆمار نەکراوە. لە دوای بەکارهێنانی سیستەم، ئەم بەشە بە شێوەی خۆکار تازە دەبێتەوە.</p>
+    </div>
+  </div>
+
+  <script>
+    const tabUser = document.getElementById('tab-user');
+    const tabReport = document.getElementById('tab-report');
+    const contentUser = document.getElementById('content-user');
+    const contentReport = document.getElementById('content-report');
+
+    tabUser.addEventListener('click', () => {
+      tabUser.classList.add('active');
+      tabReport.classList.remove('active');
+      contentUser.style.display = 'block';
+      contentReport.style.display = 'none';
+    });
+
+    tabReport.addEventListener('click', () => {
+      tabReport.classList.add('active');
+      tabUser.classList.remove('active');
+      contentReport.style.display = 'block';
+      contentUser.style.display = 'none';
+    });
+
+    // Simple form submission handler (user form)
+    const userForm = document.getElementById('userForm');
+    userForm.addEventListener('submit', e => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const role = document.getElementById('role').value;
+
+      if (!username || !email || !role) {
+        alert('تکایە هەموو خانەکان پڕ بکەوە');
+        return;
+      }
+
+      // This is a stub for saving user settings
+      alert(`کاربەر: ${username}\nئیمەیڵ: ${email}\nڕۆڵ: ${role}\nپاشکەوتکرا`);
+
+      // Clear form
+      userForm.reset();
+    });
+  </script>
+
 </body>
 </html>
