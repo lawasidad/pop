@@ -55,7 +55,7 @@
       border: 1px solid #ddd;
       border-radius: 8px;
       padding: 15px;
-      margin-bottom: 25px;
+      margin-bottom: 10px; /* کمتر بۆ بڕگەی دابینکراو */
       background: #fff;
       box-sizing: border-box;
     }
@@ -149,8 +149,10 @@
       margin-bottom: 30px;
       min-height: 32px;
     }
+    /* دابینکردنی بۆردە شینەکە بە ناوەراست */
     #submitBtn {
-      width: 100%;
+      display: block;
+      margin: 0 auto 0 auto; /* بۆ ناوەراستی شینەکە */
       padding: 22px 0;
       font-size: 30px;
       font-weight: 900;
@@ -161,9 +163,8 @@
       cursor: pointer;
       transition: background-color 0.35s, box-shadow 0.35s;
       box-shadow: 0 5px 15px rgba(25, 118, 210, 0.7);
-      margin-top: 10px;
-      text-align: center; /* <-- ناوەراست بۆ تێکست */
-      direction: ltr; /* چونە ناوەراستی */
+      width: 100%; /* ئاسان کردنەوەی گەورەبوون */
+      max-width: 300px;
     }
     #submitBtn:hover {
       background-color: #155a9c;
@@ -208,6 +209,7 @@
       #submitBtn {
         font-size: 24px;
         padding: 18px 0;
+        max-width: 100%;
       }
     }
 
