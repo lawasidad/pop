@@ -165,9 +165,9 @@
   <div class="sidebar">
     <h2>Dashboard</h2>
     <nav>
-      <button class="active" data-target="userSection">Users</button>
-      <button data-target="companySection">Company</button>
-      <button data-target="salesSection">Sales Report</button>
+      <button class="active" data-target="userSection" type="button">Users</button>
+      <button data-target="companySection" type="button">Company</button>
+      <button data-target="salesSection" type="button">Sales Report</button>
     </nav>
   </div>
 
@@ -237,7 +237,7 @@
   </div>
 
 <script>
-  // Sidebar tab switching logic
+  // Sidebar tab switching logic fixed
   const buttons = document.querySelectorAll('.sidebar nav button');
   const sections = document.querySelectorAll('.section');
 
@@ -326,4 +326,119 @@
   }
 
   userForm.addEventListener('submit', e => {
-   
+    e.preventDefault();
+
+    const username = usernameInput.value.trim();
+    const email = emailInput.value.trim();
+    const role = roleSelect.value;
+    const password = passwordInput.value;
+
+    if (!username || !email || !role || !password) {
+      alert('Please fill in all fields.');
+      return;
+    }
+
+    const idx = editIndexUser.value;
+    if (idx === '') {
+      // Add new user
+      users.push({ username, email, role, password });
+    } else {
+      // Update existing user
+      users[idx] = { username, email, role, password };
+    }
+
+    saveUsers();
+    renderUsers();
+    resetUserForm();
+  });
+
+  renderUsers();
+
+  // Company management logic
+  const companyForm = document.getElementById('companyForm');
+  const companyNameInput = document.getElementById('companyName');
+  const editIndexCompany = document.getElementById('editIndexCompany');
+  const companiesTbody = document.getElementById('companiesTbody');
+
+  let companies = JSON.parse(localStorage.getItem('companies')) || [];
+
+  function renderCompanies() {
+    companiesTbody.innerHTML = '';
+    companies.forEach((company, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${company.name}</td>
+        <td>
+          <button class="action-btn edit-btn" data-index="${index}">Edit</button>
+          <button class="action-btn delete-btn" data-index="${index}">Delete</button>
+        </td>
+      `;
+      companiesTbody.appendChild(tr);
+    });
+
+    document.querySelectorAll('#companyList .edit-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const idx = e.target.getAttribute('data-index');
+        editCompany(idx);
+      });
+    });
+    document.querySelectorAll('#companyList .delete-btn').forEach(btn => {
+      btn.addEventListener('click', e => {
+        const idx = e.target.getAttribute('data-index');
+        deleteCompany(idx);
+      });
+    });
+  }
+
+  function saveCompanies() {
+    localStorage.setItem('companies', JSON.stringify(companies));
+  }
+
+  function editCompany(index) {
+    const company = companies[index];
+    companyNameInput.value = company.name;
+    editIndexCompany.value = index;
+    companyForm.querySelector('button').textContent = 'Update Company';
+  }
+
+  function deleteCompany(index) {
+    if (confirm('Are you sure you want to delete this company?')) {
+      companies.splice(index, 1);
+      saveCompanies();
+      renderCompanies();
+      resetCompanyForm();
+    }
+  }
+
+  function resetCompanyForm() {
+    companyForm.reset();
+    editIndexCompany.value = '';
+    companyForm.querySelector('button').textContent = 'Add Company';
+  }
+
+  companyForm.addEventListener('submit', e => {
+    e.preventDefault();
+
+    const name = companyNameInput.value.trim();
+    if (!name) {
+      alert('Please enter a company name.');
+      return;
+    }
+
+    const idx = editIndexCompany.value;
+    if (idx === '') {
+      companies.push({ name });
+    } else {
+      companies[idx] = { name };
+    }
+
+    saveCompanies();
+    renderCompanies();
+    resetCompanyForm();
+  });
+
+  renderCompanies();
+</script>
+
+</body>
+</html>
