@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="en">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard - کۆمپانیا و بەکارهێنەر</title>
+<title>Dashboard - Company & Users</title>
 <style>
   body {
-    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0; 
     display: flex; 
     height: 100vh; 
@@ -96,71 +96,71 @@
 <body>
 
 <nav>
-  <button class="nav-btn active" data-section="users">بەکارهێنەرەکان</button>
-  <button class="nav-btn" data-section="company">کۆمپانیا</button>
-  <button class="nav-btn" data-section="sales">ڕاپۆرتی فرۆشتن</button>
+  <button class="nav-btn active" data-section="users">Users</button>
+  <button class="nav-btn" data-section="company">Company</button>
+  <button class="nav-btn" data-section="sales">Sales Report</button>
 </nav>
 
 <main>
-  <!-- Users -->
+  <!-- Users Section -->
   <section id="users" class="active">
-    <h2>زیادکردنی بەکارهێنەر</h2>
+    <h2>Add User</h2>
     <form id="userForm">
-      <input type="text" id="userName" placeholder="ناو" required />
-      <input type="password" id="userPass" placeholder="وشەی تێپەڕ" required />
+      <input type="text" id="userName" placeholder="Name" required />
+      <input type="password" id="userPass" placeholder="Password" required />
       <select id="userRole" required>
-        <option value="">ڕۆڵ هەڵبژێرە</option>
-        <option value="Admin">ئادمین</option>
-        <option value="Manager">بەرێوەبەر</option>
-        <option value="Sales">فرۆشیار</option>
+        <option value="">Select Role</option>
+        <option value="Admin">Admin</option>
+        <option value="Manager">Manager</option>
+        <option value="Sales">Sales</option>
       </select>
-      <input type="tel" id="userMobile" placeholder="ژمارەی موبایل" pattern="[0-9]{7,15}" required />
-      <button type="submit">زیادکردن</button>
+      <input type="tel" id="userMobile" placeholder="Mobile Number" pattern="[0-9]{7,15}" required />
+      <button type="submit">Add User</button>
     </form>
     <table id="userTable">
       <thead>
         <tr>
-          <th>ناو</th>
-          <th>ڕۆڵ</th>
-          <th>موبایل</th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Mobile</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- Company -->
+  <!-- Company Section -->
   <section id="company">
-    <h2>زانیاری کۆمپانیا</h2>
+    <h2>Company Info</h2>
     <form id="companyForm">
-      <input type="text" id="companyName" placeholder="ناوی کۆمپانیا" required />
-      <input type="text" id="companyAddress" placeholder="ناونیشان" required />
+      <input type="text" id="companyName" placeholder="Company Name" required />
+      <input type="text" id="companyAddress" placeholder="Address" required />
       <input type="file" id="companyLogo" accept="image/*" />
-      <img id="logoPreview" alt="پیشاندانى لوگۆ" style="margin-top:10px; max-width:180px; display:none; border-radius: 5px;"/>
-      <button type="submit">هەڵگرتن</button>
+      <img id="logoPreview" alt="Logo Preview" style="margin-top:10px; max-width:180px; display:none; border-radius: 5px;" />
+      <button type="submit">Save Info</button>
     </form>
   </section>
 
-  <!-- Sales -->
+  <!-- Sales Section -->
   <section id="sales">
-    <h2>ڕاپۆرتی فرۆشتن</h2>
-    <input type="text" id="salesFilter" placeholder="پێشکەش بەپێی ناوی کاڵا..." />
+    <h2>Sales Report</h2>
+    <input type="text" id="salesFilter" placeholder="Filter by item name..." />
     <table id="salesTable">
       <thead>
-        <tr><th>کاڵا</th><th>بڕی فرۆشتوو</th><th>کۆی گشتی</th></tr>
+        <tr><th>Item</th><th>Quantity Sold</th><th>Total Price</th></tr>
       </thead>
       <tbody>
-        <tr><td>سیب</td><td>20</td><td>$40</td></tr>
-        <tr><td>موز</td><td>15</td><td>$30</td></tr>
-        <tr><td>ئۆرانج</td><td>10</td><td>$25</td></tr>
-        <tr><td>مێوەی تاک</td><td>8</td><td>$16</td></tr>
+        <tr><td>Apple</td><td>20</td><td>$40</td></tr>
+        <tr><td>Banana</td><td>15</td><td>$30</td></tr>
+        <tr><td>Orange</td><td>10</td><td>$25</td></tr>
+        <tr><td>Single Fruit</td><td>8</td><td>$16</td></tr>
       </tbody>
     </table>
   </section>
 </main>
 
 <script>
-  // نێوی داشبۆرد
+  // Navigation buttons switching sections
   const navButtons = document.querySelectorAll('nav button.nav-btn');
   const sections = document.querySelectorAll('main section');
 
@@ -175,7 +175,7 @@
     });
   });
 
-  // کارکردنی بەکارهێنەر
+  // Users management
   const userForm = document.getElementById('userForm');
   const userTableBody = document.querySelector('#userTable tbody');
 
@@ -198,13 +198,13 @@
     const mobile = document.getElementById('userMobile').value.trim();
 
     if (!name || !pass || !role || !mobile) {
-      alert('تکایە هەموو خانەکان پڕ بکە.');
+      alert('Please fill in all fields.');
       return;
     }
 
     let users = JSON.parse(localStorage.getItem('users') || '[]');
     if(users.some(u => u.name.toLowerCase() === name.toLowerCase())){
-      alert('ئەم بەکارهێنەرە هەیە!');
+      alert('This user already exists!');
       return;
     }
 
@@ -214,7 +214,7 @@
     userForm.reset();
   });
 
-  // کارکردنی کۆمپانیا
+  // Company management
   const companyForm = document.getElementById('companyForm');
   const logoInput = document.getElementById('companyLogo');
   const logoPreview = document.getElementById('logoPreview');
@@ -241,19 +241,19 @@
     const logo = logoPreview.src || '';
 
     if (!name || !address) {
-      alert('ناوی کۆمپانیا و ناونیشان پێویستن.');
+      alert('Company name and address are required.');
       return;
     }
 
     const company = {name, address, logo};
     localStorage.setItem('company', JSON.stringify(company));
-    alert('زانیاری کۆمپانیا هەڵگری.');
+    alert('Company information saved.');
     companyForm.reset();
     logoPreview.style.display = 'none';
     logoPreview.src = '';
   });
 
-  // فیلترکردنی ڕاپۆرتی فرۆشتن
+  // Filter sales report table
   const salesFilter = document.getElementById('salesFilter');
   const salesTableBody = document.querySelector('#salesTable tbody');
 
