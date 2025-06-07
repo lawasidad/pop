@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ku">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -275,4 +275,101 @@
     event.preventDefault();
     const name = document.getElementById('userName').value.trim();
     const password = document.getElementById('userPassword').value.trim();
-    const role = document.getElementById('userRole').value
+    const role = document.getElementById('userRole').value;
+    const mobile = document.getElementById('userMobile').value.trim();
+
+    if(userExists(name)) {
+      alert('User with this name already exists.');
+      return;
+    }
+
+    // Store user info
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push({ name, password, role, mobile });
+    localStorage.setItem('users', JSON.stringify(users));
+
+    loadUsers();
+
+    userForm.reset();
+  });
+
+  // Company Section logic
+  const companyForm = document.getElementById('companyForm');
+  const logoInput = document.getElementById('companyLogo');
+  const logoPreview = document.getElementById('logoPreview');
+
+  // Preview logo image when selected
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        logoPreview.src = e.target.result;
+        logoPreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    } else {
+      logoPreview.src = '';
+      logoPreview.style.display = 'none';
+    }
+  });
+
+  companyForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('companyName').value.trim();
+    const address = document.getElementById('companyAddress').value.trim();
+    const logo = logoPreview.src || '';
+
+    const companyData = { name, address, logo };
+    localStorage.setItem('companyData', JSON.stringify(companyData));
+
+    alert('Company information saved!');
+    companyForm.reset();
+    logoPreview.src = '';
+    logoPreview.style.display = 'none';
+  });
+
+  // Sales Report Filter logic
+  const filterInput = document.getElementById('filterInput');
+  const salesByItemTableBody = document.querySelector('#salesByItemTable tbody');
+
+  filterInput.addEventListener('input', () => {
+    const filterText = filterInput.value.toLowerCase();
+    Array.from(salesByItemTableBody.querySelectorAll('tr')).forEach(row => {
+      const itemName = row.cells[0].textContent.toLowerCase();
+      if (itemName.includes(filterText)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    });
+  });
+
+  // Sales by Invoice Date filter
+  const fromDateInput = document.getElementById('fromDate');
+  const toDateInput = document.getElementById('toDate');
+  const salesByInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
+
+  function filterInvoicesByDate() {
+    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+    const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+
+    Array.from(salesByInvoiceTableBody.querySelectorAll('tr')).forEach(row => {
+      const dateStr = row.cells[1].textContent;
+      const invoiceDate = new Date(dateStr);
+
+      let show = true;
+      if (fromDate && invoiceDate < fromDate) show = false;
+      if (toDate && invoiceDate > toDate) show = false;
+
+      row.style.display = show ? '' : 'none';
+    });
+  }
+
+  fromDateInput.addEventListener('change', filterInvoicesByDate);
+  toDateInput.addEventListener('change', filterInvoicesByDate);
+
+</script>
+
+</body>
+</html>
