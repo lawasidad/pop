@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard Full Working Example</title>
+<title>Dashboard Full Example</title>
 <style>
   body {
     font-family: Arial, sans-serif;
@@ -255,6 +255,7 @@
   const userForm = document.getElementById('userForm');
   const userTableBody = document.querySelector('#userListTable tbody');
 
+  // Load users from localStorage and render in table
   function loadUsers() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     userTableBody.innerHTML = '';
@@ -263,3 +264,135 @@
       tr.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
       userTableBody.appendChild(tr);
     });
+  }
+
+  // Save new user
+  userForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    // Get form values
+    const name = document.getElementById('userName').value.trim();
+    const password = document.getElementById('userPassword').value.trim();
+    const role = document.getElementById('userRole').value;
+    const mobile = document.getElementById('userMobile').value.trim();
+
+    if (!name || !password || !role || !mobile) {
+      alert('Please fill all fields.');
+      return;
+    }
+
+    // Validate mobile number (simple digit check)
+    const mobilePattern = /^[0-9]{10,15}$/;
+    if (!mobilePattern.test(mobile)) {
+      alert('Mobile number must be 10 to 15 digits.');
+      return;
+    }
+
+    // Load existing users
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+
+    // Check if mobile already exists
+    const existingUser = users.find(u => u.mobile === mobile);
+    if (existingUser) {
+      alert('User with this mobile number already exists.');
+      return;
+    }
+
+    // Add new user
+    users.push({ name, password, role, mobile });
+    localStorage.setItem('users', JSON.stringify(users));
+
+    // Clear form
+    userForm.reset();
+
+    // Reload user list
+    loadUsers();
+  });
+
+  loadUsers();
+
+  // Company Section logic
+  const companyForm = document.getElementById('companyForm');
+  const companyLogoInput = document.getElementById('companyLogo');
+  const logoPreview = document.getElementById('logoPreview');
+
+  companyLogoInput.addEventListener('change', function() {
+    const file = companyLogoInput.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        logoPreview.src = e.target.result;
+        logoPreview.style.display = 'block';
+      }
+      reader.readAsDataURL(file);
+    } else {
+      logoPreview.src = '';
+      logoPreview.style.display = 'none';
+    }
+  });
+
+  companyForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    // For demo, just alert info (you can save it to localStorage or send to server)
+    const name = document.getElementById('companyName').value.trim();
+    const address = document.getElementById('companyAddress').value.trim();
+
+    if (!name || !address) {
+      alert('Please fill all company fields.');
+      return;
+    }
+
+    alert('Company info saved:\nName: ' + name + '\nAddress: ' + address);
+    // Clear form for demo
+    companyForm.reset();
+    logoPreview.src = '';
+    logoPreview.style.display = 'none';
+  });
+
+  // Sales Report Filter logic
+  const filterInput = document.getElementById('filterInput');
+  const salesByItemTable = document.getElementById('salesByItemTable').getElementsByTagName('tbody')[0];
+
+  filterInput.addEventListener('input', function() {
+    const filterValue = filterInput.value.toLowerCase();
+    const rows = salesByItemTable.getElementsByTagName('tr');
+    for (let row of rows) {
+      const itemCell = row.cells[0].textContent.toLowerCase();
+      if (itemCell.includes(filterValue)) {
+        row.style.display = '';
+      } else {
+        row.style.display = 'none';
+      }
+    }
+  });
+
+  // Sales by Invoice date filter (basic demo)
+  const fromDateInput = document.getElementById('fromDate');
+  const toDateInput = document.getElementById('toDate');
+  const salesByInvoiceTable = document.getElementById('salesByInvoiceTable').getElementsByTagName('tbody')[0];
+
+  function filterInvoicesByDate() {
+    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+    const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+
+    const rows = salesByInvoiceTable.getElementsByTagName('tr');
+
+    for (let row of rows) {
+      const dateStr = row.cells[1].textContent;
+      const date = new Date(dateStr);
+
+      let show = true;
+      if (fromDate && date < fromDate) show = false;
+      if (toDate && date > toDate) show = false;
+
+      row.style.display = show ? '' : 'none';
+    }
+  }
+
+  fromDateInput.addEventListener('change', filterInvoicesByDate);
+  toDateInput.addEventListener('change', filterInvoicesByDate);
+
+</script>
+
+</body>
+</html>
