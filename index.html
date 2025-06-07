@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Modern Blue Login</title>
+  <title>Login</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
+
     * { box-sizing: border-box; }
     body {
       margin: 0;
@@ -15,28 +16,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      flex-direction: column;
     }
-    .login-box, .add-user-box {
+    .login-box {
       background: #ffffffdd;
-      padding: 30px;
+      padding: 40px 50px;
       border-radius: 15px;
       box-shadow: 0 15px 30px rgba(0,0,0,0.2);
       width: 350px;
       text-align: center;
-      margin: 10px;
     }
     h2 {
-      margin-bottom: 20px;
+      margin-bottom: 25px;
       font-weight: 600;
       color: #1e3c72;
-      letter-spacing: 1.2px;
     }
-    input[type="text"],
-    input[type="password"] {
+    input[type="text"], input[type="password"] {
       width: 100%;
-      padding: 12px 15px;
-      margin: 10px 0;
+      padding: 14px 18px;
+      margin: 12px 0 20px 0;
       border: 2px solid #2a5298;
       border-radius: 8px;
       font-size: 16px;
@@ -45,28 +42,27 @@
       background-color: #1e3c72;
       color: white;
       border: none;
-      padding: 12px 0;
+      padding: 14px 0;
       width: 100%;
       border-radius: 10px;
-      font-size: 16px;
+      font-size: 18px;
       cursor: pointer;
       font-weight: 600;
-      margin-top: 10px;
     }
     button:hover {
       background-color: #144d7f;
+    }
+    .forgot-password {
+      margin-top: 15px;
+      font-size: 14px;
+      color: #2a5298;
+      cursor: pointer;
+      text-decoration: underline;
     }
     .error-message {
       color: #e74c3c;
       margin-bottom: 15px;
       font-weight: 600;
-    }
-    .forgot-password {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #2a5298;
-      cursor: pointer;
-      text-decoration: underline;
     }
   </style>
 </head>
@@ -83,23 +79,13 @@
   <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span>
 </div>
 
-<div class="add-user-box">
-  <h2>Add New User</h2>
-  <form id="addUserForm" novalidate>
-    <input type="text" id="newUsername" placeholder="New Username" required />
-    <input type="password" id="newPassword" placeholder="New Password" required />
-    <button type="submit">Add User</button>
-  </form>
-</div>
-
 <script>
-  // ✅ Step 1: Initialize default user once
+  // ✅ دڵنیابە لەوەی تەنها جارێکی یەکەم یوزەر زیاد بکرێت
   if (!localStorage.getItem('users')) {
-    const defaultUsers = [{ username: 'admin', password: '1234' }];
-    localStorage.setItem('users', JSON.stringify(defaultUsers));
+    const defaultUser = [{ username: 'admin', password: '1234' }];
+    localStorage.setItem('users', JSON.stringify(defaultUser));
   }
 
-  // ✅ Step 2: Handle login
   const loginForm = document.getElementById('loginForm');
   const errorMsg = document.getElementById('errorMsg');
 
@@ -127,33 +113,6 @@
       errorMsg.textContent = '❌ Invalid username or password.';
       errorMsg.style.display = 'block';
     }
-  });
-
-  // ✅ Step 3: Handle new user addition
-  const addUserForm = document.getElementById('addUserForm');
-
-  addUserForm.addEventListener('submit', function(e){
-    e.preventDefault();
-    const newUsername = document.getElementById('newUsername').value.trim();
-    const newPassword = document.getElementById('newPassword').value.trim();
-
-    if (!newUsername || !newPassword) {
-      alert("❗ Please fill in all fields.");
-      return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('users')) || [];
-
-    // Check if user already exists
-    if (users.some(u => u.username === newUsername)) {
-      alert("❌ Username already exists.");
-      return;
-    }
-
-    users.push({ username: newUsername, password: newPassword });
-    localStorage.setItem('users', JSON.stringify(users));
-    alert("✅ New user added!");
-    addUserForm.reset();
   });
 </script>
 
