@@ -238,64 +238,63 @@
 </div>
 
 <script>
-  // Sidebar navigation
-  const buttons = document.querySelectorAll('.sidebar button');
-  const sections = document.querySelectorAll('section');
+  // Sidebar navigation buttons
+  const sidebarButtons = document.querySelectorAll('.sidebar button');
+  const allSections = document.querySelectorAll('section');
 
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      sections.forEach(sec => sec.classList.remove('active'));
-      document.getElementById(btn.dataset.target).classList.add('active');
+  sidebarButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      sidebarButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      allSections.forEach(section => section.classList.remove('active'));
+      document.getElementById(button.dataset.target).classList.add('active');
     });
   });
 
-  // Users Section
+  // Users Section logic
   const userForm = document.getElementById('userForm');
   const userTableBody = document.querySelector('#userListTable tbody');
 
   function loadUsers() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
     userTableBody.innerHTML = '';
-    users.forEach(u => {
+    users.forEach(user => {
       const tr = document.createElement('tr');
-      tr.innerHTML = <td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>;
+      tr.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
       userTableBody.appendChild(tr);
     });
   }
   loadUsers();
 
-  userForm.addEventListener('submit', e => {
-    e.preventDefault();
+  userForm.addEventListener('submit', event => {
+    event.preventDefault();
     const name = document.getElementById('userName').value.trim();
-    const password = document.getElementById('userPassword').value.trim(); // not stored
+    const password = document.getElementById('userPassword').value.trim(); // password not stored for now
     const role = document.getElementById('userRole').value;
     const mobile = document.getElementById('userMobile').value.trim();
 
-    if(!name || !password || !role || !mobile) {
-      alert('Fill all fields correctly.');
+    if (!name || !password || !role || !mobile) {
+      alert('Please fill all fields correctly.');
       return;
     }
 
     const users = JSON.parse(localStorage.getItem('users') || '[]');
-    users.push({name, role, mobile});
+    users.push({ name, role, mobile });
     localStorage.setItem('users', JSON.stringify(users));
     userForm.reset();
     loadUsers();
   });
 
-
-  // Company Section
+  // Company Section logic
   const companyForm = document.getElementById('companyForm');
   const logoInput = document.getElementById('companyLogo');
   const logoPreview = document.getElementById('logoPreview');
 
   function loadCompany() {
     const company = JSON.parse(localStorage.getItem('company') || '{}');
-    if(company.name) document.getElementById('companyName').value = company.name;
-    if(company.address) document.getElementById('companyAddress').value = company.address;
-    if(company.logo) {
+    if (company.name) document.getElementById('companyName').value = company.name;
+    if (company.address) document.getElementById('companyAddress').value = company.address;
+    if (company.logo) {
       logoPreview.src = company.logo;
       logoPreview.style.display = 'block';
     }
@@ -304,7 +303,7 @@
 
   logoInput.addEventListener('change', () => {
     const file = logoInput.files[0];
-    if(file) {
+    if (file) {
       const reader = new FileReader();
       reader.onload = e => {
         logoPreview.src = e.target.result;
@@ -314,34 +313,33 @@
     }
   });
 
-  companyForm.addEventListener('submit', e => {
-    e.preventDefault();
+  companyForm.addEventListener('submit', event => {
+    event.preventDefault();
     const name = document.getElementById('companyName').value.trim();
     const address = document.getElementById('companyAddress').value.trim();
-    let logo = logoPreview.src || '';
+    const logo = logoPreview.src || '';
 
-    if(!name || !address) {
+    if (!name || !address) {
       alert('Please fill company name and address');
       return;
     }
-    localStorage.setItem('company', JSON.stringify({name, address, logo}));
+    localStorage.setItem('company', JSON.stringify({ name, address, logo }));
     alert('Company info saved!');
   });
 
-
-  // Sales Section: Filter Items Table
+  // Sales Section: Filter items by name
   const filterInput = document.getElementById('filterInput');
   const salesItemTableBody = document.querySelector('#salesByItemTable tbody');
 
   filterInput.addEventListener('input', () => {
-    const filter = filterInput.value.toLowerCase();
+    const filterText = filterInput.value.toLowerCase();
     [...salesItemTableBody.rows].forEach(row => {
       const itemName = row.cells[0].textContent.toLowerCase();
-      row.style.display = itemName.includes(filter) ? '' : 'none';
+      row.style.display = itemName.includes(filterText) ? '' : 'none';
     });
   });
 
-  // Sales Section: Filter Invoice Table by date range
+  // Sales Section: Filter invoices by date range
   const fromDateInput = document.getElementById('fromDate');
   const toDateInput = document.getElementById('toDate');
   const salesInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
@@ -353,10 +351,10 @@
     [...salesInvoiceTableBody.rows].forEach(row => {
       const dateStr = row.cells[1].textContent;
       const date = new Date(dateStr);
-      let show = true;
-      if(fromDate && date < fromDate) show = false;
-      if(toDate && date > toDate) show = false;
-      row.style.display = show ? '' : 'none';
+      let showRow = true;
+      if (fromDate && date < fromDate) showRow = false;
+      if (toDate && date > toDate) showRow = false;
+      row.style.display = showRow ? '' : 'none';
     });
   }
 
