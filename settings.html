@@ -3,183 +3,267 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Simple Dashboard</title>
+<title>Dashboard - کۆمپانیا و بەکارهێنەر</title>
 <style>
-  body { font-family: sans-serif; margin: 0; display: flex; height: 100vh; }
-  nav { background: #34495e; color: white; width: 200px; padding: 10px; box-sizing: border-box; }
-  nav button { width: 100%; padding: 10px; margin-bottom: 5px; background: #2c3e50; border: none; color: white; cursor: pointer; }
-  nav button.active { background: #1abc9c; }
-  main { flex: 1; padding: 20px; overflow-y: auto; }
-  section { display: none; }
-  section.active { display: block; }
-  form { max-width: 400px; }
-  input, select, button { width: 100%; margin-bottom: 10px; padding: 8px; box-sizing: border-box; }
-  table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-  th, td { border: 1px solid #ddd; padding: 8px; }
-  th { background: #f0f0f0; }
+  body {
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; 
+    display: flex; 
+    height: 100vh; 
+    background-color: #f4f6f8;
+  }
+  nav {
+    width: 220px;
+    background-color: #2e3a59;
+    color: white;
+    padding: 20px;
+    box-sizing: border-box;
+  }
+  nav button {
+    display: block;
+    width: 100%;
+    margin-bottom: 12px;
+    padding: 12px 8px;
+    background-color: #3e4a7e;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+  }
+  nav button:hover, nav button.active {
+    background-color: #1abc9c;
+  }
+  main {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  form {
+    max-width: 450px;
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
+  input, select, button {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+    font-size: 15px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+  button {
+    background-color: #1abc9c;
+    border: none;
+    color: white;
+    font-weight: bold;
+  }
+  button:hover {
+    background-color: #16a085;
+  }
+  h2 {
+    margin-top: 0;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 25px;
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+  }
+  th {
+    background-color: #1abc9c;
+    color: white;
+  }
 </style>
 </head>
 <body>
 
 <nav>
-  <button class="nav-btn active" data-target="users">Users</button>
-  <button class="nav-btn" data-target="company">Company</button>
-  <button class="nav-btn" data-target="sales">Sales Report</button>
+  <button class="nav-btn active" data-section="users">بەکارهێنەرەکان</button>
+  <button class="nav-btn" data-section="company">کۆمپانیا</button>
+  <button class="nav-btn" data-section="sales">ڕاپۆرتی فرۆشتن</button>
 </nav>
 
 <main>
-  <!-- Users Section -->
+  <!-- Users -->
   <section id="users" class="active">
-    <h2>Add User</h2>
+    <h2>زیادکردنی بەکارهێنەر</h2>
     <form id="userForm">
-      <input type="text" id="name" placeholder="Name" required />
-      <input type="password" id="password" placeholder="Password" required />
-      <select id="role" required>
-        <option value="">Select Role</option>
-        <option>Admin</option>
-        <option>Manager</option>
-        <option>Sales</option>
+      <input type="text" id="userName" placeholder="ناو" required />
+      <input type="password" id="userPass" placeholder="وشەی تێپەڕ" required />
+      <select id="userRole" required>
+        <option value="">ڕۆڵ هەڵبژێرە</option>
+        <option value="Admin">ئادمین</option>
+        <option value="Manager">بەرێوەبەر</option>
+        <option value="Sales">فرۆشیار</option>
       </select>
-      <input type="tel" id="mobile" placeholder="Mobile Number" pattern="[0-9]{7,15}" required />
-      <button type="submit">Add User</button>
+      <input type="tel" id="userMobile" placeholder="ژمارەی موبایل" pattern="[0-9]{7,15}" required />
+      <button type="submit">زیادکردن</button>
     </form>
-    <h3>User List</h3>
     <table id="userTable">
-      <thead><tr><th>Name</th><th>Role</th><th>Mobile</th></tr></thead>
+      <thead>
+        <tr>
+          <th>ناو</th>
+          <th>ڕۆڵ</th>
+          <th>موبایل</th>
+        </tr>
+      </thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- Company Section -->
+  <!-- Company -->
   <section id="company">
-    <h2>Company Info</h2>
+    <h2>زانیاری کۆمپانیا</h2>
     <form id="companyForm">
-      <input type="text" id="companyName" placeholder="Company Name" required />
-      <input type="text" id="companyAddress" placeholder="Address" required />
+      <input type="text" id="companyName" placeholder="ناوی کۆمپانیا" required />
+      <input type="text" id="companyAddress" placeholder="ناونیشان" required />
       <input type="file" id="companyLogo" accept="image/*" />
-      <img id="logoPreview" style="max-width:150px; margin-top:10px; display:none;" alt="Logo Preview" />
-      <button type="submit">Save Company</button>
+      <img id="logoPreview" alt="پیشاندانى لوگۆ" style="margin-top:10px; max-width:180px; display:none; border-radius: 5px;"/>
+      <button type="submit">هەڵگرتن</button>
     </form>
   </section>
 
-  <!-- Sales Section -->
+  <!-- Sales -->
   <section id="sales">
-    <h2>Sales Report</h2>
-    <input type="text" id="filterSales" placeholder="Filter by Item Name..." />
+    <h2>ڕاپۆرتی فرۆشتن</h2>
+    <input type="text" id="salesFilter" placeholder="پێشکەش بەپێی ناوی کاڵا..." />
     <table id="salesTable">
-      <thead><tr><th>Item</th><th>Quantity Sold</th><th>Total</th></tr></thead>
+      <thead>
+        <tr><th>کاڵا</th><th>بڕی فرۆشتوو</th><th>کۆی گشتی</th></tr>
+      </thead>
       <tbody>
-        <tr><td>Apple</td><td>20</td><td>$40</td></tr>
-        <tr><td>Banana</td><td>15</td><td>$30</td></tr>
-        <tr><td>Orange</td><td>10</td><td>$25</td></tr>
-        <tr><td>Grapes</td><td>8</td><td>$16</td></tr>
+        <tr><td>سیب</td><td>20</td><td>$40</td></tr>
+        <tr><td>موز</td><td>15</td><td>$30</td></tr>
+        <tr><td>ئۆرانج</td><td>10</td><td>$25</td></tr>
+        <tr><td>مێوەی تاک</td><td>8</td><td>$16</td></tr>
       </tbody>
     </table>
   </section>
 </main>
 
 <script>
-// Navigation
-const navButtons = document.querySelectorAll('.nav-btn');
-const sections = document.querySelectorAll('section');
+  // نێوی داشبۆرد
+  const navButtons = document.querySelectorAll('nav button.nav-btn');
+  const sections = document.querySelectorAll('main section');
 
-navButtons.forEach(btn => {
-  btn.addEventListener('click', () => {
-    navButtons.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    sections.forEach(s => s.classList.remove('active'));
-    document.getElementById(btn.dataset.target).classList.add('active');
+  navButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      navButtons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      sections.forEach(sec => sec.classList.remove('active'));
+      const targetId = btn.getAttribute('data-section');
+      document.getElementById(targetId).classList.add('active');
+    });
   });
-});
 
-// User Management
-const userForm = document.getElementById('userForm');
-const userTableBody = document.querySelector('#userTable tbody');
+  // کارکردنی بەکارهێنەر
+  const userForm = document.getElementById('userForm');
+  const userTableBody = document.querySelector('#userTable tbody');
 
-function loadUsers() {
-  const users = JSON.parse(localStorage.getItem('users') || '[]');
-  userTableBody.innerHTML = '';
-  users.forEach(u => {
-    const tr = document.createElement('tr');
-    tr.innerHTML = `<td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>`;
-    userTableBody.appendChild(tr);
-  });
-}
-loadUsers();
-
-userForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('name').value.trim();
-  const password = document.getElementById('password').value.trim();
-  const role = document.getElementById('role').value;
-  const mobile = document.getElementById('mobile').value.trim();
-
-  if(!name || !password || !role || !mobile) {
-    alert('All fields required.');
-    return;
+  function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    userTableBody.innerHTML = '';
+    users.forEach(user => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
+      userTableBody.appendChild(tr);
+    });
   }
-
-  let users = JSON.parse(localStorage.getItem('users') || '[]');
-  if(users.some(u => u.name.toLowerCase() === name.toLowerCase())) {
-    alert('User already exists.');
-    return;
-  }
-  users.push({name, password, role, mobile});
-  localStorage.setItem('users', JSON.stringify(users));
   loadUsers();
-  userForm.reset();
-});
 
-// Company Info
-const companyForm = document.getElementById('companyForm');
-const logoInput = document.getElementById('companyLogo');
-const logoPreview = document.getElementById('logoPreview');
+  userForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('userName').value.trim();
+    const pass = document.getElementById('userPass').value.trim();
+    const role = document.getElementById('userRole').value;
+    const mobile = document.getElementById('userMobile').value.trim();
 
-logoInput.addEventListener('change', () => {
-  const file = logoInput.files[0];
-  if(!file) {
+    if (!name || !pass || !role || !mobile) {
+      alert('تکایە هەموو خانەکان پڕ بکە.');
+      return;
+    }
+
+    let users = JSON.parse(localStorage.getItem('users') || '[]');
+    if(users.some(u => u.name.toLowerCase() === name.toLowerCase())){
+      alert('ئەم بەکارهێنەرە هەیە!');
+      return;
+    }
+
+    users.push({name, pass, role, mobile});
+    localStorage.setItem('users', JSON.stringify(users));
+    loadUsers();
+    userForm.reset();
+  });
+
+  // کارکردنی کۆمپانیا
+  const companyForm = document.getElementById('companyForm');
+  const logoInput = document.getElementById('companyLogo');
+  const logoPreview = document.getElementById('logoPreview');
+
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files[0];
+    if (!file) {
+      logoPreview.style.display = 'none';
+      logoPreview.src = '';
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = e => {
+      logoPreview.src = e.target.result;
+      logoPreview.style.display = 'block';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  companyForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('companyName').value.trim();
+    const address = document.getElementById('companyAddress').value.trim();
+    const logo = logoPreview.src || '';
+
+    if (!name || !address) {
+      alert('ناوی کۆمپانیا و ناونیشان پێویستن.');
+      return;
+    }
+
+    const company = {name, address, logo};
+    localStorage.setItem('company', JSON.stringify(company));
+    alert('زانیاری کۆمپانیا هەڵگری.');
+    companyForm.reset();
     logoPreview.style.display = 'none';
     logoPreview.src = '';
-    return;
-  }
-  const reader = new FileReader();
-  reader.onload = e => {
-    logoPreview.src = e.target.result;
-    logoPreview.style.display = 'block';
-  }
-  reader.readAsDataURL(file);
-});
-
-companyForm.addEventListener('submit', e => {
-  e.preventDefault();
-  const name = document.getElementById('companyName').value.trim();
-  const address = document.getElementById('companyAddress').value.trim();
-  const logo = logoPreview.src || '';
-
-  if(!name || !address) {
-    alert('Company name and address are required.');
-    return;
-  }
-
-  const company = {name, address, logo};
-  localStorage.setItem('company', JSON.stringify(company));
-  alert('Company info saved!');
-  companyForm.reset();
-  logoPreview.style.display = 'none';
-  logoPreview.src = '';
-});
-
-// Sales Report Filter
-const filterSales = document.getElementById('filterSales');
-const salesTableBody = document.querySelector('#salesTable tbody');
-
-filterSales.addEventListener('input', () => {
-  const filter = filterSales.value.toLowerCase();
-  Array.from(salesTableBody.querySelectorAll('tr')).forEach(row => {
-    const item = row.cells[0].textContent.toLowerCase();
-    row.style.display = item.includes(filter) ? '' : 'none';
   });
-});
+
+  // فیلترکردنی ڕاپۆرتی فرۆشتن
+  const salesFilter = document.getElementById('salesFilter');
+  const salesTableBody = document.querySelector('#salesTable tbody');
+
+  salesFilter.addEventListener('input', () => {
+    const filter = salesFilter.value.toLowerCase();
+    Array.from(salesTableBody.querySelectorAll('tr')).forEach(row => {
+      const item = row.cells[0].textContent.toLowerCase();
+      row.style.display = item.includes(filter) ? '' : 'none';
+    });
+  });
 </script>
 
 </body>
