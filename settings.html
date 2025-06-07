@@ -1,134 +1,368 @@
 <!DOCTYPE html>
-<html lang="ku">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login Users Panel</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-    }
-    .container {
-      background: white;
-      padding: 30px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-    input, select {
-      width: 100%;
-      padding: 10px;
-      margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    button {
-      width: 100%;
-      background: #2980b9;
-      color: white;
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #3498db;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-    }
-    th, td {
-      padding: 8px;
-      border-bottom: 1px solid #ddd;
-      text-align: left;
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Dashboard Full Working Example</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0; padding: 0;
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
+  }
+  .sidebar {
+    width: 220px;
+    background: #2c3e50;
+    color: white;
+    display: flex;
+    flex-direction: column;
+  }
+  .sidebar h2 {
+    padding: 20px;
+    margin: 0;
+    border-bottom: 1px solid #34495e;
+    text-align: center;
+  }
+  .sidebar button {
+    padding: 15px 20px;
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-bottom: 1px solid #34495e;
+    font-size: 16px;
+    text-align: left;
+  }
+  .sidebar button:hover,
+  .sidebar button.active {
+    background: #34495e;
+  }
+  .main-content {
+    flex: 1;
+    padding: 25px;
+    background: white;
+    overflow-y: auto;
+  }
+  section {
+    display: none;
+  }
+  section.active {
+    display: block;
+  }
+  h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
+  form {
+    max-width: 600px;
+    margin-bottom: 30px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+  button.submit-btn {
+    background: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button.submit-btn:hover {
+    background: #3498db;
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+  }
+  th, td {
+    text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+  }
+  th {
+    background: #f7f7f7;
+  }
+  tr:hover {
+    background: #f1f1f1;
+  }
+  #logoPreview {
+    max-width: 150px;
+    max-height: 80px;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .date-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    max-width: 420px;
+  }
+  .date-filter label {
+    font-weight: normal;
+    color: #555;
+    flex-shrink: 0;
+  }
+  #filterInput {
+    max-width: 300px;
+    margin-bottom: 15px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+  }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>زیادکردنی یوزەر</h2>
+
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <button data-target="usersSection" class="active">Users</button>
+  <button data-target="companySection">Company</button>
+  <button data-target="salesSection">Sales Report</button>
+</div>
+
+<div class="main-content">
+  
+  <section id="usersSection" class="active">
+    <h1>Users</h1>
     <form id="userForm">
-      <label for="userName">ناوی بەکارهێنەر</label>
+      <label for="userName">Name</label>
       <input type="text" id="userName" required />
-
-      <label for="userPassword">تێپەڕەوشە</label>
+      <label for="userPassword">Password</label>
       <input type="password" id="userPassword" required />
-
-      <label for="userRole">ڕۆڵ</label>
+      <label for="userRole">Role</label>
       <select id="userRole" required>
-        <option value="">ڕۆڵ دیاری بکە</option>
+        <option value="">Select role</option>
         <option>Admin</option>
         <option>Manager</option>
         <option>Sales</option>
       </select>
-
-      <label for="userMobile">ژمارەی مۆبایل</label>
-      <input type="tel" id="userMobile" pattern="[0-9]{10,15}" placeholder="مثلاً 07501234567" required />
-
-      <button type="submit">زیادکردن</button>
+      <label for="userMobile">Mobile Number</label>
+      <input type="tel" id="userMobile" pattern="[0-9]{10,15}" placeholder="e.g. 1234567890" required />
+      <button type="submit" class="submit-btn">Add User</button>
     </form>
 
-    <h3>لیستی یوزەرەکان</h3>
+    <h2>User List</h2>
     <table id="userListTable">
       <thead>
-        <tr><th>ناو</th><th>ڕۆڵ</th><th>مۆبایل</th></tr>
+        <tr><th>Name</th><th>Role</th><th>Mobile Number</th></tr>
       </thead>
       <tbody></tbody>
     </table>
-  </div>
+  </section>
 
-  <script>
-    const userForm = document.getElementById('userForm');
-    const userTableBody = document.querySelector('#userListTable tbody');
+  <section id="companySection">
+    <h1>Company</h1>
+    <form id="companyForm">
+      <label for="companyName">Company Name</label>
+      <input type="text" id="companyName" required />
+      <label for="companyAddress">Address</label>
+      <input type="text" id="companyAddress" required />
+      <label for="companyLogo">Logo</label>
+      <input type="file" id="companyLogo" accept="image/*" />
+      <img id="logoPreview" alt="Logo Preview" />
+      <button type="submit" class="submit-btn">Save Company Info</button>
+    </form>
+  </section>
 
-    function loadUsers() {
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      userTableBody.innerHTML = '';
-      users.forEach(u => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>`;
-        userTableBody.appendChild(tr);
-      });
+  <section id="salesSection">
+    <h1>Sales Report</h1>
+
+    <label for="filterInput">Filter Items:</label>
+    <input type="text" id="filterInput" placeholder="Type to filter items..." />
+
+    <h2>Sales by Item</h2>
+    <table id="salesByItemTable">
+      <thead>
+        <tr><th>Item</th><th>Quantity Sold</th><th>Total Sales</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
+        <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+        <tr><td>Sample Product</td><td>7</td><td>$70</td></tr>
+        <tr><td>Test Item</td><td>3</td><td>$30</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Sales by Invoice</h2>
+
+    <div class="date-filter">
+      <label for="fromDate">From:</label>
+      <input type="date" id="fromDate" />
+      <label for="toDate">To:</label>
+      <input type="date" id="toDate" />
+    </div>
+
+    <table id="salesByInvoiceTable">
+      <thead>
+        <tr><th>Invoice Number</th><th>Date</th><th>Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
+        <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+        <tr><td>INV003</td><td>2025-06-05</td><td>$200</td></tr>
+        <tr><td>INV004</td><td>2025-06-10</td><td>$175</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Sales by Amount</h2>
+    <table id="salesByAmountTable">
+      <thead>
+        <tr><th>Customer</th><th>Total Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Customer A</td><td>$250</td></tr>
+        <tr><td>Customer B</td><td>$100</td></tr>
+      </tbody>
+    </table>
+  </section>
+
+</div>
+
+<script>
+  // Sidebar navigation
+  const buttons = document.querySelectorAll('.sidebar button');
+  const sections = document.querySelectorAll('section');
+
+  buttons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      buttons.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(btn.dataset.target).classList.add('active');
+    });
+  });
+
+  // Users Section
+  const userForm = document.getElementById('userForm');
+  const userTableBody = document.querySelector('#userListTable tbody');
+
+  function loadUsers() {
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    userTableBody.innerHTML = '';
+    users.forEach(u => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = <td>${u.name}</td><td>${u.role}</td><td>${u.mobile}</td>;
+      userTableBody.appendChild(tr);
+    });
+  }
+  loadUsers();
+
+  userForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('userName').value.trim();
+    const password = document.getElementById('userPassword').value.trim(); // not stored
+    const role = document.getElementById('userRole').value;
+    const mobile = document.getElementById('userMobile').value.trim();
+
+    if(!name || !password || !role || !mobile) {
+      alert('Fill all fields correctly.');
+      return;
     }
 
-    userForm.addEventListener('submit', e => {
-      e.preventDefault();
-      const name = document.getElementById('userName').value.trim();
-      const password = document.getElementById('userPassword').value.trim(); // ناتەوێتە ناو DB
-      const role = document.getElementById('userRole').value;
-      const mobile = document.getElementById('userMobile').value.trim();
+    const users = JSON.parse(localStorage.getItem('users') || '[]');
+    users.push({name, role, mobile});
+    localStorage.setItem('users', JSON.stringify(users));
+    userForm.reset();
+    loadUsers();
+  });
 
-      if(!name || !password || !role || !mobile) {
-        alert('تکایە هەموو خانەکان پڕ بکە');
-        return;
-      }
 
-      const users = JSON.parse(localStorage.getItem('users') || '[]');
-      users.push({ name, role, mobile });
-      localStorage.setItem('users', JSON.stringify(users));
-      userForm.reset();
-      loadUsers();
+  // Company Section
+  const companyForm = document.getElementById('companyForm');
+  const logoInput = document.getElementById('companyLogo');
+  const logoPreview = document.getElementById('logoPreview');
+
+  function loadCompany() {
+    const company = JSON.parse(localStorage.getItem('company') || '{}');
+    if(company.name) document.getElementById('companyName').value = company.name;
+    if(company.address) document.getElementById('companyAddress').value = company.address;
+    if(company.logo) {
+      logoPreview.src = company.logo;
+      logoPreview.style.display = 'block';
+    }
+  }
+  loadCompany();
+
+  logoInput.addEventListener('change', () => {
+    const file = logoInput.files[0];
+    if(file) {
+      const reader = new FileReader();
+      reader.onload = e => {
+        logoPreview.src = e.target.result;
+        logoPreview.style.display = 'block';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+
+  companyForm.addEventListener('submit', e => {
+    e.preventDefault();
+    const name = document.getElementById('companyName').value.trim();
+    const address = document.getElementById('companyAddress').value.trim();
+    let logo = logoPreview.src || '';
+
+    if(!name || !address) {
+      alert('Please fill company name and address');
+      return;
+    }
+    localStorage.setItem('company', JSON.stringify({name, address, logo}));
+    alert('Company info saved!');
+  });
+
+
+  // Sales Section: Filter Items Table
+  const filterInput = document.getElementById('filterInput');
+  const salesItemTableBody = document.querySelector('#salesByItemTable tbody');
+
+  filterInput.addEventListener('input', () => {
+    const filter = filterInput.value.toLowerCase();
+    [...salesItemTableBody.rows].forEach(row => {
+      const itemName = row.cells[0].textContent.toLowerCase();
+      row.style.display = itemName.includes(filter) ? '' : 'none';
     });
+  });
 
-    window.onload = loadUsers;
-  </script>
+  // Sales Section: Filter Invoice Table by date range
+  const fromDateInput = document.getElementById('fromDate');
+  const toDateInput = document.getElementById('toDate');
+  const salesInvoiceTableBody = document.querySelector('#salesByInvoiceTable tbody');
+
+  function filterInvoices() {
+    const fromDate = fromDateInput.value ? new Date(fromDateInput.value) : null;
+    const toDate = toDateInput.value ? new Date(toDateInput.value) : null;
+
+    [...salesInvoiceTableBody.rows].forEach(row => {
+      const dateStr = row.cells[1].textContent;
+      const date = new Date(dateStr);
+      let show = true;
+      if(fromDate && date < fromDate) show = false;
+      if(toDate && date > toDate) show = false;
+      row.style.display = show ? '' : 'none';
+    });
+  }
+
+  fromDateInput.addEventListener('change', filterInvoices);
+  toDateInput.addEventListener('change', filterInvoices);
+
+</script>
 </body>
 </html>
