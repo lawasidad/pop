@@ -3,41 +3,46 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Dashboard - Company & Users</title>
+<title>Dashboard Full Working Example</title>
 <style>
   body {
     font-family: Arial, sans-serif;
-    margin: 0; 
-    display: flex; 
-    height: 100vh; 
-    background-color: #f4f6f8;
+    margin: 0; padding: 0;
+    display: flex;
+    height: 100vh;
+    background: #f5f5f5;
   }
-  nav {
+  .sidebar {
     width: 220px;
-    background-color: #2e3a59;
+    background: #2c3e50;
     color: white;
-    padding: 20px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
   }
-  nav button {
-    display: block;
-    width: 100%;
-    margin-bottom: 12px;
-    padding: 12px 8px;
-    background-color: #3e4a7e;
+  .sidebar h2 {
+    padding: 20px;
+    margin: 0;
+    border-bottom: 1px solid #34495e;
+    text-align: center;
+  }
+  .sidebar button {
+    padding: 15px 20px;
+    background: none;
     border: none;
     color: white;
-    font-size: 16px;
     cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+    border-bottom: 1px solid #34495e;
+    font-size: 16px;
+    text-align: left;
   }
-  nav button:hover, nav button.active {
-    background-color: #1abc9c;
+  .sidebar button:hover,
+  .sidebar button.active {
+    background: #34495e;
   }
-  main {
-    flex-grow: 1;
-    padding: 30px;
+  .main-content {
+    flex: 1;
+    padding: 25px;
+    background: white;
     overflow-y: auto;
   }
   section {
@@ -46,138 +51,209 @@
   section.active {
     display: block;
   }
+  h1 {
+    margin-top: 0;
+    margin-bottom: 20px;
+  }
   form {
-    max-width: 450px;
-    background: white;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    max-width: 600px;
+    margin-bottom: 30px;
   }
-  input, select, button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 10px;
-    box-sizing: border-box;
-    font-size: 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-  }
-  button {
-    background-color: #1abc9c;
-    border: none;
-    color: white;
+  label {
+    display: block;
+    margin-bottom: 5px;
     font-weight: bold;
   }
-  button:hover {
-    background-color: #16a085;
+  input, select {
+    width: 100%;
+    padding: 8px 10px;
+    margin-bottom: 15px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
   }
-  h2 {
-    margin-top: 0;
+  button.submit-btn {
+    background: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 15px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button.submit-btn:hover {
+    background: #3498db;
   }
   table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 25px;
-    background: white;
-    border-radius: 8px;
-    overflow: hidden;
+    margin-top: 15px;
   }
   th, td {
-    padding: 12px 15px;
-    border-bottom: 1px solid #ddd;
     text-align: left;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
   }
   th {
-    background-color: #1abc9c;
-    color: white;
+    background: #f7f7f7;
+  }
+  tr:hover {
+    background: #f1f1f1;
+  }
+  #logoPreview {
+    max-width: 150px;
+    max-height: 80px;
+    margin-top: 10px;
+    display: none;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .date-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    max-width: 420px;
+  }
+  .date-filter label {
+    font-weight: normal;
+    color: #555;
+    flex-shrink: 0;
+  }
+  #filterInput {
+    max-width: 300px;
+    margin-bottom: 15px;
+    padding: 8px 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    font-size: 14px;
   }
 </style>
 </head>
 <body>
 
-<nav>
-  <button class="nav-btn active" data-section="users">Users</button>
-  <button class="nav-btn" data-section="company">Company</button>
-  <button class="nav-btn" data-section="sales">Sales Report</button>
-</nav>
+<div class="sidebar">
+  <h2>Dashboard</h2>
+  <button data-target="usersSection" class="active">Users</button>
+  <button data-target="companySection">Company</button>
+  <button data-target="salesSection">Sales Report</button>
+</div>
 
-<main>
-  <!-- Users Section -->
-  <section id="users" class="active">
-    <h2>Add User</h2>
+<div class="main-content">
+  
+  <section id="usersSection" class="active">
+    <h1>Users</h1>
     <form id="userForm">
-      <input type="text" id="userName" placeholder="Name" required />
-      <input type="password" id="userPass" placeholder="Password" required />
+      <label for="userName">Name</label>
+      <input type="text" id="userName" required />
+      <label for="userPassword">Password</label>
+      <input type="password" id="userPassword" required />
+      <label for="userRole">Role</label>
       <select id="userRole" required>
-        <option value="">Select Role</option>
-        <option value="Admin">Admin</option>
-        <option value="Manager">Manager</option>
-        <option value="Sales">Sales</option>
+        <option value="">Select role</option>
+        <option>Admin</option>
+        <option>Manager</option>
+        <option>Sales</option>
       </select>
-      <input type="tel" id="userMobile" placeholder="Mobile Number" pattern="[0-9]{7,15}" required />
-      <button type="submit">Add User</button>
+      <label for="userMobile">Mobile Number</label>
+      <input type="tel" id="userMobile" pattern="[0-9]{10,15}" placeholder="e.g. 1234567890" required />
+      <button type="submit" class="submit-btn">Add User</button>
     </form>
-    <table id="userTable">
+
+    <h2>User List</h2>
+    <table id="userListTable">
       <thead>
-        <tr>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Mobile</th>
-        </tr>
+        <tr><th>Name</th><th>Role</th><th>Mobile Number</th></tr>
       </thead>
       <tbody></tbody>
     </table>
   </section>
 
-  <!-- Company Section -->
-  <section id="company">
-    <h2>Company Info</h2>
+  <section id="companySection">
+    <h1>Company</h1>
     <form id="companyForm">
-      <input type="text" id="companyName" placeholder="Company Name" required />
-      <input type="text" id="companyAddress" placeholder="Address" required />
+      <label for="companyName">Company Name</label>
+      <input type="text" id="companyName" required />
+      <label for="companyAddress">Address</label>
+      <input type="text" id="companyAddress" required />
+      <label for="companyLogo">Logo</label>
       <input type="file" id="companyLogo" accept="image/*" />
-      <img id="logoPreview" alt="Logo Preview" style="margin-top:10px; max-width:180px; display:none; border-radius: 5px;" />
-      <button type="submit">Save Info</button>
+      <img id="logoPreview" alt="Logo Preview" />
+      <button type="submit" class="submit-btn">Save Company Info</button>
     </form>
   </section>
 
-  <!-- Sales Section -->
-  <section id="sales">
-    <h2>Sales Report</h2>
-    <input type="text" id="salesFilter" placeholder="Filter by item name..." />
-    <table id="salesTable">
+  <section id="salesSection">
+    <h1>Sales Report</h1>
+
+    <label for="filterInput">Filter Items:</label>
+    <input type="text" id="filterInput" placeholder="Type to filter items..." />
+
+    <h2>Sales by Item</h2>
+    <table id="salesByItemTable">
       <thead>
-        <tr><th>Item</th><th>Quantity Sold</th><th>Total Price</th></tr>
+        <tr><th>Item</th><th>Quantity Sold</th><th>Total Sales</th></tr>
       </thead>
       <tbody>
-        <tr><td>Apple</td><td>20</td><td>$40</td></tr>
-        <tr><td>Banana</td><td>15</td><td>$30</td></tr>
-        <tr><td>Orange</td><td>10</td><td>$25</td></tr>
-        <tr><td>Single Fruit</td><td>8</td><td>$16</td></tr>
+        <tr><td>Example Item 1</td><td>10</td><td>$100</td></tr>
+        <tr><td>Example Item 2</td><td>5</td><td>$50</td></tr>
+        <tr><td>Sample Product</td><td>7</td><td>$70</td></tr>
+        <tr><td>Test Item</td><td>3</td><td>$30</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Sales by Invoice</h2>
+
+    <div class="date-filter">
+      <label for="fromDate">From:</label>
+      <input type="date" id="fromDate" />
+      <label for="toDate">To:</label>
+      <input type="date" id="toDate" />
+    </div>
+
+    <table id="salesByInvoiceTable">
+      <thead>
+        <tr><th>Invoice Number</th><th>Date</th><th>Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>INV001</td><td>2025-06-01</td><td>$150</td></tr>
+        <tr><td>INV002</td><td>2025-06-02</td><td>$100</td></tr>
+        <tr><td>INV003</td><td>2025-06-05</td><td>$200</td></tr>
+        <tr><td>INV004</td><td>2025-06-10</td><td>$175</td></tr>
+      </tbody>
+    </table>
+
+    <h2>Sales by Amount</h2>
+    <table id="salesByAmountTable">
+      <thead>
+        <tr><th>Customer</th><th>Total Amount</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Customer A</td><td>$250</td></tr>
+        <tr><td>Customer B</td><td>$100</td></tr>
       </tbody>
     </table>
   </section>
-</main>
+
+</div>
 
 <script>
-  // Navigation buttons switching sections
-  const navButtons = document.querySelectorAll('nav button.nav-btn');
-  const sections = document.querySelectorAll('main section');
+  // Sidebar navigation buttons
+  const sidebarButtons = document.querySelectorAll('.sidebar button');
+  const allSections = document.querySelectorAll('section');
 
-  navButtons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      navButtons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-
-      sections.forEach(sec => sec.classList.remove('active'));
-      const targetId = btn.getAttribute('data-section');
-      document.getElementById(targetId).classList.add('active');
+  sidebarButtons.forEach(button => {
+    button.addEventListener('click', () => {
+      sidebarButtons.forEach(btn => btn.classList.remove('active'));
+      button.classList.add('active');
+      allSections.forEach(section => section.classList.remove('active'));
+      document.getElementById(button.dataset.target).classList.add('active');
     });
   });
 
-  // Users management
+  // Users Section logic
   const userForm = document.getElementById('userForm');
-  const userTableBody = document.querySelector('#userTable tbody');
+  const userTableBody = document.querySelector('#userListTable tbody');
 
   function loadUsers() {
     const users = JSON.parse(localStorage.getItem('users') || '[]');
@@ -187,84 +263,3 @@
       tr.innerHTML = `<td>${user.name}</td><td>${user.role}</td><td>${user.mobile}</td>`;
       userTableBody.appendChild(tr);
     });
-  }
-  loadUsers();
-
-  userForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('userName').value.trim();
-    const pass = document.getElementById('userPass').value.trim();
-    const role = document.getElementById('userRole').value;
-    const mobile = document.getElementById('userMobile').value.trim();
-
-    if (!name || !pass || !role || !mobile) {
-      alert('Please fill in all fields.');
-      return;
-    }
-
-    let users = JSON.parse(localStorage.getItem('users') || '[]');
-    if(users.some(u => u.name.toLowerCase() === name.toLowerCase())){
-      alert('This user already exists!');
-      return;
-    }
-
-    users.push({name, pass, role, mobile});
-    localStorage.setItem('users', JSON.stringify(users));
-    loadUsers();
-    userForm.reset();
-  });
-
-  // Company management
-  const companyForm = document.getElementById('companyForm');
-  const logoInput = document.getElementById('companyLogo');
-  const logoPreview = document.getElementById('logoPreview');
-
-  logoInput.addEventListener('change', () => {
-    const file = logoInput.files[0];
-    if (!file) {
-      logoPreview.style.display = 'none';
-      logoPreview.src = '';
-      return;
-    }
-    const reader = new FileReader();
-    reader.onload = e => {
-      logoPreview.src = e.target.result;
-      logoPreview.style.display = 'block';
-    };
-    reader.readAsDataURL(file);
-  });
-
-  companyForm.addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('companyName').value.trim();
-    const address = document.getElementById('companyAddress').value.trim();
-    const logo = logoPreview.src || '';
-
-    if (!name || !address) {
-      alert('Company name and address are required.');
-      return;
-    }
-
-    const company = {name, address, logo};
-    localStorage.setItem('company', JSON.stringify(company));
-    alert('Company information saved.');
-    companyForm.reset();
-    logoPreview.style.display = 'none';
-    logoPreview.src = '';
-  });
-
-  // Filter sales report table
-  const salesFilter = document.getElementById('salesFilter');
-  const salesTableBody = document.querySelector('#salesTable tbody');
-
-  salesFilter.addEventListener('input', () => {
-    const filter = salesFilter.value.toLowerCase();
-    Array.from(salesTableBody.querySelectorAll('tr')).forEach(row => {
-      const item = row.cells[0].textContent.toLowerCase();
-      row.style.display = item.includes(filter) ? '' : 'none';
-    });
-  });
-</script>
-
-</body>
-</html>
