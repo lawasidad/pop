@@ -6,7 +6,6 @@
 <title>Modern Blue Login</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
-
   * {
     box-sizing: border-box;
   }
@@ -93,13 +92,15 @@
 </div>
 
 <script>
-  const users = [
-    { username: 'admin', password: '1234' },
-    { username: 'user', password: 'password' }
-  ];
-
   const loginForm = document.getElementById('loginForm');
   const errorMsg = document.getElementById('errorMsg');
+
+  // Load users from localStorage or add default admin
+  let users = JSON.parse(localStorage.getItem('users'));
+  if (!users || users.length === 0) {
+    users = [{ username: 'admin', password: '1234' }];
+    localStorage.setItem('users', JSON.stringify(users));
+  }
 
   loginForm.addEventListener('submit', function(e){
     e.preventDefault();
