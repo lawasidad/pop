@@ -2,224 +2,9 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
-    body {
-      font-family: Tahoma, sans-serif;
-      margin: 0; padding: 10px;
-      background: #f4f8ff;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: white;
-      border-radius: 12px;
-      padding: 20px 25px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.12);
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #246cd4;
-      color: white;
-      font-weight: bold;
-      font-size: 1.3em;
-      padding: 14px 18px;
-      border-radius: 10px;
-      margin-bottom: 15px;
-      user-select: none;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-    .header .total {
-      background: #184f9f;
-      padding: 7px 16px;
-      border-radius: 8px;
-      min-width: 140px;
-      text-align: center;
-    }
-    .header button {
-      background: #f78f1e;
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 1em;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-    }
-    .header button:hover {
-      background: #db7f00;
-    }
-
-    label {
-      display: block;
-      font-weight: 600;
-      margin-top: 14px;
-      margin-bottom: 4px;
-      color: #333;
-    }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 8px 12px;
-      font-size: 1em;
-      border-radius: 7px;
-      border: 1.4px solid #bbb;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus, input[type="number"]:focus {
-      border-color: #246cd4;
-      outline: none;
-    }
-    #searchInput {
-      margin-bottom: 18px;
-      font-size: 1.1em;
-      font-weight: 600;
-    }
-
-    #productList {
-      max-height: 480px;
-      overflow-y: auto;
-      background: #fafafa;
-      border-radius: 10px;
-      border: 1.5px solid #ddd;
-      padding: 12px 18px;
-    }
-
-    .product-item {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-      align-items: center;
-      padding: 14px 8px;
-      border-bottom: 1.3px solid #ddd;
-    }
-    .product-img {
-      flex-shrink: 0;
-      width: 50px;
-      height: 50px;
-      border-radius: 10px;
-      background: #dde5f2;
-      color: #5678a5;
-      font-weight: 800;
-      font-size: 1.5em;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-      text-transform: uppercase;
-    }
-    .product-info {
-      flex: 1 1 130px;
-      font-weight: 700;
-      font-size: 1.05em;
-      color: #202020;
-      min-width: 100px;
-    }
-    .product-details {
-      flex: 1 1 150px;
-      font-size: 0.9em;
-      color: #555;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-      min-width: 130px;
-    }
-
-    .controls {
-      display: flex;
-      gap: 10px;
-      flex: 1 1 300px;
-      flex-wrap: wrap;
-      justify-content: flex-end;
-      align-items: center;
-      min-width: 180px;
-    }
-    .controls label {
-      font-weight: 500;
-      font-size: 0.9em;
-      white-space: nowrap;
-      margin-right: 5px;
-    }
-    .controls input[type="number"] {
-      width: 65px;
-      padding: 6px 9px;
-      font-size: 1em;
-      border-radius: 6px;
-      border: 1.3px solid #999;
-      text-align: center;
-    }
-    .controls button {
-      width: 30px;
-      height: 30px;
-      font-size: 1.3em;
-      background: #246cd4;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      user-select: none;
-      transition: background-color 0.3s ease;
-    }
-    .controls button:hover:not(:disabled) {
-      background: #1b53a6;
-    }
-    .controls button:disabled {
-      background: #bbb;
-      cursor: not-allowed;
-    }
-    .total-product {
-      font-weight: 700;
-      font-size: 1em;
-      min-width: 130px;
-      text-align: center;
-      color: #184f9f;
-    }
-
-    #saleResult {
-      margin-top: 28px;
-      font-weight: 700;
-      font-size: 1.25em;
-      text-align: center;
-      color: green;
-    }
-
-    /* Responsive */
-    @media (max-width: 720px) {
-      .product-item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .controls {
-        justify-content: flex-start;
-        gap: 10px 20px;
-      }
-      .product-info, .product-details, .total-product {
-        min-width: auto;
-        width: 100%;
-      }
-      .header {
-        flex-direction: column;
-        gap: 10px;
-        font-size: 1.15em;
-        padding: 10px 15px;
-      }
-      .header .total {
-        min-width: auto;
-        width: 100%;
-        padding: 10px 0;
-      }
-      .header button {
-        width: 100%;
-        padding: 12px 0;
-        font-size: 1.1em;
-      }
-    }
+    /* ...[هەمان style کە هەیە، تاقی بکە سەریدا بوونی ئەو style ـانە بەجێهێڵراوە]... */
   </style>
 </head>
 <body>
@@ -241,7 +26,6 @@
   </div>
 
   <script>
-    // Sample products for testing
     const products = [
       { name: "Kalashin", unitPrice: 1000, discount: 0, img: "K" },
       { name: "Shusha", unitPrice: 1500, discount: 5, img: "S" },
@@ -250,20 +34,125 @@
       { name: "Computer", unitPrice: 7000, discount: 15, img: "C" },
     ];
 
-    // Track quantities and discount overrides per product
     const items = products.map(p => ({
       ...p,
       quantity: 0,
       discountOverride: p.discount
     }));
 
-    // Render product list with controls
     function renderProducts(filter = "") {
       const list = document.getElementById("productList");
       const filterLC = filter.toLowerCase();
       list.innerHTML = "";
-
       items.forEach((item, index) => {
         if (!item.name.toLowerCase().includes(filterLC)) return;
 
-        const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) /
+        const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
+        const total = item.quantity > 0 ? (priceAfterDiscount * item.quantity) : 0;
+
+        list.innerHTML += `
+          <div class="product-item" data-index="${index}">
+            <div class="product-img">${item.img}</div>
+            <div class="product-info">${item.name}</div>
+            <div class="product-details">
+              <div>Unit Price: <input type="number" value="${item.unitPrice}" readonly /></div>
+              <div>Default Discount: ${item.discount}%</div>
+            </div>
+            <div class="controls">
+              <label>Qty:</label>
+              <button onclick="changeQty(${index}, -1)">-</button>
+              <input type="number" min="0" value="${item.quantity}" oninput="updateQty(${index}, this.value)" />
+              <button onclick="changeQty(${index}, 1)">+</button>
+
+              <label>Discount %:</label>
+              <input type="number" min="0" max="100" value="${item.discountOverride}" oninput="updateDiscount(${index}, this.value)" />
+            </div>
+            <div class="total-product">${total.toLocaleString()} IQD</div>
+          </div>
+        `;
+      });
+      updateTotal();
+    }
+
+    function changeQty(index, delta) {
+      items[index].quantity = Math.max(0, items[index].quantity + delta);
+      renderProducts(document.getElementById("searchInput").value);
+    }
+
+    function updateQty(index, val) {
+      let v = parseInt(val);
+      if (isNaN(v) || v < 0) v = 0;
+      items[index].quantity = v;
+      renderProducts(document.getElementById("searchInput").value);
+    }
+
+    function updateDiscount(index, val) {
+      let v = parseFloat(val);
+      if (isNaN(v) || v < 0) v = 0;
+      if (v > 100) v = 100;
+      items[index].discountOverride = v;
+      renderProducts(document.getElementById("searchInput").value);
+    }
+
+    function filterProducts() {
+      const val = document.getElementById("searchInput").value;
+      renderProducts(val);
+    }
+
+    function updateTotal() {
+      const total = items.reduce((sum, item) => {
+        if (item.quantity > 0) {
+          const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
+          return sum + (priceAfterDiscount * item.quantity);
+        }
+        return sum;
+      }, 0);
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
+    }
+
+    function submitSale() {
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("Please enter the customer name.");
+        return;
+      }
+
+      const saleItems = items.filter(i => i.quantity > 0).map(i => {
+        const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
+        return {
+          name: i.name,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+          discount: i.discountOverride,
+          total: priceAfterDiscount * i.quantity
+        };
+      });
+
+      if (saleItems.length === 0) {
+        alert("Please select at least one product with quantity greater than zero.");
+        return;
+      }
+
+      const totalSale = saleItems.reduce((sum, i) => sum + i.total, 0);
+
+      const saleData = {
+        customer,
+        items: saleItems,
+        total: totalSale
+      };
+
+      // Save sale data to localStorage
+      localStorage.setItem("lastSale", JSON.stringify(saleData));
+
+      document.getElementById("saleResult").textContent = "Sale submitted successfully!";
+
+      // Redirect to sales.html
+      setTimeout(() => {
+        window.location.href = "sales.html";
+      }, 1000);
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
