@@ -1,114 +1,112 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<title>New Sale</title>
-<style>
-body { font-family: Tahoma, sans-serif; background: #f0f0f0; padding: 20px; }
-.container { max-width:700px; margin:auto; background:white; padding:20px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.1);}
-label { display:block; margin-top:12px; font-weight:bold; }
-input[type=text], input[type=number] { width:100%; padding:8px; border-radius:5px; border:1px solid #bbb; }
-.items-list { margin-top:15px; min-height:150px; border:1px solid #ddd; padding:10px; background:#fafafa; border-radius:5px; }
-.item-row { display:flex; justify-content:space-between; margin-bottom:8px; }
-.item-row > div { flex:1; padding:0 5px; }
-.item-row input { width:100%; }
-.total-summary { margin-top:20px; font-size:18px; font-weight:bold; border-top:1px solid #ccc; padding-top:10px;}
-button { margin-top:20px; width:100%; padding:12px; background:#2c3e50; color:#fff; border:none; border-radius:7px; cursor:pointer; }
-</style>
+  <meta charset="UTF-8">
+  <title>New Sale</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      width: 100%;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 8px;
+      border: 1px solid #ccc;
+      text-align: center;
+    }
+    th {
+      background: #eee;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <h2>New Sale</h2>
+  <div class="container">
+    <h2>New Sale</h2>
+    <input type="text" id="customer" placeholder="Customer" />
+    <input type="text" id="prodName" placeholder="Product Name" />
+    <input type="number" id="qty" placeholder="Qty" />
+    <input type="number" id="price" placeholder="Unit Price" />
+    <input type="number" id="disc" placeholder="Discount %" />
+    <button onclick="addItem()">Add Item</button>
 
-  <label>Customer Name</label>
-  <input type="text" id="customer" />
+    <table id="itemsTable">
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Qty</th>
+          <th>Unit Price</th>
+          <th>Discount %</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-  <label>Product Name</label>
-  <input type="text" id="prodName" placeholder="e.g. Product A" />
+    <h3 id="totalDisplay">Total: 0</h3>
+    <button onclick="submitSale()">Submit Sale</button>
+  </div>
 
-  <label>Qty</label>
-  <input type="number" id="qty" min="1" />
+  <script>
+    let items = [];
 
-  <label>Unit Price</label>
-  <input type="number" id="price" min="0" />
+    function addItem() {
+      const prodName = document.getElementById('prodName').value;
+      const qty = parseFloat(document.getElementById('qty').value);
+      const price = parseFloat(document.getElementById('price').value);
+      const disc = parseFloat(document.getElementById('disc').value) || 0;
+      const total = qty * price * (1 - disc / 100);
 
-  <label>Discount %</label>
-  <input type="number" id="disc" min="0" max="100" />
-
-  <button id="addBtn">Add to Sale</button>
-
-  <div class="items-list" id="itemsList"></div>
-
-  <div class="total-summary" id="totalSum">Total: IQD 0.00</div>
-
-  <button id="submitBtn">Submit Sale</button>
-</div>
-
-<script>
-// کۆکردنەوەی ئەیتمەکان
-let items = [];
-
-// هەڵبژردنی DOM
-const itemsList = document.getElementById('itemsList');
-const totalSum = document.getElementById('totalSum');
-const customerInput = document.getElementById('customer');
-const prodInput = document.getElementById('prodName');
-const qtyInput = document.getElementById('qty');
-const priceInput = document.getElementById('price');
-const discInput = document.getElementById('disc');
-
-// زیادکردنی ئەیتم
-document.getElementById('addBtn').addEventListener('click', () => {
-  const name = prodInput.value.trim();
-  const qty = parseInt(qtyInput.value,10);
-  const price = parseFloat(priceInput.value);
-  const disc = parseFloat(discInput.value) || 0;
-  if (!name || !qty || !price) return alert('Please fill fields');
-  const total = qty * price * (1 - disc/100);
-  items.push({ name, qty, price, disc, total });
-  renderItems();
-  prodInput.value = qtyInput.value = priceInput.value = discInput.value = '';
-});
-
-// نمایش لیست آیتم‌ها و حساب کل
-function renderItems(){
-  itemsList.innerHTML = '';
-  let sum = 0;
-  items.forEach((it,i) => {
-    sum += it.total;
-    const row = document.createElement('div');
-    row.className = 'item-row';
-    row.innerHTML = `
-      <div>${it.name}</div>
-      <div>${it.qty}</div>
-      <div>${it.price.toFixed(2)}</div>
-      <div>${it.disc}%</div>
-      <div>${it.total.toFixed(2)}</div>
-      <div><button data-index="${i}">✖</button></div>`;
-    itemsList.appendChild(row);
-  });
-  totalSum.textContent = `Total: IQD ${sum.toFixed(2)}`;
-  // حذف
-  document.querySelectorAll('.item-row button').forEach(b => {
-    b.onclick = () => {
-      items.splice(b.dataset.index,1);
+      items.push({ name: prodName, qty, price, disc, total });
       renderItems();
-    };
-  });
-}
+    }
 
-// زیادکردن بۆ sales.html
-document.getElementById('submitBtn').addEventListener('click', () => {
-  const cust = customerInput.value.trim();
-  if (!cust) return alert('Enter customer');
-  if (!items.length) return alert('Add items');
-  const sale = { customer: cust, items };
-  let sales = JSON.parse(localStorage.getItem('salesList') || '[]');
-  sales.push(sale);
-  localStorage.setItem('salesList', JSON.stringify(sales));
-  alert('Sale saved!');
-  customerInput.value = ''; items=[];renderItems();
-});
-</script>
+    function renderItems() {
+      const tbody = document.querySelector('#itemsTable tbody');
+      tbody.innerHTML = '';
+      let grandTotal = 0;
+      items.forEach(item => {
+        grandTotal += item.total;
+        const row = `<tr>
+          <td>${item.name}</td>
+          <td>${item.qty}</td>
+          <td>${item.price}</td>
+          <td>${item.disc}</td>
+          <td>${item.total.toFixed(2)}</td>
+        </tr>`;
+        tbody.innerHTML += row;
+      });
+      document.getElementById('totalDisplay').innerText = `Total: ${grandTotal.toFixed(2)}`;
+    }
+
+    function submitSale() {
+      const customer = document.getElementById('customer').value;
+      const sale = { customer, items };
+      let sales = JSON.parse(localStorage.getItem('salesList') || '[]');
+      sales.push(sale);
+      localStorage.setItem('salesList', JSON.stringify(sales));
+      alert('Sale saved.');
+      document.getElementById('customer').value = '';
+      items = [];
+      renderItems();
+    }
+  </script>
 </body>
 </html>
