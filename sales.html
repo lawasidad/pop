@@ -5,7 +5,7 @@
   <title>Submitted Sales</title>
   <style>
     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
     th { background: #eee; }
   </style>
 </head>
@@ -26,20 +26,22 @@
   </table>
 
   <script>
-    const sales = JSON.parse(localStorage.getItem("salesList")) || [];
+    const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
     const tbody = document.getElementById("salesTable");
 
-    sales.forEach(sale => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${sale.customer}</td>
-        <td>${sale.product}</td>
-        <td>${sale.qty}</td>
-        <td>${sale.unitPrice}</td>
-        <td>${sale.discount}</td>
-        <td>${sale.total.toFixed(2)}</td>
-      `;
-      tbody.appendChild(row);
+    salesList.forEach(sale => {
+      sale.items.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${sale.customer}</td>
+          <td>${item.productName}</td>
+          <td>${item.quantity}</td>
+          <td>${item.unitPrice.toLocaleString()}</td>
+          <td>${item.discountPercent}</td>
+          <td>${item.total.toFixed(2)}</td>
+        `;
+        tbody.appendChild(row);
+      });
     });
   </script>
 </body>
