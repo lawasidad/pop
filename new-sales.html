@@ -20,7 +20,6 @@
     input, select, button {
       margin: 10px 0;
       padding: 10px;
-      width: 100%;
       font-size: 1em;
     }
     table {
@@ -33,11 +32,17 @@
       padding: 8px;
       text-align: center;
     }
+    .btn-small {
+      padding: 5px 10px;
+      font-size: 0.9em;
+      margin: 2px;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>فرۆشتنی نوێ</h2>
+
     <label>ناوی کڕیار:</label>
     <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە">
 
@@ -48,42 +53,87 @@
       <option value="ئێلکترۆنیک">ئێلکترۆنیک</option>
     </select>
 
-    <label>ژمارە:</label>
-    <input type="number" id="quantity" value="1">
-
     <label>نرخی تاک:</label>
     <input type="number" id="unitPrice" value="1000">
 
     <label>داشکاندن (%):</label>
     <input type="number" id="discount" value="0">
 
-    <button onclick="addSale()">ناردنی فرۆشتن</button>
+    <button onclick="addItem()">زیادکردنی بەرهەم</button>
 
+    <table id="itemList">
+      <thead>
+        <tr>
+          <th>کالا</th>
+          <th>ژمارە</th>
+          <th>+</th>
+          <th>-</th>
+          <th>نرخی تاک</th>
+          <th>داشکاندن</th>
+          <th>کۆی گشتی</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <button onclick="submitSale()">ناردنی فرۆشتن</button>
     <div id="saleResult"></div>
   </div>
 
   <script>
-    function addSale() {
-      const customer = document.getElementById("customer").value;
+    let items = [];
+
+    function addItem() {
       const product = document.getElementById("product").value;
-      const quantity = parseInt(document.getElementById("quantity").value);
       const unitPrice = parseFloat(document.getElementById("unitPrice").value);
       const discount = parseFloat(document.getElementById("discount").value);
 
-      const discountedPrice = unitPrice * (1 - discount / 100);
-      const total = discountedPrice * quantity;
+      const existing = items.find(i => i.name === product && i.unitPrice === unitPrice && i.discount === discount);
+      if (existing) {
+        existing.quantity++;
+      } else {
+        items.push({ name: product, quantity: 1, unitPrice, discount });
+      }
+      renderTable();
+    }
+
+    function changeQty(index, delta) {
+      items[index].quantity += delta;
+      if (items[index].quantity <= 0) items.splice(index, 1);
+      renderTable();
+    }
+
+    function renderTable() {
+      const tbody = document.querySelector("#itemList tbody");
+      tbody.innerHTML = "";
+      items.forEach((item, i) => {
+        const total = item.unitPrice * (1 - item.discount / 100) * item.quantity;
+        tbody.innerHTML += `
+          <tr>
+            <td>${item.name}</td>
+            <td>${item.quantity}</td>
+            <td><button class="btn-small" onclick="changeQty(${i}, 1)">+</button></td>
+            <td><button class="btn-small" onclick="changeQty(${i}, -1)">-</button></td>
+            <td>${item.unitPrice}</td>
+            <td>${item.discount}%</td>
+            <td>${total.toLocaleString()}</td>
+          </tr>`;
+      });
+    }
+
+    function submitSale() {
+      const customer = document.getElementById("customer").value;
+      const total = items.reduce((sum, i) => sum + (i.unitPrice * (1 - i.discount / 100) * i.quantity), 0);
 
       const saleData = {
         customer,
-        items: [
-          {
-            name: product,
-            quantity,
-            unitPrice,
-            discount,
-            total
-          }
-        ],
+        items: items.map(i => ({
+          name: i.name,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+          discount: i.discount,
+          total: i.unitPrice * (1 - i.discount / 100) * i.quantity
+        })),
         total
       };
 
