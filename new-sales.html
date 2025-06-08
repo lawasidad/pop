@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form</title>
+  <title>فۆرمی فرۆشتن</title>
   <style>
     body {
       font-family: "Tahoma", sans-serif;
       background: #f0f0f0;
       padding: 20px;
-      direction: ltr;
-      text-align: left;
+      direction: rtl;
+      text-align: right;
     }
     .container {
       max-width: 700px;
@@ -134,28 +134,28 @@
 </head>
 <body>
   <div class="container">
-    <h2>Sales Form</h2>
+    <h2>فۆرمی فرۆشتن</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
+    <label for="customer">ناوی کڕیار</label>
+    <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" autocomplete="off" />
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
+    <label for="searchProduct">گەڕان بۆ کاڵا</label>
+    <input type="text" id="searchProduct" placeholder="ناوی کاڵا بنووسە" autocomplete="off" />
 
     <div class="items-list" id="itemsList"></div>
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+    <div class="total-summary" id="totalSummary">کۆی گشتی: IQD 0.00</div>
 
-    <button id="submitBtn">Submit Sale</button>
+    <button id="submitBtn">ناردنی فرۆشتن</button>
   </div>
 
 <script>
   const products = [
-    { id: 1, name: "Product A", price: 20000 },
-    { id: 2, name: "Product B", price: 35000 },
-    { id: 3, name: "Product C", price: 50000 },
-    { id: 4, name: "Product D", price: 15000 },
-    { id: 5, name: "Product E", price: 40000 },
+    { id: 1, name: "کاڵا A", price: 20000 },
+    { id: 2, name: "کاڵا B", price: 35000 },
+    { id: 3, name: "کاڵا C", price: 50000 },
+    { id: 4, name: "کاڵا D", price: 15000 },
+    { id: 5, name: "کاڵا E", price: 40000 },
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -177,20 +177,20 @@
       itemDiv.innerHTML = `
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
+          <div class="item-price">نرخ: IQD ${item.price.toLocaleString()}</div>
         </div>
         <div class="controls">
           <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="Quantity of ${item.name}" />
-            <button data-action="inc" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">+</button>
+            <button data-action="dec" data-id="${item.id}" aria-label="کەمکردنەوەی ژمارەی ${item.name}">-</button>
+            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="ژمارەی ${item.name}" />
+            <button data-action="inc" data-id="${item.id}" aria-label="زیادکردنی ژمارەی ${item.name}">+</button>
           </div>
           <div class="discount-control">
-            <label for="discount-${item.id}">Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="Discount percent for ${item.name}" />
+            <label for="discount-${item.id}">داشکاندن %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="داشکاندنی ${item.name}" />
           </div>
           <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            کۆی گشتی: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
           </div>
         </div>
       `;
@@ -203,7 +203,7 @@
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    totalSummary.textContent = `کۆی گشتی: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
   }
 
   searchInput.addEventListener("input", () => {
@@ -244,56 +244,4 @@
     if (input.classList.contains("discount-input")) {
       const id = parseInt(input.getAttribute("data-id"));
       let val = parseFloat(input.value);
-      if (isNaN(val) || val < 0) val = 0;
-      if (val > 100) val = 100;
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      cart[index].discount = val;
-      renderItems();
-    }
-  });
-
-  submitBtn.addEventListener("click", () => {
-    const customer = customerInput.value.trim();
-    if (!customer) {
-      alert("Please enter customer name!");
-      return;
-    }
-
-    const saleItems = cart.filter(item => item.quantity > 0).map(item => ({
-      productName: item.name,
-      quantity: item.quantity,
-      unitPrice: item.price,
-      discountPercent: item.discount,
-      total: parseFloat((item.quantity * item.price * (1 - item.discount / 100)).toFixed(2))
-    }));
-
-    if (saleItems.length === 0) {
-      alert("Please add at least one product quantity!");
-      return;
-    }
-
-    const saleData = {
-      customer,
-      items: saleItems,
-      totalAmount: parseFloat(saleItems.reduce((sum, item) => sum + item.total, 0).toFixed(2))
-    };
-
-    // Save to localStorage under "salesList" array
-    const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
-    salesList.push(saleData);
-    localStorage.setItem("salesList", JSON.stringify(salesList));
-
-    alert("Sale data saved successfully!");
-
-    // Reset form
-    customerInput.value = "";
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-    filteredCart = [...cart];
-    renderItems();
-  });
-
-  renderItems();
-</script>
-</body>
-</html>
+      if (isNaN(val) || val < 0)
