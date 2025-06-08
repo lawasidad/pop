@@ -1,50 +1,141 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Sales List</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
-    .container { background: white; padding: 20px; max-width: 800px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #eee; }
+    body {
+      font-family: "Tahoma", sans-serif;
+      background: #f8f9fa;
+      padding: 20px;
+      direction: ltr;
+      text-align: left;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: white;
+      padding: 20px 30px;
+      box-shadow: 0 0 12px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #34495e;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border: 1px solid #ccc;
+      text-align: center;
+      font-size: 15px;
+      color: #2c3e50;
+    }
+    th {
+      background-color: #2c3e50;
+      color: white;
+    }
+    tbody tr:hover {
+      background-color: #d1ecf1;
+    }
+    .sale-block {
+      margin-bottom: 30px;
+      border-bottom: 2px solid #2c3e50;
+      padding-bottom: 15px;
+    }
+    .customer-name {
+      font-weight: bold;
+      font-size: 18px;
+      margin-bottom: 10px;
+      color: #1a3e72;
+    }
+    .total-amount {
+      font-weight: bold;
+      font-size: 16px;
+      color: #e74c3c;
+      margin-top: 8px;
+      text-align: right;
+    }
+    .no-data {
+      text-align: center;
+      font-size: 18px;
+      margin-top: 40px;
+      color: #888;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Sales List</h2>
-    <table>
-      <thead>
-        <tr>
-          <th>Customer</th>
-          <th>Product</th>
-          <th>Qty</th>
-          <th>Unit Price</th>
-          <th>Discount %</th>
-          <th>Total</th>
-        </tr>
-      </thead>
-      <tbody id="salesBody"></tbody>
-    </table>
+    <div id="salesContainer"></div>
   </div>
 
-  <script>
-    const sales = JSON.parse(localStorage.getItem('salesList') || '[]');
-    const tbody = document.getElementById('salesBody');
-    sales.forEach(sale => {
-      sale.items.forEach(item => {
-        const row = `<tr>
-          <td>${sale.customer}</td>
-          <td>${item.name}</td>
-          <td>${item.qty}</td>
-          <td>${item.price}</td>
-          <td>${item.disc}</td>
-          <td>${item.total.toFixed(2)}</td>
-        </tr>`;
-        tbody.innerHTML += row;
+<script>
+  function renderSales() {
+    const salesContainer = document.getElementById("salesContainer");
+    const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
+
+    if (salesList.length === 0) {
+      salesContainer.innerHTML = '<div class="no-data">No sales records found.</div>';
+      return;
+    }
+
+    salesContainer.innerHTML = "";
+
+    salesList.forEach((sale, index) => {
+      const saleDiv = document.createElement("div");
+      saleDiv.className = "sale-block";
+
+      let itemsTable = `
+        <table>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Unit Price (IQD)</th>
+              <th>Discount (%)</th>
+              <th>Total (IQD)</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      sale.items.forEach((item, i) => {
+        itemsTable += `
+          <tr>
+            <td>${i + 1}</td>
+            <td>${item.productName}</td>
+            <td>${item.quantity}</td>
+            <td>${item.unitPrice.toLocaleString()}</td>
+            <td>${item.discountPercent}</td>
+            <td>${item.total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          </tr>
+        `;
       });
+
+      itemsTable += `
+          </tbody>
+        </table>
+      `;
+
+      saleDiv.innerHTML = `
+        <div class="customer-name">Customer: ${sale.customer}</div>
+        ${itemsTable}
+        <div class="total-amount">Total Amount: IQD ${sale.totalAmount.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</div>
+      `;
+
+      salesContainer.appendChild(saleDiv);
     });
-  </script>
+  }
+
+  renderSales();
+</script>
 </body>
 </html>
