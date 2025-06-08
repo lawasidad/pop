@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form</title>
+  <title>Sales Form Test</title>
   <style>
     body {
       font-family: "Tahoma", sans-serif;
@@ -13,7 +13,7 @@
       text-align: left;
     }
     .container {
-      max-width: 800px;
+      max-width: 700px;
       margin: auto;
       background: white;
       padding: 20px 30px;
@@ -41,7 +41,7 @@
     }
     .items-list {
       margin-top: 15px;
-      max-height: 350px;
+      max-height: 300px;
       overflow-y: auto;
       border: 1px solid #ddd;
       border-radius: 5px;
@@ -57,13 +57,6 @@
     }
     .item:last-child {
       border-bottom: none;
-    }
-    .item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 6px;
-      margin-right: 10px;
-      object-fit: cover;
     }
     .item-info {
       flex-grow: 1;
@@ -83,7 +76,7 @@
       display: flex;
       gap: 12px;
       align-items: center;
-      min-width: 250px;
+      min-width: 230px;
       font-size: 14px;
     }
     .qty-control button,
@@ -138,12 +131,10 @@
       background: #1a2a3a;
     }
   </style>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>Sales Form</h2>
+    <h2>Sales Form Test</h2>
 
     <label for="customer">Customer Name</label>
     <input type="text" id="customer" placeholder="Enter customer name" />
@@ -155,19 +146,17 @@
 
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
 
-    <button id="submitBtn">Submit Sale</button>
+    <button id="submitBtn">Submit Sale (Test Console)</button>
   </div>
 
 <script>
-  const { jsPDF } = window.jspdf;
-
+  // Sample product list
   const products = [
-    { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
-    { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
-    { id: 3, name: "Product C", price: 50000, image: "https://via.placeholder.com/60?text=C" },
-    { id: 4, name: "Product D", price: 15000, image: "https://via.placeholder.com/60?text=D" },
-    { id: 5, name: "Product E", price: 40000, image: "https://via.placeholder.com/60?text=E" },
-    { id: 6, name: "Product F", price: 60000, image: "https://via.placeholder.com/60?text=F" }
+    { id: 1, name: "Product A", price: 20000 },
+    { id: 2, name: "Product B", price: 35000 },
+    { id: 3, name: "Product C", price: 50000 },
+    { id: 4, name: "Product D", price: 15000 },
+    { id: 5, name: "Product E", price: 40000 },
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -176,16 +165,17 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
+  // Initialize cart with quantities and discounts
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
+  // Render product items list
   function renderItems() {
     itemsList.innerHTML = "";
     filteredCart.forEach(item => {
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
       itemDiv.innerHTML = `
-        <img src="${item.image}" alt="${item.name}" />
         <div class="item-info">
           <div class="item-name">${item.name}</div>
           <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
@@ -210,34 +200,38 @@
     updateTotalSummary();
   }
 
+  // Change quantity by delta (+1 or -1)
   function changeQuantity(id, delta) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
-    let newQty = cart[index].quantity + delta;
+    const idx = cart.findIndex(p => p.id === id);
+    if (idx === -1) return;
+    let newQty = cart[idx].quantity + delta;
     if (newQty < 0) newQty = 0;
-    cart[index].quantity = newQty;
+    cart[idx].quantity = newQty;
     filterProducts();
   }
 
+  // Set quantity from input
   function setQuantity(id, value) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
+    const idx = cart.findIndex(p => p.id === id);
+    if (idx === -1) return;
     let val = Number(value);
     if (isNaN(val) || val < 0) val = 0;
-    cart[index].quantity = val;
+    cart[idx].quantity = val;
     filterProducts();
   }
 
+  // Set discount from input
   function setDiscount(id, value) {
-    const index = cart.findIndex(p => p.id === id);
-    if (index === -1) return;
+    const idx = cart.findIndex(p => p.id === id);
+    if (idx === -1) return;
     let val = Number(value);
     if (isNaN(val) || val < 0) val = 0;
     if (val > 100) val = 100;
-    cart[index].discount = val;
+    cart[idx].discount = val;
     filterProducts();
   }
 
+  // Update total summary
   function updateTotalSummary() {
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
@@ -245,61 +239,58 @@
     totalSummary.textContent = `Total: IQD ${total.toLocaleString()}`;
   }
 
+  // Filter products by search input
   function filterProducts() {
-    const query = searchInput.value.trim().toLowerCase();
-    if (query === "") {
+    const q = searchInput.value.trim().toLowerCase();
+    if (q === "") {
       filteredCart = [...cart];
     } else {
-      filteredCart = cart.filter(item => item.name.toLowerCase().includes(query));
+      filteredCart = cart.filter(item => item.name.toLowerCase().includes(q));
     }
     renderItems();
   }
 
-  function generatePDF(saleData) {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "pt",
-      format: "a4"
-    });
+  // Submit button click handler - show sale data in console for testing
+  submitBtn.addEventListener("click", () => {
+    const customer = customerInput.value.trim();
+    if (!customer) {
+      alert("Please enter customer name!");
+      return;
+    }
+    // Get only items with quantity > 0
+    const saleItems = cart.filter(item => item.quantity > 0).map(item => ({
+      productName: item.name,
+      quantity: item.quantity,
+      unitPrice: item.price,
+      discountPercent: item.discount,
+      total: item.quantity * item.price * (1 - item.discount / 100)
+    }));
 
-    let y = 40;
-    const leftMargin = 40;
-    doc.setFontSize(22);
-    doc.text("Sales Receipt", leftMargin + 150, y);
-    y += 30;
+    if (saleItems.length === 0) {
+      alert("Please add at least one product quantity!");
+      return;
+    }
 
-    doc.setFontSize(16);
-    doc.text(`Customer: ${saleData.customer}`, leftMargin, y);
-    y += 25;
+    const saleData = {
+      customer: customer,
+      items: saleItems,
+      totalAmount: saleItems.reduce((sum, item) => sum + item.total, 0)
+    };
 
-    doc.setFontSize(14);
-    doc.text("Items:", leftMargin, y);
-    y += 20;
+    console.log("=== Sale Data ===");
+    console.log(saleData);
 
-    doc.setFont(undefined, "bold");
-    doc.text("Name", leftMargin, y);
-    doc.text("Qty", leftMargin + 150, y);
-    doc.text("Price", leftMargin + 200, y);
-    doc.text("Discount %", leftMargin + 320, y);
-    doc.text("Total", leftMargin + 420, y);
-    y += 15;
-    doc.setLineWidth(0.5);
-    doc.line(leftMargin, y, 550, y);
-    y += 15;
+    alert("Sale data sent to console. Check developer tools.");
 
-    doc.setFont(undefined, "normal");
-    saleData.items.forEach(item => {
-      if (y > 750) {
-        doc.addPage();
-        y = 40;
-      }
-      doc.text(item.productName, leftMargin, y);
-      doc.text(item.quantity.toString(), leftMargin + 150, y);
-      doc.text(`IQD ${item.unitPrice.toLocaleString()}`, leftMargin + 200, y);
-      doc.text(item.discountPercent.toString(), leftMargin + 320, y);
-      doc.text(`IQD ${item.total.toLocaleString()}`, leftMargin + 420, y);
-      y += 20;
-    });
+    // Reset form after submission
+    customerInput.value = "";
+    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+    filterProducts();
+  });
 
-    y += 10;
-    doc.setLineWidth
+  // Initial render
+  renderItems();
+</script>
+
+</body>
+</html>
