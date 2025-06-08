@@ -1,189 +1,177 @@
+<!-- new-sales.html -->
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>فۆرمی فرۆشتن</title>
+  <meta charset="UTF-8">
+  <title>فرۆشتنی نوێ</title>
   <style>
     body {
-      font-family: "Tahoma", sans-serif;
-      background: #f9f9f9;
+      font-family: Tahoma, sans-serif;
       padding: 20px;
+      background: #eef;
     }
     .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
       max-width: 800px;
       margin: auto;
-      background: white;
-      padding: 25px 30px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 10px;
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 25px;
-      color: #333;
-    }
-    label {
-      font-weight: bold;
-      display: block;
-      margin: 15px 0 5px;
-    }
-    input[type="text"], input[type="number"] {
-      width: 100%;
+    input, select, button {
+      margin: 10px 0;
       padding: 10px;
-      font-size: 16px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      box-sizing: border-box;
-    }
-    .product-list {
-      margin-top: 20px;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-    }
-    .product {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .product-info {
-      flex: 1;
-    }
-    .product-controls {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-    }
-    .product-controls input {
-      width: 60px;
-    }
-    .total {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: left;
-    }
-    button {
-      background: #2c3e50;
-      color: white;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      margin-top: 20px;
       width: 100%;
+      font-size: 1em;
     }
-    button:hover {
-      background: #1a2a3a;
+    table {
+      width: 100%;
+      margin-top: 15px;
+      border-collapse: collapse;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>فۆرمی فرۆشتن</h2>
+    <h2>فرۆشتنی نوێ</h2>
+    <label>ناوی کڕیار:</label>
+    <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە">
 
-    <label for="customer">ناوی کڕیار</label>
-    <input type="text" id="customer" placeholder="ناوی کڕیار بنوسە">
+    <label>کالا:</label>
+    <select id="product">
+      <option value="کەڵەشین">کەڵەشین</option>
+      <option value="شووشە">شووشە</option>
+      <option value="ئێلکترۆنیک">ئێلکترۆنیک</option>
+    </select>
 
-    <div class="product-list" id="productList"></div>
+    <label>ژمارە:</label>
+    <input type="number" id="quantity" value="1">
 
-    <div class="total" id="totalAmount">کۆی گشتی: 0 IQD</div>
+    <label>نرخی تاک:</label>
+    <input type="number" id="unitPrice" value="1000">
 
-    <button id="submitSale">ناردنی فرۆشتن</button>
+    <label>داشکاندن (%):</label>
+    <input type="number" id="discount" value="0">
+
+    <button onclick="addSale()">ناردنی فرۆشتن</button>
+
+    <div id="saleResult"></div>
   </div>
 
-<script>
-  const products = [
-    { id: 1, name: "کالای یەکەم", price: 10000 },
-    { id: 2, name: "کالای دووەم", price: 20000 },
-    { id: 3, name: "کالای سێیەم", price: 15000 }
-  ];
+  <script>
+    function addSale() {
+      const customer = document.getElementById("customer").value;
+      const product = document.getElementById("product").value;
+      const quantity = parseInt(document.getElementById("quantity").value);
+      const unitPrice = parseFloat(document.getElementById("unitPrice").value);
+      const discount = parseFloat(document.getElementById("discount").value);
 
-  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+      const discountedPrice = unitPrice * (1 - discount / 100);
+      const total = discountedPrice * quantity;
 
-  const productList = document.getElementById("productList");
-  const totalAmount = document.getElementById("totalAmount");
-  const submitSale = document.getElementById("submitSale");
-  const customerInput = document.getElementById("customer");
+      const saleData = {
+        customer,
+        items: [
+          {
+            name: product,
+            quantity,
+            unitPrice,
+            discount,
+            total
+          }
+        ],
+        total
+      };
 
-  function renderProducts() {
-    productList.innerHTML = "";
-    cart.forEach(p => {
-      const total = p.quantity * p.price * (1 - p.discount / 100);
-      const div = document.createElement("div");
-      div.className = "product";
-      div.innerHTML = `
-        <div class="product-info">
-          <div><strong>${p.name}</strong></div>
-          <div>نرخی تاک: ${p.price.toLocaleString()} IQD</div>
-        </div>
-        <div class="product-controls">
-          <input type="number" min="0" value="${p.quantity}" data-id="${p.id}" class="qty" title="ژمارە">
-          <input type="number" min="0" max="100" value="${p.discount}" data-id="${p.id}" class="disc" title="داشکاندن">
-          <div><strong>${total.toLocaleString()} IQD</strong></div>
-        </div>
+      localStorage.setItem("lastSale", JSON.stringify(saleData));
+
+      document.getElementById("saleResult").innerHTML = "<p>فرۆشتن تۆمار کرا</p>";
+    }
+  </script>
+</body>
+</html>
+
+
+<!-- sales.html -->
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>زانیاری فرۆشتنی کۆتا</h2>
+    <div id="saleData"></div>
+  </div>
+
+  <script>
+    const sale = JSON.parse(localStorage.getItem("lastSale"));
+
+    if (!sale) {
+      document.getElementById("saleData").innerHTML = "<p>هیچ زانیاری فرۆشتنێک نییە.</p>";
+    } else {
+      const html = `
+        <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>ناوی کاڵا</th>
+              <th>ژمارە</th>
+              <th>نرخی تاک</th>
+              <th>داشکاندن (%)</th>
+              <th>کۆی گشتی</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sale.items.map(item => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unitPrice.toLocaleString()} IQD</td>
+                <td>${item.discount}%</td>
+                <td>${item.total.toLocaleString()} IQD</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+        <p><strong>کۆی گشتی:</strong> ${sale.total.toLocaleString()} IQD</p>
       `;
-      productList.appendChild(div);
-    });
-    updateTotal();
-  }
-
-  function updateTotal() {
-    const total = cart.reduce((sum, p) => sum + (p.quantity * p.price * (1 - p.discount / 100)), 0);
-    totalAmount.textContent = `کۆی گشتی: ${total.toLocaleString()} IQD`;
-  }
-
-  productList.addEventListener("input", (e) => {
-    const id = parseInt(e.target.dataset.id);
-    const product = cart.find(p => p.id === id);
-    if (!product) return;
-
-    if (e.target.classList.contains("qty")) {
-      product.quantity = Math.max(0, parseInt(e.target.value) || 0);
-    } else if (e.target.classList.contains("disc")) {
-      product.discount = Math.min(100, Math.max(0, parseFloat(e.target.value) || 0));
+      document.getElementById("saleData").innerHTML = html;
     }
-    renderProducts();
-  });
-
-  submitSale.addEventListener("click", () => {
-    const customer = customerInput.value.trim();
-    if (!customer) {
-      alert("تکایە ناوی کڕیار بنوسە");
-      return;
-    }
-
-    const items = cart.filter(p => p.quantity > 0).map(p => ({
-      name: p.name,
-      unitPrice: p.price,
-      quantity: p.quantity,
-      discount: p.discount,
-      total: +(p.quantity * p.price * (1 - p.discount / 100)).toFixed(2)
-    }));
-
-    if (items.length === 0) {
-      alert("هیچ کاڵایەک دیار نەکراوە");
-      return;
-    }
-
-    const saleData = {
-      customer,
-      items,
-      total: +(items.reduce((sum, i) => sum + i.total, 0)).toFixed(2)
-    };
-
-    console.log("داتای فرۆشتن:", saleData);
-    alert("فرۆشتن تۆمار کرا - داتاکان لە console دەنرێن");
-
-    customerInput.value = "";
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-    renderProducts();
-  });
-
-  renderProducts();
-</script>
+  </script>
 </body>
 </html>
