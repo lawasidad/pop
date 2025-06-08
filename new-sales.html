@@ -302,46 +302,4 @@
     });
 
     y += 10;
-    doc.setLineWidth(0.8);
-    doc.line(leftMargin, y, 550, y);
-    y += 25;
-
-    doc.setFontSize(16);
-    doc.setFont(undefined, "bold");
-    doc.text(`Grand Total: IQD ${saleData.grandTotal.toLocaleString()}`, leftMargin, y);
-
-    doc.save(`sale_${Date.now()}.pdf`);
-  }
-
-  submitBtn.onclick = () => {
-    const customer = customerInput.value.trim();
-    if (customer === "") {
-      alert("Please enter customer name");
-      return;
-    }
-
-    const items = cart.filter(item => item.quantity > 0).map(item => {
-      const total = item.quantity * item.price * (1 - item.discount / 100);
-      return {
-        productName: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        discountPercent: item.discount,
-        total: Math.round(total)
-      };
-    });
-
-    if (items.length === 0) {
-      alert("No products selected");
-      return;
-    }
-
-    const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
-
-    generatePDF({ customer, items, grandTotal });
-  };
-
-  renderItems();
-</script>
-</body>
-</html>
+    doc.setLineWidth
