@@ -256,18 +256,26 @@
   }
 
   function generatePDF(saleData) {
-    const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: "a4"
+    });
+
     let y = 40;
     const leftMargin = 40;
     doc.setFontSize(22);
     doc.text("Sales Receipt", leftMargin + 150, y);
     y += 30;
+
     doc.setFontSize(16);
     doc.text(`Customer: ${saleData.customer}`, leftMargin, y);
     y += 25;
+
     doc.setFontSize(14);
     doc.text("Items:", leftMargin, y);
     y += 20;
+
     doc.setFont(undefined, "bold");
     doc.text("Name", leftMargin, y);
     doc.text("Qty", leftMargin + 150, y);
@@ -278,6 +286,7 @@
     doc.setLineWidth(0.5);
     doc.line(leftMargin, y, 550, y);
     y += 15;
+
     doc.setFont(undefined, "normal");
     saleData.items.forEach(item => {
       if (y > 750) {
@@ -291,13 +300,16 @@
       doc.text(`IQD ${item.total.toLocaleString()}`, leftMargin + 420, y);
       y += 20;
     });
+
     y += 10;
     doc.setLineWidth(0.8);
     doc.line(leftMargin, y, 550, y);
     y += 25;
+
     doc.setFontSize(16);
     doc.setFont(undefined, "bold");
     doc.text(`Grand Total: IQD ${saleData.grandTotal.toLocaleString()}`, leftMargin, y);
+
     doc.save(`sale_${Date.now()}.pdf`);
   }
 
@@ -307,6 +319,7 @@
       alert("Please enter customer name");
       return;
     }
+
     const items = cart.filter(item => item.quantity > 0).map(item => {
       const total = item.quantity * item.price * (1 - item.discount / 100);
       return {
@@ -317,11 +330,14 @@
         total: Math.round(total)
       };
     });
+
     if (items.length === 0) {
       alert("No products selected");
       return;
     }
+
     const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
+
     generatePDF({ customer, items, grandTotal });
   };
 
