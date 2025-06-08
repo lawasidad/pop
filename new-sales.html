@@ -31,8 +31,7 @@
       font-weight: bold;
       color: #34495e;
     }
-    input[type="text"],
-    input[type="number"] {
+    input[type="text"], input[type="number"] {
       width: 100%;
       padding: 8px 10px;
       font-size: 16px;
@@ -136,7 +135,6 @@
 <body>
   <div class="container">
     <h2>Sales Form Test</h2>
-
     <label for="customer">Customer Name</label>
     <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
 
@@ -144,7 +142,6 @@
     <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
 
     <div class="items-list" id="itemsList"></div>
-
     <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
 
     <button id="submitBtn">Submit Sale (Test Console)</button>
@@ -189,7 +186,7 @@
               <label for="discount-${item.id}">Discount %:</label>
               <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" />
             </div>
-            <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
+            <div style="margin-top:8px; font-weight:bold; min-width:110px;">
               Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
             </div>
           </div>
@@ -200,8 +197,9 @@
     }
 
     function updateTotalSummary() {
-      const total = cart.reduce((sum, item) =>
-        sum + (item.quantity * item.price * (1 - item.discount / 100)), 0);
+      const total = cart.reduce((sum, item) => {
+        return sum + (item.quantity * item.price * (1 - item.discount / 100));
+      }, 0);
       totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
     }
 
@@ -220,36 +218,31 @@
         const action = btn.getAttribute("data-action");
         const index = cart.findIndex(item => item.id === id);
         if (index === -1) return;
-        if (action === "inc") {
-          cart[index].quantity++;
-        } else if (action === "dec" && cart[index].quantity > 0) {
-          cart[index].quantity--;
-        }
+        if (action === "inc") cart[index].quantity++;
+        else if (action === "dec" && cart[index].quantity > 0) cart[index].quantity--;
         renderItems();
       }
     });
 
     itemsList.addEventListener("change", (e) => {
       const input = e.target;
+      const id = parseInt(input.getAttribute("data-id"));
+      const index = cart.findIndex(item => item.id === id);
+      if (index === -1) return;
+
       if (input.classList.contains("qty-input")) {
-        const id = parseInt(input.getAttribute("data-id"));
         let val = parseInt(input.value);
-        if (isNaN(val) || val < 0) val = 0;
-        const index = cart.findIndex(item => item.id === id);
-        if (index === -1) return;
-        cart[index].quantity = val;
-        renderItems();
+        cart[index].quantity = isNaN(val) || val < 0 ? 0 : val;
       }
+
       if (input.classList.contains("discount-input")) {
-        const id = parseInt(input.getAttribute("data-id"));
         let val = parseFloat(input.value);
         if (isNaN(val) || val < 0) val = 0;
         if (val > 100) val = 100;
-        const index = cart.findIndex(item => item.id === id);
-        if (index === -1) return;
         cart[index].discount = val;
-        renderItems();
       }
+
+      renderItems();
     });
 
     submitBtn.addEventListener("click", () => {
@@ -282,7 +275,6 @@
       console.log(saleData);
       alert("Sale data sent to console. Check developer tools.");
 
-      // Reset form
       customerInput.value = "";
       cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
       filteredCart = [...cart];
