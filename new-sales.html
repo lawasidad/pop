@@ -1,99 +1,167 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>New Sale</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Sales</title>
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, button { margin: 5px; padding: 5px; }
-    table { border-collapse: collapse; width: 100%; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 10px; text-align: center; }
-    th { background-color: #eee; }
+    body {
+      font-family: "Tahoma", sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 20px 30px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .items-list {
+      margin-top: 15px;
+      max-height: 350px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+    .qty-control input, .discount-control input {
+      width: 60px;
+    }
+    .total-summary {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      text-align: left;
+    }
+    #submitBtn {
+      margin-top: 25px;
+      width: 100%;
+      background: #2c3e50;
+      color: white;
+      padding: 14px 0;
+      font-size: 18px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
-  <h2>Create New Sale</h2>
-  
-  <label>Customer Name:</label>
-  <input type="text" id="customerInput"><br><br>
+  <div class="container">
+    <h2>New Sales</h2>
 
-  <table id="productTable">
-    <thead>
-      <tr>
-        <th>Product</th>
-        <th>Unit Price</th>
-        <th>Quantity</th>
-        <th>Discount (%)</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <label for="customer">Customer Name</label>
+    <input type="text" id="customer" placeholder="Enter customer name" />
 
-  <button id="submitBtn">Submit Sale</button>
+    <div class="items-list" id="itemsList"></div>
+
+    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+
+    <button id="submitBtn">Submit Sale</button>
+  </div>
 
   <script>
+    const itemsList = document.getElementById("itemsList");
+    const customerInput = document.getElementById("customer");
+    const totalSummary = document.getElementById("totalSummary");
+
     const products = [
-      { name: "Coca Cola", price: 1000 },
-      { name: "Pepsi", price: 800 },
-      { name: "Chips", price: 500 },
+      { id: 1, name: "Product A", price: 20000 },
+      { id: 2, name: "Product B", price: 35000 },
+      { id: 3, name: "Product C", price: 50000 }
     ];
 
-    const tbody = document.querySelector("#productTable tbody");
+    let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
 
-    products.forEach((product, index) => {
-      const row = document.createElement("tr");
+    function renderItems() {
+      itemsList.innerHTML = "";
+      cart.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div>
+            <strong>${item.name}</strong><br>
+            Price: IQD ${item.price.toLocaleString()}
+          </div>
+          <div class="controls">
+            <input type="number" min="0" placeholder="Qty" onchange="setQty(${item.id}, this.value)" />
+            <input type="number" min="0" max="100" placeholder="Discount %" onchange="setDiscount(${item.id}, this.value)" />
+          </div>
+        `;
+        itemsList.appendChild(div);
+      });
+    }
 
-      row.innerHTML = `
-        <td>${product.name}</td>
-        <td>${product.price}</td>
-        <td><input type="number" id="qty-${index}" min="0" value="0"></td>
-        <td><input type="number" id="discount-${index}" min="0" max="100" value="0"></td>
-      `;
+    function setQty(id, val) {
+      const item = cart.find(i => i.id === id);
+      item.quantity = parseInt(val) || 0;
+      updateTotal();
+    }
 
-      tbody.appendChild(row);
-    });
+    function setDiscount(id, val) {
+      const item = cart.find(i => i.id === id);
+      item.discount = parseFloat(val) || 0;
+      updateTotal();
+    }
 
-    const submitBtn = document.getElementById("submitBtn");
-    const customerInput = document.getElementById("customerInput");
+    function updateTotal() {
+      const total = cart.reduce((sum, i) =>
+        sum + (i.quantity * i.price * (1 - i.discount / 100)), 0);
+      totalSummary.textContent = `Total: IQD ${total.toLocaleString()}`;
+    }
 
-    submitBtn.onclick = () => {
+    document.getElementById("submitBtn").onclick = () => {
       const customer = customerInput.value.trim();
       if (!customer) {
         alert("Enter customer name");
         return;
       }
-
-      const items = [];
-
-      products.forEach((product, index) => {
-        const qty = parseInt(document.getElementById(`qty-${index}`).value);
-        const discount = parseFloat(document.getElementById(`discount-${index}`).value);
-        if (qty > 0) {
-          const total = qty * product.price * (1 - discount / 100);
-          items.push({
-            productName: product.name,
-            quantity: qty,
-            unitPrice: product.price,
-            discountPercent: discount,
-            total: Math.round(total),
-          });
-        }
-      });
-
+      const items = cart.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        qty: i.quantity,
+        price: i.price,
+        discount: i.discount
+      }));
       if (items.length === 0) {
-        alert("Select at least one product");
+        alert("No items selected");
         return;
       }
-
-      const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
-
-      localStorage.setItem("lastSale", JSON.stringify({
-        customer,
-        items,
-        grandTotal
-      }));
-
-      alert("Sale saved! Go to sales.html to view.");
+      const saleData = { customer, items };
+      localStorage.setItem("saleData", JSON.stringify(saleData));
+      window.location.href = "sales.html";
     };
+
+    renderItems();
   </script>
 </body>
 </html>
