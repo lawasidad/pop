@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>فۆرمی فرۆشتن</title>
+  <title>New Sales Form</title>
   <style>
     body {
       font-family: "Tahoma", sans-serif;
       background: #f0f0f0;
       padding: 20px;
-      direction: rtl;
-      text-align: right;
+      direction: ltr;
+      text-align: left;
     }
     .container {
       max-width: 700px;
@@ -134,28 +134,29 @@
 </head>
 <body>
   <div class="container">
-    <h2>فۆرمی فرۆشتن</h2>
+    <h2>New Sales Form</h2>
 
-    <label for="customer">ناوی کڕیار</label>
-    <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" autocomplete="off" />
+    <label for="customer">Customer Name</label>
+    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
 
-    <label for="searchProduct">گەڕان بۆ کاڵا</label>
-    <input type="text" id="searchProduct" placeholder="ناوی کاڵا بنووسە" autocomplete="off" />
+    <label for="searchProduct">Search Product</label>
+    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
 
     <div class="items-list" id="itemsList"></div>
 
-    <div class="total-summary" id="totalSummary">کۆی گشتی: IQD 0.00</div>
+    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
 
-    <button id="submitBtn">ناردنی فرۆشتن</button>
+    <button id="submitBtn">Submit Sale</button>
   </div>
 
 <script>
+  // Products hardcoded list
   const products = [
-    { id: 1, name: "کاڵا A", price: 20000 },
-    { id: 2, name: "کاڵا B", price: 35000 },
-    { id: 3, name: "کاڵا C", price: 50000 },
-    { id: 4, name: "کاڵا D", price: 15000 },
-    { id: 5, name: "کاڵا E", price: 40000 },
+    { id: 1, name: "Product A", price: 20000 },
+    { id: 2, name: "Product B", price: 35000 },
+    { id: 3, name: "Product C", price: 50000 },
+    { id: 4, name: "Product D", price: 15000 },
+    { id: 5, name: "Product E", price: 40000 },
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -164,9 +165,11 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
+  // Initialize cart with quantity and discount
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
+  // Render product items
   function renderItems() {
     itemsList.innerHTML = "";
     filteredCart.forEach(item => {
@@ -177,20 +180,20 @@
       itemDiv.innerHTML = `
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-price">نرخ: IQD ${item.price.toLocaleString()}</div>
+          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
         </div>
         <div class="controls">
           <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}" aria-label="کەمکردنەوەی ژمارەی ${item.name}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="ژمارەی ${item.name}" />
-            <button data-action="inc" data-id="${item.id}" aria-label="زیادکردنی ژمارەی ${item.name}">+</button>
+            <button data-action="dec" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">-</button>
+            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="Quantity of ${item.name}" />
+            <button data-action="inc" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">+</button>
           </div>
           <div class="discount-control">
-            <label for="discount-${item.id}">داشکاندن %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="داشکاندنی ${item.name}" />
+            <label for="discount-${item.id}">Discount %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="Discount percent for ${item.name}" />
           </div>
           <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            کۆی گشتی: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
           </div>
         </div>
       `;
@@ -199,13 +202,15 @@
     updateTotalSummary();
   }
 
+  // Update total sale summary
   function updateTotalSummary() {
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `کۆی گشتی: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
   }
 
+  // Filter products by search
   searchInput.addEventListener("input", () => {
     const query = searchInput.value.trim().toLowerCase();
     filteredCart = query
@@ -214,6 +219,7 @@
     renderItems();
   });
 
+  // Quantity buttons (increment/decrement)
   itemsList.addEventListener("click", (e) => {
     const btn = e.target;
     if (btn.tagName === "BUTTON") {
@@ -230,18 +236,5 @@
     }
   });
 
-  itemsList.addEventListener("change", (e) => {
-    const input = e.target;
-    if (input.classList.contains("qty-input")) {
-      const id = parseInt(input.getAttribute("data-id"));
-      let val = parseInt(input.value);
-      if (isNaN(val) || val < 0) val = 0;
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      cart[index].quantity = val;
-      renderItems();
-    }
-    if (input.classList.contains("discount-input")) {
-      const id = parseInt(input.getAttribute("data-id"));
-      let val = parseFloat(input.value);
-      if (isNaN(val) || val < 0)
+  // Change quantity or discount input fields
+  itemsList.add
