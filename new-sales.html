@@ -3,21 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sale (Responsive)</title>
+  <title>New Sale</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
-      margin: 0;
-      background: #f5f7fa;
-      padding: 15px 10px;
+      margin: 0; padding: 10px;
+      background: #f4f8ff;
     }
     .container {
       max-width: 900px;
       margin: auto;
-      background: #fff;
-      padding: 20px 25px;
+      background: white;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      padding: 20px 25px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.12);
     }
     .header {
       display: flex;
@@ -25,14 +24,15 @@
       align-items: center;
       background: #246cd4;
       color: white;
-      padding: 12px 18px;
-      border-radius: 10px;
       font-weight: bold;
       font-size: 1.3em;
+      padding: 14px 18px;
+      border-radius: 10px;
+      margin-bottom: 15px;
       user-select: none;
       position: sticky;
       top: 0;
-      z-index: 999;
+      z-index: 10;
     }
     .header .total {
       background: #184f9f;
@@ -57,17 +57,17 @@
     }
 
     label {
-      font-weight: 600;
-      margin-top: 15px;
       display: block;
+      font-weight: 600;
+      margin-top: 14px;
+      margin-bottom: 4px;
       color: #333;
-      font-size: 1em;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
-      padding: 9px 12px;
+      padding: 8px 12px;
       font-size: 1em;
-      border-radius: 8px;
+      border-radius: 7px;
       border: 1.4px solid #bbb;
       box-sizing: border-box;
       transition: border-color 0.3s ease;
@@ -83,12 +83,12 @@
     }
 
     #productList {
-      max-height: 520px;
+      max-height: 480px;
       overflow-y: auto;
       background: #fafafa;
       border-radius: 10px;
       border: 1.5px solid #ddd;
-      padding: 10px 15px;
+      padding: 12px 18px;
     }
 
     .product-item {
@@ -96,14 +96,14 @@
       flex-wrap: wrap;
       gap: 12px;
       align-items: center;
-      padding: 12px 8px;
-      border-bottom: 1.2px solid #ddd;
+      padding: 14px 8px;
+      border-bottom: 1.3px solid #ddd;
     }
     .product-img {
       flex-shrink: 0;
-      width: 52px;
-      height: 52px;
-      border-radius: 8px;
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
       background: #dde5f2;
       color: #5678a5;
       font-weight: 800;
@@ -122,7 +122,7 @@
       min-width: 100px;
     }
     .product-details {
-      flex: 1 1 170px;
+      flex: 1 1 150px;
       font-size: 0.9em;
       color: #555;
       display: flex;
@@ -189,7 +189,7 @@
       color: green;
     }
 
-    /* Responsive adjustments */
+    /* Responsive */
     @media (max-width: 720px) {
       .product-item {
         flex-direction: column;
@@ -257,6 +257,7 @@
       discountOverride: p.discount
     }));
 
+    // Render product list with controls
     function renderProducts(filter = "") {
       const list = document.getElementById("productList");
       const filterLC = filter.toLowerCase();
@@ -265,39 +266,4 @@
       items.forEach((item, index) => {
         if (!item.name.toLowerCase().includes(filterLC)) return;
 
-        const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
-        const total = item.quantity > 0
-          ? priceAfterDiscount * item.quantity
-          : 0;
-
-        list.innerHTML += `
-          <div class="product-item" data-index="${index}">
-            <div class="product-img">${item.img}</div>
-            <div class="product-info">${item.name}</div>
-            <div class="product-details">
-              <div>Unit Price: <input type="number" value="${item.unitPrice}" readonly /></div>
-              <div>Default Discount: ${item.discount}%</div>
-            </div>
-            <div class="controls">
-              <label>Qty:</label>
-              <button onclick="changeQty(${index}, -1)">-</button>
-              <input type="number" min="0" value="${item.quantity}" oninput="updateQty(${index}, this.value)" />
-              <button onclick="changeQty(${index}, 1)">+</button>
-
-              <label>Discount %:</label>
-              <input type="number" min="0" max="100" value="${item.discountOverride}" oninput="updateDiscount(${index}, this.value)" />
-            </div>
-            <div class="total-product">${total.toLocaleString()} IQD</div>
-          </div>
-        `;
-      });
-      updateTotal();
-    }
-
-    function changeQty(index, delta) {
-      items[index].quantity = Math.max(0, items[index].quantity + delta);
-      renderProducts(document.getElementById("searchInput").value);
-    }
-    function updateQty(index, val) {
-      let v = parseInt(val);
-      if
+        const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) /
