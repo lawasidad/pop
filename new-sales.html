@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>فرۆشتنی نوێ</title>
   <style>
     body {
@@ -22,6 +22,23 @@
       font-size: 1em;
       margin: 10px 0;
     }
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 20px;
+      gap: 15px;
+    }
+    .total-amount {
+      font-weight: bold;
+      font-size: 1.2em;
+      background: #d4edda;
+      padding: 8px 15px;
+      border-radius: 8px;
+      color: #155724;
+      min-width: 150px;
+      text-align: center;
+    }
     .product-list {
       margin-top: 20px;
     }
@@ -39,25 +56,30 @@
       margin: 0 5px;
       padding: 5px 10px;
       font-size: 1em;
+      cursor: pointer;
     }
     .product-name {
       font-weight: bold;
+    }
+    .customer-section {
+      margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>فرۆشتنی نوێ</h2>
-
-    <label>ناوی کڕیار:</label>
-    <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە">
-
-    <div class="product-list" id="productList">
-      <!-- Items will be added here -->
+    <div class="top-bar">
+      <div class="total-amount" id="totalAmount">کۆی گشتی: 0 IQD</div>
+      <button onclick="submitSale()">ناردنی فرۆشتن</button>
     </div>
 
-    <button onclick="submitSale()">ناردنی فرۆشتن</button>
-    <div id="saleResult"></div>
+    <div class="customer-section">
+      <label>ناوی کڕیار:</label>
+      <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" />
+      <button onclick="scrollToProducts()">گەڕان بۆ کالا زیادکردن</button>
+    </div>
+
+    <div class="product-list" id="productList"></div>
   </div>
 
   <script>
@@ -67,10 +89,7 @@
       { name: "ئێلکترۆنیک", unitPrice: 3000, discount: 10 },
     ];
 
-    const items = products.map(p => ({
-      ...p,
-      quantity: 0
-    }));
+    const items = products.map(p => ({ ...p, quantity: 0 }));
 
     function renderProducts() {
       const list = document.getElementById("productList");
@@ -81,8 +100,8 @@
           <div class="product-item">
             <div>
               <div class="product-name">${item.name}</div>
-              <div>نرخی تاک: ${item.unitPrice} | داشکاندن: ${item.discount}%</div>
-              <div>ژمارە: ${item.quantity} | کۆی گشتی: ${total.toLocaleString()}</div>
+              <div>نرخی تاک: ${item.unitPrice} IQD | داشکاندن: ${item.discount}%</div>
+              <div>ژمارە: ${item.quantity} | کۆی گشتی: ${total.toLocaleString()} IQD</div>
             </div>
             <div class="controls">
               <button onclick="changeQty(${index}, 1)">+</button>
@@ -91,6 +110,7 @@
           </div>
         `;
       });
+      updateTotal();
     }
 
     function changeQty(index, delta) {
@@ -99,8 +119,18 @@
       renderProducts();
     }
 
+    function updateTotal() {
+      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
+      document.getElementById("totalAmount").textContent = `کۆی گشتی: ${total.toLocaleString()} IQD`;
+    }
+
     function submitSale() {
-      const customer = document.getElementById("customer").value;
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("تکایە ناوی کڕیار بنووسە");
+        return;
+      }
+
       const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
         name: i.name,
         quantity: i.quantity,
@@ -108,6 +138,11 @@
         discount: i.discount,
         total: i.unitPrice * i.quantity * (1 - i.discount / 100)
       }));
+
+      if (selectedItems.length === 0) {
+        alert("هیچ کاڵایەک هەڵنەبژێردراوە");
+        return;
+      }
 
       const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
 
@@ -118,10 +153,19 @@
       };
 
       localStorage.setItem("lastSale", JSON.stringify(saleData));
-      document.getElementById("saleResult").innerHTML = "<p>فرۆشتن تۆمار کرا</p>";
+      document.getElementById("totalAmount").textContent = "کۆی گشتی: 0 IQD";
+      document.getElementById("customer").value = "";
+      items.forEach(i => i.quantity = 0);
+      renderProducts();
 
-      // Redirect optionally:
+      document.getElementById("saleResult").innerHTML = "<p style='color:green;'>فرۆشتن تۆمار کرا</p>";
+
+      // بەتەواوی گەڕان بۆ sales.html ئەگەر دەتەوێت، لە خوار کۆدەکە کامێنت بکە:
       // window.location.href = "sales.html";
+    }
+
+    function scrollToProducts() {
+      document.getElementById("productList").scrollIntoView({ behavior: "smooth" });
     }
 
     renderProducts();
