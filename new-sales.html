@@ -1,207 +1,114 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form Test</title>
-  <style>
-    body { font-family: Tahoma, sans-serif; background: #f0f0f0; padding: 20px; text-align: left; }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 20px 30px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
-    h2 { text-align: center; margin-bottom: 20px; color: #2c3e50; }
-    label { display: block; margin: 12px 0 6px; font-weight: bold; color: #34495e; }
-    input[type="text"], input[type="number"] {
-      width: 100%; padding: 8px 10px; font-size: 16px; border: 1px solid #bbb; border-radius: 5px;
-      box-sizing: border-box;
-    }
-    .items-list { margin-top: 15px; max-height: 300px; overflow-y: auto; border: 1px solid #ddd;
-      border-radius: 5px; padding: 10px; background: #fafafa;
-    }
-    .item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .item:last-child { border-bottom: none; }
-    .item-info { flex-grow: 1; margin-left: 10px; }
-    .item-name { font-weight: bold; font-size: 17px; color: #2c3e50; margin-bottom: 5px; }
-    .item-price { font-size: 14px; color: #555; }
-    .controls { display: flex; gap: 12px; align-items: center; min-width: 230px; font-size: 14px; }
-    .qty-control button,
-    .discount-control input[type="number"] {
-      cursor: pointer; padding: 5px 10px; border: 1px solid #ccc; border-radius: 4px;
-      font-size: 16px; background-color: white; user-select: none;
-    }
-    .qty-control input[type="number"] { width: 50px; text-align: center; border: 1px solid #bbb; border-radius: 5px; }
-    .discount-control {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 90px;
-    }
-    .discount-control label { margin-bottom: 2px; font-size: 13px; }
-    .total-summary {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #1a3e72;
-      border-top: 2px solid #2c3e50;
-      padding-top: 10px;
-      text-align: left;
-    }
-    #submitBtn {
-      margin-top: 25px;
-      width: 100%;
-      background: #2c3e50;
-      color: white;
-      padding: 14px 0;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #submitBtn:hover { background: #1a2a3a; }
-  </style>
+<meta charset="UTF-8">
+<title>New Sale</title>
+<style>
+body { font-family: Tahoma, sans-serif; background: #f0f0f0; padding: 20px; }
+.container { max-width:700px; margin:auto; background:white; padding:20px; border-radius:8px; box-shadow:0 0 8px rgba(0,0,0,0.1);}
+label { display:block; margin-top:12px; font-weight:bold; }
+input[type=text], input[type=number] { width:100%; padding:8px; border-radius:5px; border:1px solid #bbb; }
+.items-list { margin-top:15px; min-height:150px; border:1px solid #ddd; padding:10px; background:#fafafa; border-radius:5px; }
+.item-row { display:flex; justify-content:space-between; margin-bottom:8px; }
+.item-row > div { flex:1; padding:0 5px; }
+.item-row input { width:100%; }
+.total-summary { margin-top:20px; font-size:18px; font-weight:bold; border-top:1px solid #ccc; padding-top:10px;}
+button { margin-top:20px; width:100%; padding:12px; background:#2c3e50; color:#fff; border:none; border-radius:7px; cursor:pointer; }
+</style>
 </head>
 <body>
-  <div class="container">
-    <h2>Sales Form Test</h2>
+<div class="container">
+  <h2>New Sale</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
+  <label>Customer Name</label>
+  <input type="text" id="customer" />
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
+  <label>Product Name</label>
+  <input type="text" id="prodName" placeholder="e.g. Product A" />
 
-    <div class="items-list" id="itemsList"></div>
+  <label>Qty</label>
+  <input type="number" id="qty" min="1" />
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+  <label>Unit Price</label>
+  <input type="number" id="price" min="0" />
 
-    <button id="submitBtn">Submit Sale (Test Console)</button>
-  </div>
+  <label>Discount %</label>
+  <input type="number" id="disc" min="0" max="100" />
+
+  <button id="addBtn">Add to Sale</button>
+
+  <div class="items-list" id="itemsList"></div>
+
+  <div class="total-summary" id="totalSum">Total: IQD 0.00</div>
+
+  <button id="submitBtn">Submit Sale</button>
+</div>
 
 <script>
-  const products = [
-    { id: 1, name: "Product A", price: 20000 },
-    { id: 2, name: "Product B", price: 35000 },
-    { id: 3, name: "Product C", price: 50000 },
-    { id: 4, name: "Product D", price: 15000 },
-    { id: 5, name: "Product E", price: 40000 },
-  ];
+// کۆکردنەوەی ئەیتمەکان
+let items = [];
 
-  const itemsList = document.getElementById("itemsList");
-  const totalSummary = document.getElementById("totalSummary");
-  const submitBtn = document.getElementById("submitBtn");
-  const customerInput = document.getElementById("customer");
-  const searchInput = document.getElementById("searchProduct");
+// هەڵبژردنی DOM
+const itemsList = document.getElementById('itemsList');
+const totalSum = document.getElementById('totalSum');
+const customerInput = document.getElementById('customer');
+const prodInput = document.getElementById('prodName');
+const qtyInput = document.getElementById('qty');
+const priceInput = document.getElementById('price');
+const discInput = document.getElementById('disc');
 
-  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-  let filteredCart = [...cart];
-
-  function renderItems() {
-    itemsList.innerHTML = "";
-    filteredCart.forEach(item => {
-      const total = item.quantity * item.price * (1 - item.discount / 100);
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
-      itemDiv.innerHTML = `
-        <div class="item-info">
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
-        </div>
-        <div class="controls">
-          <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" />
-            <button data-action="inc" data-id="${item.id}">+</button>
-          </div>
-          <div class="discount-control">
-            <label>Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" data-id="${item.id}" class="discount-input" />
-          </div>
-          <div style="min-width:110px; font-weight:bold;">
-            Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2,maximumFractionDigits:2})}
-          </div>
-        </div>
-      `;
-      itemsList.appendChild(itemDiv);
-    });
-    updateTotal();
-  }
-
-  function updateTotal() {
-    const tot = cart.reduce((s, i) => s + (i.quantity * i.price * (1 - i.discount / 100)), 0);
-    totalSummary.textContent = `Total: IQD ${tot.toLocaleString(undefined, {minimumFractionDigits:2,maximumFractionDigits:2})}`;
-  }
-
-  searchInput.addEventListener("input", () => {
-    const q = searchInput.value.trim().toLowerCase();
-    filteredCart = q ? cart.filter(i => i.name.toLowerCase().includes(q)) : [...cart];
-    renderItems();
-  });
-
-  itemsList.addEventListener("click", e => {
-    const btn = e.target;
-    if (btn.tagName === "BUTTON") {
-      const id = +btn.dataset.id;
-      const idx = cart.findIndex(i => i.id === id);
-      if (idx === -1) return;
-      if (btn.dataset.action === "inc") cart[idx].quantity++;
-      else cart[idx].quantity = Math.max(0, cart[idx].quantity - 1);
-      renderItems();
-    }
-  });
-
-  itemsList.addEventListener("change", e => {
-    const tgt = e.target;
-    const id = +tgt.dataset.id;
-    const idx = cart.findIndex(i => i.id === id);
-    if (idx === -1) return;
-    if (tgt.classList.contains("qty-input")) {
-      cart[idx].quantity = Math.max(0, parseInt(tgt.value) || 0);
-    }
-    else if (tgt.classList.contains("discount-input")) {
-      cart[idx].discount = Math.min(100, Math.max(0, parseFloat(tgt.value) || 0));
-    }
-    renderItems();
-  });
-
-  submitBtn.addEventListener("click", () => {
-    const customer = customerInput.value.trim();
-    if (!customer) return alert("Please enter customer name!");
-    const saleItems = cart.filter(i => i.quantity > 0).map(i => ({
-      productName: i.name,
-      quantity: i.quantity,
-      unitPrice: i.price,
-      discountPercent: i.discount,
-      total: parseFloat((i.quantity * i.price * (1 - i.discount / 100)).toFixed(2))
-    }));
-    if (!saleItems.length) return alert("Please select at least one product!");
-    const saleData = {
-      customer,
-      items: saleItems,
-      totalAmount: parseFloat(saleItems.reduce((a,c) => a + c.total,0).toFixed(2))
-    };
-    console.log("Sale Data:", saleData);
-    localStorage.setItem("latestSale", JSON.stringify(saleData));
-    alert("Sale saved!");
-    customerInput.value = "";
-    cart = products.map(p => ({ ...p, quantity:0, discount:0 }));
-    filteredCart = [...cart];
-    renderItems();
-  });
-
+// زیادکردنی ئەیتم
+document.getElementById('addBtn').addEventListener('click', () => {
+  const name = prodInput.value.trim();
+  const qty = parseInt(qtyInput.value,10);
+  const price = parseFloat(priceInput.value);
+  const disc = parseFloat(discInput.value) || 0;
+  if (!name || !qty || !price) return alert('Please fill fields');
+  const total = qty * price * (1 - disc/100);
+  items.push({ name, qty, price, disc, total });
   renderItems();
+  prodInput.value = qtyInput.value = priceInput.value = discInput.value = '';
+});
+
+// نمایش لیست آیتم‌ها و حساب کل
+function renderItems(){
+  itemsList.innerHTML = '';
+  let sum = 0;
+  items.forEach((it,i) => {
+    sum += it.total;
+    const row = document.createElement('div');
+    row.className = 'item-row';
+    row.innerHTML = `
+      <div>${it.name}</div>
+      <div>${it.qty}</div>
+      <div>${it.price.toFixed(2)}</div>
+      <div>${it.disc}%</div>
+      <div>${it.total.toFixed(2)}</div>
+      <div><button data-index="${i}">✖</button></div>`;
+    itemsList.appendChild(row);
+  });
+  totalSum.textContent = `Total: IQD ${sum.toFixed(2)}`;
+  // حذف
+  document.querySelectorAll('.item-row button').forEach(b => {
+    b.onclick = () => {
+      items.splice(b.dataset.index,1);
+      renderItems();
+    };
+  });
+}
+
+// زیادکردن بۆ sales.html
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const cust = customerInput.value.trim();
+  if (!cust) return alert('Enter customer');
+  if (!items.length) return alert('Add items');
+  const sale = { customer: cust, items };
+  let sales = JSON.parse(localStorage.getItem('salesList') || '[]');
+  sales.push(sale);
+  localStorage.setItem('salesList', JSON.stringify(sales));
+  alert('Sale saved!');
+  customerInput.value = ''; items=[];renderItems();
+});
 </script>
 </body>
 </html>
