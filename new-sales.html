@@ -241,6 +241,7 @@
   </div>
 
   <script>
+    // Sample products for testing
     const products = [
       { name: "Kalashin", unitPrice: 1000, discount: 0, img: "K" },
       { name: "Shusha", unitPrice: 1500, discount: 5, img: "S" },
@@ -249,7 +250,7 @@
       { name: "Computer", unitPrice: 7000, discount: 15, img: "C" },
     ];
 
-    // Keep track of quantities and discounts per product (no freeCase field now)
+    // Track quantities and discount overrides per product
     const items = products.map(p => ({
       ...p,
       quantity: 0,
@@ -330,4 +331,41 @@
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("Please
+        alert("Please enter the customer name.");
+        return;
+      }
+
+      // Prepare data for sales.html
+      const saleItems = items
+        .filter(item => item.quantity > 0)
+        .map(item => ({
+          name: item.name,
+          quantity: item.quantity,
+          unitPrice: item.unitPrice,
+          discount: item.discountOverride,
+          total: item.unitPrice * item.quantity * (1 - item.discountOverride / 100)
+        }));
+
+      if (saleItems.length === 0) {
+        alert("Please add at least one product with quantity > 0.");
+        return;
+      }
+
+      const saleData = {
+        customer,
+        items: saleItems,
+        totalAmount: saleItems.reduce((sum, i) => sum + i.total, 0)
+      };
+
+      // Save data in localStorage for sales.html to read
+      localStorage.setItem("newSaleData", JSON.stringify(saleData));
+
+      document.getElementById("saleResult").textContent = "Sale data saved! Open sales.html to see the sale.";
+    }
+
+    window.onload = () => {
+      renderProducts();
+    };
+  </script>
+</body>
+</html>
