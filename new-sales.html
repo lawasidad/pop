@@ -137,10 +137,10 @@
     <h2>Sales Form Test</h2>
 
     <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" />
+    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
 
     <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" />
+    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
 
     <div class="items-list" id="itemsList"></div>
 
@@ -164,12 +164,15 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
+  // Initialize cart from products with quantity and discount
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
+  // Render visible items
   function renderItems() {
     itemsList.innerHTML = "";
     filteredCart.forEach(item => {
+      const totalPrice = item.quantity * item.price * (1 - item.discount / 100);
       const itemDiv = document.createElement("div");
       itemDiv.className = "item";
 
@@ -180,25 +183,25 @@
         </div>
         <div class="controls">
           <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" />
-            <button data-action="inc" data-id="${item.id}">+</button>
+            <button data-action="dec" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">-</button>
+            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="Quantity of ${item.name}" />
+            <button data-action="inc" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">+</button>
           </div>
           <div class="discount-control">
-            <label>Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" data-id="${item.id}" class="discount-input" />
+            <label for="discount-${item.id}">Discount %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="Discount percent for ${item.name}" />
           </div>
           <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            Total: IQD ${((item.quantity * item.price * (1 - item.discount / 100)) || 0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
           </div>
         </div>
       `;
-
       itemsList.appendChild(itemDiv);
     });
     updateTotalSummary();
   }
 
+  // Update total summary at bottom
   function updateTotalSummary() {
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
@@ -206,59 +209,57 @@
     totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
   }
 
-  // Filter and re-render items on search input
+  // Filter products by search input and re-render
   searchInput.addEventListener("input", () => {
-    const q = searchInput.value.trim().toLowerCase();
-    if (q === "") {
-      filteredCart = [...cart];
-    } else {
-      filteredCart = cart.filter(item => item.name.toLowerCase().includes(q));
-    }
+    const query = searchInput.value.trim().toLowerCase();
+    filteredCart = query
+      ? cart.filter(item => item.name.toLowerCase().includes(query))
+      : [...cart];
     renderItems();
   });
 
-  // Delegate clicks on qty +/- buttons
+  // Handle click on quantity buttons
   itemsList.addEventListener("click", (e) => {
-    const target = e.target;
-    if (target.tagName === "BUTTON") {
-      const id = parseInt(target.getAttribute("data-id"));
-      const action = target.getAttribute("data-action");
+    const btn = e.target;
+    if (btn.tagName === "BUTTON") {
+      const id = parseInt(btn.getAttribute("data-id"));
+      const action = btn.getAttribute("data-action");
       const index = cart.findIndex(item => item.id === id);
-      if (index < 0) return;
+      if (index === -1) return;
       if (action === "inc") {
         cart[index].quantity++;
-      } else if (action === "dec") {
-        if (cart[index].quantity > 0) cart[index].quantity--;
+      } else if (action === "dec" && cart[index].quantity > 0) {
+        cart[index].quantity--;
       }
       renderItems();
     }
   });
 
-  // Listen to quantity input changes
+  // Handle manual input changes for quantity and discount
   itemsList.addEventListener("change", (e) => {
-    const target = e.target;
-    if (target.classList.contains("qty-input")) {
-      const id = parseInt(target.getAttribute("data-id"));
-      let val = parseInt(target.value);
+    const input = e.target;
+    if (input.classList.contains("qty-input")) {
+      const id = parseInt(input.getAttribute("data-id"));
+      let val = parseInt(input.value);
       if (isNaN(val) || val < 0) val = 0;
       const index = cart.findIndex(item => item.id === id);
-      if (index < 0) return;
+      if (index === -1) return;
       cart[index].quantity = val;
       renderItems();
     }
-    if (target.classList.contains("discount-input")) {
-      const id = parseInt(target.getAttribute("data-id"));
-      let val = parseFloat(target.value);
+    if (input.classList.contains("discount-input")) {
+      const id = parseInt(input.getAttribute("data-id"));
+      let val = parseFloat(input.value);
       if (isNaN(val) || val < 0) val = 0;
       if (val > 100) val = 100;
       const index = cart.findIndex(item => item.id === id);
-      if (index < 0) return;
+      if (index === -1) return;
       cart[index].discount = val;
       renderItems();
     }
   });
 
-  // Submit sale data handler
+  // On submit, validate and log sale data
   submitBtn.addEventListener("click", () => {
     const customer = customerInput.value.trim();
     if (!customer) {
@@ -290,14 +291,14 @@
 
     alert("Sale data sent to console. Check developer tools.");
 
-    // Reset form
+    // Reset form after submission
     customerInput.value = "";
     cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
     filteredCart = [...cart];
     renderItems();
   });
 
-  // Initial render
+  // Initial render of items list
   renderItems();
 </script>
 </body>
