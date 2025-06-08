@@ -54,27 +54,32 @@
   </table>
 
   <script>
-    // Get sales data from localStorage
     const salesData = JSON.parse(localStorage.getItem("salesList") || "[]");
 
     const salesBody = document.getElementById("salesBody");
 
-    salesData.forEach(sale => {
-      sale.items.forEach(item => {
-        const row = document.createElement("tr");
+    if (salesData.length === 0) {
+      const row = document.createElement("tr");
+      row.innerHTML = `<td colspan="6">No sales data found.</td>`;
+      salesBody.appendChild(row);
+    } else {
+      salesData.forEach(sale => {
+        sale.items.forEach(item => {
+          const row = document.createElement("tr");
 
-        row.innerHTML = `
-          <td>${sale.customer}</td>
-          <td>${item.productName}</td>
-          <td>${item.quantity}</td>
-          <td>${item.unitPrice.toLocaleString()}</td>
-          <td>${item.discountPercent}</td>
-          <td>${item.total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-        `;
+          row.innerHTML = `
+            <td>${sale.customer}</td>
+            <td>${item.productName}</td>
+            <td>${item.quantity}</td>
+            <td>${item.unitPrice.toLocaleString()}</td>
+            <td>${item.discountPercent}</td>
+            <td>${item.total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+          `;
 
-        salesBody.appendChild(row);
+          salesBody.appendChild(row);
+        });
       });
-    });
+    }
   </script>
 </body>
 </html>
