@@ -223,9 +223,12 @@
 
     function updateTotal() {
       const total = items.reduce((sum, i) => {
-        if (i.freeCase === null) return sum; // skip if freeCase not entered
-        const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
-        return sum + (priceAfterDiscount * i.quantity) + i.freeCase;
+        if (i.quantity > 0) {
+          if (i.freeCase === null) return sum; // skip if freeCase not entered
+          const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
+          return sum + (priceAfterDiscount * i.quantity) + i.freeCase;
+        }
+        return sum;
       }, 0);
       document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
     }
@@ -237,4 +240,63 @@
         return;
       }
 
-      // validate freeCase entered for all items that have quantity >
+      // Validate freeCase for items with quantity > 0
+      for (const i of items) {
+        if (i.quantity > 0 && (i.freeCase === null || i.freeCase === "")) {
+          alert(`Please enter Free Case amount for product: ${i.name}`);
+          return;
+        }
+      }
+
+      // Prepare sale data
+      const saleItems = items.filter(i => i.quantity > 0).map(i => {
+        const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
+        return {
+          name: i.name,
+          quantity: i.quantity,
+          unitPrice: i.unitPrice,
+          discount: i.discountOverride,
+          freeCase: i.freeCase,
+          total: (priceAfterDiscount * i.quantity) + i.freeCase
+        };
+      });
+
+      if (saleItems.length === 0) {
+        alert("Please select at least one product with quantity greater than zero.");
+        return;
+      }
+
+      const totalSale = saleItems.reduce((sum, i) => sum + i.total, 0);
+
+      const saleData = {
+        customer,
+        items: saleItems,
+        total: totalSale
+      };
+
+      // Save to localStorage for sales.html
+      localStorage.setItem("lastSale", JSON.stringify(saleData));
+
+      document.getElementById("saleResult").textContent = "Sale submitted successfully!";
+
+      // Optionally clear form
+      // clearForm();
+    }
+
+    function clearForm() {
+      document.getElementById("customer").value = "";
+      items.forEach(i => {
+        i.quantity = 0;
+        i.discountOverride = i.discount;
+        i.freeCase = null;
+      });
+      renderProducts();
+      updateTotal();
+      document.getElementById("saleResult").textContent = "";
+    }
+
+    // Initial render
+    renderProducts();
+  </script>
+</body>
+</html>
