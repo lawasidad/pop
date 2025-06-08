@@ -1,21 +1,64 @@
-<!-- new-sales.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Sales Form</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>New Sale Entry</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background-color: #f7f7f7;
+    }
+    .form-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .form-group {
+      margin-bottom: 15px;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+    h2 {
+      text-align: center;
+    }
+  </style>
 </head>
 <body>
-  <h2>New Sale</h2>
-  <input type="text" id="customer" placeholder="Customer Name" />
-  <button onclick="submitSale()">Submit</button>
+  <div class="form-container">
+    <h2>New Sale Form</h2>
+    <div class="form-group">
+      <label for="customer">Customer Name</label>
+      <input type="text" id="customer" placeholder="Enter customer name">
+    </div>
+    <button onclick="submitSale()">Submit Sale</button>
+  </div>
 
   <script>
-    const products = [
-      { name: "Product A", price: 1000 },
-      { name: "Product B", price: 2000 }
-    ];
-
     const cart = [
       { product: "Product A", qty: 2, unitPrice: 1000, discount: 10, total: 1800 },
       { product: "Product B", qty: 1, unitPrice: 2000, discount: 0, total: 2000 }
@@ -37,7 +80,7 @@
       });
 
       localStorage.setItem("salesList", JSON.stringify(salesList));
-      alert("Sale submitted!");
+      alert("Sale submitted successfully!");
     }
   </script>
 </body>
