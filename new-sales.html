@@ -1,14 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sales</title>
+  <title>Sales Form</title>
   <style>
     body {
       font-family: "Tahoma", sans-serif;
       background: #f0f0f0;
       padding: 20px;
+      direction: ltr;
+      text-align: left;
     }
     .container {
       max-width: 800px;
@@ -21,10 +23,13 @@
     h2 {
       text-align: center;
       margin-bottom: 20px;
+      color: #2c3e50;
     }
     label {
       display: block;
       margin: 12px 0 6px;
+      font-weight: bold;
+      color: #34495e;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
@@ -45,22 +50,75 @@
     }
     .item {
       display: flex;
+      align-items: center;
       justify-content: space-between;
       padding: 8px 10px;
       border-bottom: 1px solid #ddd;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item img {
+      width: 60px;
+      height: 60px;
+      border-radius: 6px;
+      margin-right: 10px;
+      object-fit: cover;
+    }
+    .item-info {
+      flex-grow: 1;
+      margin-left: 10px;
+    }
+    .item-name {
+      font-weight: bold;
+      font-size: 17px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .item-price {
+      font-size: 14px;
+      color: #555;
     }
     .controls {
       display: flex;
       gap: 12px;
       align-items: center;
+      min-width: 250px;
+      font-size: 14px;
     }
-    .qty-control input, .discount-control input {
-      width: 60px;
+    .qty-control button,
+    .discount-control input[type="number"] {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: white;
+      user-select: none;
+    }
+    .qty-control input[type="number"] {
+      width: 50px;
+      text-align: center;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+    }
+    .discount-control {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 90px;
+    }
+    .discount-control label {
+      margin-bottom: 2px;
+      font-size: 13px;
     }
     .total-summary {
       margin-top: 20px;
-      font-size: 18px;
+      font-size: 20px;
       font-weight: bold;
+      color: #1a3e72;
+      border-top: 2px solid #2c3e50;
+      padding-top: 10px;
       text-align: left;
     }
     #submitBtn {
@@ -70,18 +128,28 @@
       color: white;
       padding: 14px 0;
       font-size: 18px;
+      font-weight: bold;
       border: none;
       border-radius: 7px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #submitBtn:hover {
+      background: #1a2a3a;
     }
   </style>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>New Sales</h2>
+    <h2>Sales Form</h2>
 
     <label for="customer">Customer Name</label>
     <input type="text" id="customer" placeholder="Enter customer name" />
+
+    <label for="searchProduct">Search Product</label>
+    <input type="text" id="searchProduct" placeholder="Type product name to search" oninput="filterProducts()" />
 
     <div class="items-list" id="itemsList"></div>
 
@@ -90,78 +158,194 @@
     <button id="submitBtn">Submit Sale</button>
   </div>
 
-  <script>
-    const itemsList = document.getElementById("itemsList");
-    const customerInput = document.getElementById("customer");
-    const totalSummary = document.getElementById("totalSummary");
+<script>
+  const { jsPDF } = window.jspdf;
 
-    const products = [
-      { id: 1, name: "Product A", price: 20000 },
-      { id: 2, name: "Product B", price: 35000 },
-      { id: 3, name: "Product C", price: 50000 }
-    ];
+  // Sample products for testing
+  const products = [
+    { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
+    { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
+    { id: 3, name: "Product C", price: 50000, image: "https://via.placeholder.com/60?text=C" },
+    { id: 4, name: "Product D", price: 15000, image: "https://via.placeholder.com/60?text=D" },
+    { id: 5, name: "Product E", price: 40000, image: "https://via.placeholder.com/60?text=E" },
+    { id: 6, name: "Product F", price: 60000, image: "https://via.placeholder.com/60?text=F" }
+  ];
 
-    let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+  const itemsList = document.getElementById("itemsList");
+  const totalSummary = document.getElementById("totalSummary");
+  const submitBtn = document.getElementById("submitBtn");
+  const customerInput = document.getElementById("customer");
+  const searchInput = document.getElementById("searchProduct");
 
-    function renderItems() {
-      itemsList.innerHTML = "";
-      cart.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <div>
-            <strong>${item.name}</strong><br>
-            Price: IQD ${item.price.toLocaleString()}
+  // Cart array with quantity and discount for each product
+  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+  let filteredCart = [...cart];
+
+  function renderItems() {
+    itemsList.innerHTML = "";
+    filteredCart.forEach(item => {
+      const itemDiv = document.createElement("div");
+      itemDiv.className = "item";
+      itemDiv.innerHTML = 
+        <img src="${item.image}" alt="${item.name}" />
+        <div class="item-info">
+          <div class="item-name">${item.name}</div>
+          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
+        </div>
+        <div class="controls">
+          <div class="qty-control">
+            <button onclick="changeQuantity(${item.id}, -1)">-</button>
+            <input type="number" min="0" value="${item.quantity}" onchange="setQuantity(${item.id}, this.value)" />
+            <button onclick="changeQuantity(${item.id}, 1)">+</button>
           </div>
-          <div class="controls">
-            <input type="number" min="0" placeholder="Qty" onchange="setQty(${item.id}, this.value)" />
-            <input type="number" min="0" max="100" placeholder="Discount %" onchange="setDiscount(${item.id}, this.value)" />
+          <div class="discount-control">
+            <label>Discount %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" onchange="setDiscount(${item.id}, this.value)" />
           </div>
-        `;
-        itemsList.appendChild(div);
-      });
+          <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
+            Total: IQD ${(item.quantity * item.price * (1 - item.discount / 100)).toLocaleString()}
+          </div>
+        </div>
+      ;
+      itemsList.appendChild(itemDiv);
+    });
+    updateTotalSummary();
+  }
+
+  function changeQuantity(id, delta) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
+    let newQty = cart[index].quantity + delta;
+    if (newQty < 0) newQty = 0;
+    cart[index].quantity = newQty;
+    filterProducts();
+  }
+
+  function setQuantity(id, value) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
+    let val = Number(value);
+    if (isNaN(val) || val < 0) val = 0;
+    cart[index].quantity = val;
+    filterProducts();
+  }
+
+  function setDiscount(id, value) {
+    const index = cart.findIndex(p => p.id === id);
+    if (index === -1) return;
+    let val = Number(value);
+    if (isNaN(val) || val < 0) val = 0;
+    if (val > 100) val = 100;
+    cart[index].discount = val;
+    filterProducts();
+  }
+
+  function updateTotalSummary() {
+    const total = cart.reduce((sum, item) => {
+      return sum + (item.quantity * item.price * (1 - item.discount / 100));
+    }, 0);
+    totalSummary.textContent = Total: IQD ${total.toLocaleString()};
+  }
+
+  function filterProducts() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (query === "") {
+      filteredCart = [...cart];
+    } else {
+      filteredCart = cart.filter(item => item.name.toLowerCase().includes(query));
     }
-
-    function setQty(id, val) {
-      const item = cart.find(i => i.id === id);
-      item.quantity = parseInt(val) || 0;
-      updateTotal();
-    }
-
-    function setDiscount(id, val) {
-      const item = cart.find(i => i.id === id);
-      item.discount = parseFloat(val) || 0;
-      updateTotal();
-    }
-
-    function updateTotal() {
-      const total = cart.reduce((sum, i) =>
-        sum + (i.quantity * i.price * (1 - i.discount / 100)), 0);
-      totalSummary.textContent = `Total: IQD ${total.toLocaleString()}`;
-    }
-
-    document.getElementById("submitBtn").onclick = () => {
-      const customer = customerInput.value.trim();
-      if (!customer) {
-        alert("Enter customer name");
-        return;
-      }
-      const items = cart.filter(i => i.quantity > 0).map(i => ({
-        name: i.name,
-        qty: i.quantity,
-        price: i.price,
-        discount: i.discount
-      }));
-      if (items.length === 0) {
-        alert("No items selected");
-        return;
-      }
-      const saleData = { customer, items };
-      localStorage.setItem("saleData", JSON.stringify(saleData));
-      window.location.href = "sales.html";
-    };
-
     renderItems();
-  </script>
+  }
+
+  function generatePDF(saleData) {
+    const doc = new jsPDF({
+      orientation: "portrait",
+      unit: "pt",
+      format: "a4"
+    });
+
+    let y = 40;
+    const leftMargin = 40;
+    doc.setFontSize(22);
+    doc.text("Sales Receipt", leftMargin + 150, y);
+    y += 30;
+
+    doc.setFontSize(16);
+    doc.text(Customer: ${saleData.customer}, leftMargin, y);
+    y += 25;
+
+    doc.setFontSize(14);
+    doc.text("Items:", leftMargin, y);
+    y += 20;
+
+    doc.setFont(undefined, "bold");
+    doc.text("Name", leftMargin, y);
+    doc.text("Qty", leftMargin + 150, y);
+    doc.text("Price", leftMargin + 200, y);
+    doc.text("Discount %", leftMargin + 320, y);
+    doc.text("Total", leftMargin + 420, y);
+    y += 15;
+    doc.setLineWidth(0.5);
+    doc.line(leftMargin, y, 550, y);
+    y += 15;
+
+    doc.setFont(undefined, "normal");
+    saleData.items.forEach(item => {
+      if (y > 750) {
+        doc.addPage();
+        y = 40;
+      }
+      doc.text(item.productName, leftMargin, y);
+      doc.text(item.quantity.toString(), leftMargin + 150, y);
+      doc.text(IQD ${item.unitPrice.toLocaleString()}, leftMargin + 200, y);
+      doc.text(item.discountPercent.toString(), leftMargin + 320, y);
+      doc.text(IQD ${item.total.toLocaleString()}, leftMargin + 420, y);
+      y += 20;
+    });
+
+    y += 10;
+    doc.setLineWidth(0.8);
+    doc.line(leftMargin, y, 550, y);
+    y += 25;
+
+    doc.setFontSize(16);
+    doc.setFont(undefined, "bold");
+    doc.text(Grand Total: IQD ${saleData.grandTotal.toLocaleString()}, leftMargin, y);
+
+    doc.save(sale_${Date.now()}.pdf);
+  }
+
+  submitBtn.onclick = () => {
+    const customer = customerInput.value.trim();
+    if (customer === "") {
+      alert("Please enter customer name");
+      return;
+    }
+
+    const items = cart.filter(item => item.quantity > 0).map(item => {
+      const total = item.quantity * item.price * (1 - item.discount / 100);
+      return {
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discountPercent: item.discount,
+        total: Math.round(total)
+      };
+    });
+
+    if (items.length === 0) {
+      alert("No products selected");
+      return;
+    }
+
+    const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
+
+    generatePDF({ customer, items, grandTotal });
+  };
+
+  // Initial render
+  renderItems();
+
+</script>
 </body>
 </html>
