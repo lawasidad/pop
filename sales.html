@@ -1,68 +1,334 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Sales List</title>
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
-<style>
-  body { padding: 20px; background: #f8f9fa; }
-  .table-responsive { max-height: 500px; overflow-y: auto; background: white; border-radius: 8px; }
-  .table thead th {
-    position: sticky;
-    top: 0;
-    background: #343a40;
-    color: white;
-  }
-  tr:hover { background-color: #f1f1f1; transition: background-color 0.3s ease; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sales Form</title>
+  <style>
+    body {
+      font-family: "Tahoma", sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      direction: ltr;
+      text-align: left;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px 30px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .items-list {
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item-info {
+      flex-grow: 1;
+      margin-left: 10px;
+    }
+    .item-name {
+      font-weight: bold;
+      font-size: 17px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .item-price {
+      font-size: 14px;
+      color: #555;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-width: 230px;
+      font-size: 14px;
+    }
+    .qty-control button,
+    .discount-control input[type="number"] {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: white;
+      user-select: none;
+    }
+    .qty-control input[type="number"] {
+      width: 50px;
+      text-align: center;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+    }
+    .discount-control {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 90px;
+    }
+    .discount-control label {
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+    .total-summary {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1a3e72;
+      border-top: 2px solid #2c3e50;
+      padding-top: 10px;
+      text-align: left;
+    }
+    #submitBtn {
+      margin-top: 25px;
+      width: 100%;
+      background: #2c3e50;
+      color: white;
+      padding: 14px 0;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #submitBtn:hover {
+      background: #1a2a3a;
+    }
+    .sales-table-section {
+      margin-top: 40px;
+    }
+    #salesTable {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    #salesTable th,
+    #salesTable td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: center;
+    }
+    #salesTable th {
+      background-color: #2c3e50;
+      color: white;
+    }
+  </style>
 </head>
 <body>
+  <div class="container">
+    <h2>Sales Form</h2>
 
-<div class="container">
-  <h2 class="mb-4 text-center text-primary">Sales List</h2>
-  <div class="table-responsive shadow-sm">
-    <table class="table table-bordered table-hover align-middle" id="salesTable">
-      <thead>
-        <tr>
-          <th>Date</th>
-          <th>Transaction No.</th>
-          <th>Party Name</th>
-          <th>Amount (IQD)</th>
-          <th>Due (IQD)</th>
-          <th>Status</th>
-          <th>Created By</th>
-        </tr>
-      </thead>
-      <tbody id="salesBody"></tbody>
-    </table>
+    <label for="customer">Customer Name</label>
+    <input type="text" id="customer" placeholder="Enter customer name" />
+
+    <label for="searchProduct">Search Product</label>
+    <input type="text" id="searchProduct" placeholder="Type product name to search" />
+
+    <div class="items-list" id="itemsList"></div>
+
+    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+
+    <button id="submitBtn">Submit Sale</button>
+
+    <div class="sales-table-section">
+      <h3>Submitted Sales</h3>
+      <table id="salesTable">
+        <thead>
+          <tr>
+            <th>Customer</th>
+            <th>Product</th>
+            <th>Qty</th>
+            <th>Unit Price</th>
+            <th>Discount %</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
   </div>
-</div>
 
-<script>
-  function renderSales() {
-    const sales = JSON.parse(localStorage.getItem('salesData') || '[]');
-    const tbody = document.getElementById('salesBody');
-    tbody.innerHTML = '';
+  <script>
+    const products = [
+      { id: 1, name: "Product A", price: 20000 },
+      { id: 2, name: "Product B", price: 35000 },
+      { id: 3, name: "Product C", price: 50000 },
+      { id: 4, name: "Product D", price: 15000 },
+      { id: 5, name: "Product E", price: 40000 },
+    ];
 
-    sales.forEach(sale => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${sale.date}</td>
-        <td>${sale.trans}</td>
-        <td>${sale.party}</td>
-        <td class="text-end">${sale.amount.toLocaleString()}</td>
-        <td class="text-end">${sale.due.toLocaleString()}</td>
-        <td>${sale.status}</td>
-        <td>${sale.createdBy}</td>
-      `;
-      tbody.appendChild(row);
+    const itemsList = document.getElementById("itemsList");
+    const totalSummary = document.getElementById("totalSummary");
+    const submitBtn = document.getElementById("submitBtn");
+    const customerInput = document.getElementById("customer");
+    const searchInput = document.getElementById("searchProduct");
+    const salesTableBody = document.querySelector("#salesTable tbody");
+
+    let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+    let filteredCart = [...cart];
+
+    function renderItems() {
+      itemsList.innerHTML = "";
+      filteredCart.forEach(item => {
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+
+        itemDiv.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
+          </div>
+          <div class="controls">
+            <div class="qty-control">
+              <button data-action="dec" data-id="${item.id}">-</button>
+              <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" />
+              <button data-action="inc" data-id="${item.id}">+</button>
+            </div>
+            <div class="discount-control">
+              <label>Discount %:</label>
+              <input type="number" min="0" max="100" value="${item.discount}" data-id="${item.id}" class="discount-input" />
+            </div>
+            <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
+              Total: IQD ${((item.quantity * item.price * (1 - item.discount / 100)) || 0).toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            </div>
+          </div>
+        `;
+        itemsList.appendChild(itemDiv);
+      });
+      updateTotalSummary();
+    }
+
+    function updateTotalSummary() {
+      const total = cart.reduce((sum, item) => {
+        return sum + (item.quantity * item.price * (1 - item.discount / 100));
+      }, 0);
+      totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    }
+
+    searchInput.addEventListener("input", () => {
+      const q = searchInput.value.trim().toLowerCase();
+      filteredCart = q === "" ? [...cart] : cart.filter(item => item.name.toLowerCase().includes(q));
+      renderItems();
     });
-  }
 
-  // Render on page load
-  document.addEventListener('DOMContentLoaded', renderSales);
-</script>
+    itemsList.addEventListener("click", (e) => {
+      const target = e.target;
+      if (target.tagName === "BUTTON") {
+        const id = parseInt(target.getAttribute("data-id"));
+        const action = target.getAttribute("data-action");
+        const index = cart.findIndex(item => item.id === id);
+        if (index < 0) return;
+        if (action === "inc") cart[index].quantity++;
+        else if (action === "dec" && cart[index].quantity > 0) cart[index].quantity--;
+        renderItems();
+      }
+    });
 
+    itemsList.addEventListener("change", (e) => {
+      const target = e.target;
+      const id = parseInt(target.getAttribute("data-id"));
+      const index = cart.findIndex(item => item.id === id);
+      if (index < 0) return;
+
+      if (target.classList.contains("qty-input")) {
+        let val = parseInt(target.value);
+        cart[index].quantity = isNaN(val) || val < 0 ? 0 : val;
+      }
+      if (target.classList.contains("discount-input")) {
+        let val = parseFloat(target.value);
+        if (isNaN(val) || val < 0) val = 0;
+        if (val > 100) val = 100;
+        cart[index].discount = val;
+      }
+      renderItems();
+    });
+
+    submitBtn.addEventListener("click", () => {
+      const customer = customerInput.value.trim();
+      if (!customer) {
+        alert("Please enter customer name!");
+        return;
+      }
+
+      const saleItems = cart.filter(item => item.quantity > 0).map(item => ({
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discountPercent: item.discount,
+        total: parseFloat((item.quantity * item.price * (1 - item.discount / 100)).toFixed(2))
+      }));
+
+      if (saleItems.length === 0) {
+        alert("Please add at least one product quantity!");
+        return;
+      }
+
+      const saleData = {
+        customer,
+        items: saleItems,
+        totalAmount: parseFloat(saleItems.reduce((sum, item) => sum + item.total, 0).toFixed(2))
+      };
+
+      // Display to table
+      saleItems.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+          <td>${customer}</td>
+          <td>${item.productName}</td>
+          <td>${item.quantity}</td>
+          <td>${item.unitPrice.toLocaleString()}</td>
+          <td>${item.discountPercent}%</td>
+          <td>${item.total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
+        `;
+        salesTableBody.appendChild(row);
+      });
+
+      alert("Sale recorded successfully!");
+
+      // Reset
+      customerInput.value = "";
+      cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+      filteredCart = [...cart];
+      renderItems();
+    });
+
+    renderItems();
+  </script>
 </body>
 </html>
