@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <title>فرۆشتنی نوێ</title>
+  <title>New Sale</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -117,18 +117,18 @@
 <body>
   <div class="container">
     <div class="top-bar">
-      <div class="total-amount" id="totalAmount">کۆی گشتی: 0 IQD</div>
-      <button onclick="submitSale()">ناردنی فرۆشتن</button>
+      <div class="total-amount" id="totalAmount">Total: 0 IQD</div>
+      <button onclick="submitSale()">Submit Sale</button>
     </div>
 
     <div class="customer-section">
-      <label>ناوی کڕیار:</label><br/>
-      <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" />
+      <label>Customer Name:</label><br/>
+      <input type="text" id="customer" placeholder="Enter customer name" />
     </div>
 
     <div class="search-box">
-      <label>گەڕان بۆ کالا:</label><br/>
-      <input type="text" id="searchInput" placeholder="ناوی کالا بنووسە..." oninput="filterProducts()" />
+      <label>Search Product:</label><br/>
+      <input type="text" id="searchInput" placeholder="Type product name..." oninput="filterProducts()" />
     </div>
 
     <div id="productList"></div>
@@ -138,19 +138,19 @@
 
   <script>
     const products = [
-      { name: "کەڵەشین", unitPrice: 1000, discount: 0 },
-      { name: "شووشە", unitPrice: 1500, discount: 5 },
-      { name: "ئێلکترۆنیک", unitPrice: 3000, discount: 10 },
-      { name: "موبایل", unitPrice: 5000, discount: 7 },
-      { name: "کەمپیوته‌ر", unitPrice: 7000, discount: 15 },
+      { name: "Kalashin", unitPrice: 1000, discount: 0 },
+      { name: "Shusha", unitPrice: 1500, discount: 5 },
+      { name: "Electronic", unitPrice: 3000, discount: 10 },
+      { name: "Mobile", unitPrice: 5000, discount: 7 },
+      { name: "Computer", unitPrice: 7000, discount: 15 },
     ];
 
-    // Extend each product with quantity, discountOverride (for input), and freeCase (فری کەیس)
+    // extend products with quantity, discountOverride, freeCase
     const items = products.map(p => ({
       ...p,
       quantity: 0,
       discountOverride: p.discount,
-      freeCase: 0
+      freeCase: null // must enter
     }));
 
     function renderProducts(filter = "") {
@@ -160,29 +160,29 @@
       items.forEach((item, index) => {
         if (item.name.toLowerCase().includes(filterLC)) {
           const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
-          const total = (priceAfterDiscount * item.quantity) + (item.freeCase || 0);
+          const total = (priceAfterDiscount * item.quantity) + (item.freeCase ? parseFloat(item.freeCase) : 0);
 
           list.innerHTML += `
             <div class="product-item" data-index="${index}">
               <div class="product-info">${item.name}</div>
               <div class="product-details">
-                نرخی تاک: ${item.unitPrice.toLocaleString()} IQD | 
-                داشکاندنی پیشەفرض: ${item.discount}% 
+                Unit Price: <input type="number" value="${item.unitPrice}" readonly style="width:90px; text-align:center; background:#eee; border:none;" />
+                | Default Discount: ${item.discount}%
               </div>
               <div class="controls">
-                <label>ژمارە:</label>
+                <label>Quantity:</label>
                 <button onclick="changeQty(${index}, -1)">-</button>
                 <input type="number" min="0" value="${item.quantity}" oninput="updateQty(${index}, this.value)" />
                 <button onclick="changeQty(${index}, 1)">+</button>
                 
-                <label>داشکان (%):</label>
+                <label>Discount (%):</label>
                 <input type="number" min="0" max="100" value="${item.discountOverride}" oninput="updateDiscount(${index}, this.value)" />
                 
-                <label>فری کەیس (IQD):</label>
-                <input type="number" min="0" value="${item.freeCase}" oninput="updateFreeCase(${index}, this.value)" />
+                <label>Free Case (IQD):</label>
+                <input type="number" min="0" value="${item.freeCase === null ? '' : item.freeCase}" oninput="updateFreeCase(${index}, this.value)" required />
               </div>
               <div style="min-width:120px; text-align:center; font-weight:bold;">
-                کۆی گشتی: ${total.toLocaleString()} IQD
+                Total: ${total.toLocaleString()} IQD
               </div>
             </div>
           `;
@@ -210,8 +210,8 @@
       renderProducts(document.getElementById("searchInput").value);
     }
     function updateFreeCase(index, val) {
-      let v = parseFloat(val);
-      if (isNaN(v) || v < 0) v = 0;
+      let v = val.trim() === "" ? null : parseFloat(val);
+      if (v !== null && (isNaN(v) || v < 0)) v = 0;
       items[index].freeCase = v;
       renderProducts(document.getElementById("searchInput").value);
     }
@@ -223,60 +223,18 @@
 
     function updateTotal() {
       const total = items.reduce((sum, i) => {
+        if (i.freeCase === null) return sum; // skip if freeCase not entered
         const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
-        return sum + (priceAfterDiscount * i.quantity) + (i.freeCase || 0);
+        return sum + (priceAfterDiscount * i.quantity) + i.freeCase;
       }, 0);
-      document.getElementById("totalAmount").textContent = `کۆی گشتی: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
     }
 
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("تکایە ناوی کڕیار بنووسە");
+        alert("Please enter the customer name.");
         return;
       }
 
-      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
-        name: i.name,
-        quantity: i.quantity,
-        unitPrice: i.unitPrice,
-        discount: i.discountOverride,
-        freeCase: i.freeCase,
-        total: (i.unitPrice * i.quantity * (1 - i.discountOverride / 100)) + i.freeCase
-      }));
-
-      if (selectedItems.length === 0) {
-        alert("هیچ کاڵایەک هەڵنەبژێردراوە");
-        return;
-      }
-
-      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
-
-      const saleData = {
-        customer,
-        items: selectedItems,
-        total
-      };
-
-      localStorage.setItem("lastSale", JSON.stringify(saleData));
-      
-      // پاککردن فۆرمەکە:
-      document.getElementById("totalAmount").textContent = "کۆی گشتی: 0 IQD";
-      document.getElementById("customer").value = "";
-      items.forEach(i => {
-        i.quantity = 0;
-        i.discountOverride = i.discount;
-        i.freeCase = 0;
-      });
-      renderProducts();
-
-      document.getElementById("saleResult").textContent = "فرۆشتن تۆمار کرا";
-
-      // گەڕان بۆ sales.html ئەگەر دەتەوێت کامێنت بکە:
-      // window.location.href = "sales.html";
-    }
-
-    renderProducts();
-  </script>
-</body>
-</html>
+      // validate freeCase entered for all items that have quantity >
