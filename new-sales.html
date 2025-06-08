@@ -1,177 +1,222 @@
-<!-- new-sales.html -->
-<!DOCTYPE html>
-<html lang="ku" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <title>فرۆشتنی نوێ</title>
-  <style>
-    body {
-      font-family: Tahoma, sans-serif;
-      padding: 20px;
-      background: #eef;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 800px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-    input, select, button {
-      margin: 10px 0;
-      padding: 10px;
-      width: 100%;
-      font-size: 1em;
-    }
-    table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2>فرۆشتنی نوێ</h2>
-    <label>ناوی کڕیار:</label>
-    <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە">
-
-    <label>کالا:</label>
-    <select id="product">
-      <option value="کەڵەشین">کەڵەشین</option>
-      <option value="شووشە">شووشە</option>
-      <option value="ئێلکترۆنیک">ئێلکترۆنیک</option>
-    </select>
-
-    <label>ژمارە:</label>
-    <input type="number" id="quantity" value="1">
-
-    <label>نرخی تاک:</label>
-    <input type="number" id="unitPrice" value="1000">
-
-    <label>داشکاندن (%):</label>
-    <input type="number" id="discount" value="0">
-
-    <button onclick="addSale()">ناردنی فرۆشتن</button>
-
-    <div id="saleResult"></div>
-  </div>
-
-  <script>
-    function addSale() {
-      const customer = document.getElementById("customer").value;
-      const product = document.getElementById("product").value;
-      const quantity = parseInt(document.getElementById("quantity").value);
-      const unitPrice = parseFloat(document.getElementById("unitPrice").value);
-      const discount = parseFloat(document.getElementById("discount").value);
-
-      const discountedPrice = unitPrice * (1 - discount / 100);
-      const total = discountedPrice * quantity;
-
-      const saleData = {
-        customer,
-        items: [
-          {
-            name: product,
-            quantity,
-            unitPrice,
-            discount,
-            total
-          }
-        ],
-        total
-      };
-
-      localStorage.setItem("lastSale", JSON.stringify(saleData));
-
-      document.getElementById("saleResult").innerHTML = "<p>فرۆشتن تۆمار کرا</p>";
-    }
-  </script>
-</body>
-</html>
-
-
-<!-- sales.html -->
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>فۆرمی فرۆشتن</title>
   <style>
     body {
-      font-family: Tahoma, sans-serif;
+      font-family: "Tahoma", sans-serif;
+      background: #f4f4f4;
       padding: 20px;
-      background: #f2f2f2;
+      direction: rtl;
+      text-align: right;
     }
     .container {
-      max-width: 800px;
+      max-width: 750px;
       margin: auto;
       background: white;
-      padding: 25px;
+      padding: 30px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      padding: 10px;
-      border: 1px solid #ddd;
-      text-align: center;
-    }
     h2 {
       text-align: center;
-      margin-bottom: 15px;
+      color: #2c3e50;
+      margin-bottom: 20px;
+    }
+    label {
+      font-weight: bold;
+      margin-bottom: 5px;
+      display: block;
+      color: #34495e;
+    }
+    input[type="text"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      font-size: 16px;
+    }
+    .items-list {
+      margin-top: 20px;
+    }
+    .item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #f9f9f9;
+      padding: 10px;
+      margin-bottom: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+    }
+    .item-info {
+      flex-grow: 1;
+    }
+    .item-name {
+      font-weight: bold;
+      font-size: 17px;
+      color: #333;
+    }
+    .item-price {
+      font-size: 14px;
+      color: #555;
+    }
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      min-width: 250px;
+    }
+    .qty-control button,
+    .qty-control input {
+      padding: 5px 8px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+    }
+    .qty-control input {
+      width: 50px;
+      text-align: center;
+    }
+    .discount-control input {
+      width: 60px;
+      padding: 5px;
+    }
+    .total-summary {
+      margin-top: 20px;
+      font-weight: bold;
+      font-size: 18px;
+      text-align: left;
+      color: #1a3e72;
+      border-top: 2px solid #ccc;
+      padding-top: 10px;
+    }
+    button#submitBtn {
+      width: 100%;
+      padding: 14px;
+      margin-top: 25px;
+      background-color: #2c3e50;
+      color: white;
+      font-size: 18px;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    button#submitBtn:hover {
+      background-color: #1a2a3a;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>زانیاری فرۆشتنی کۆتا</h2>
-    <div id="saleData"></div>
+    <h2>فۆرمی فرۆشتن</h2>
+
+    <label for="customer">ناوی کریار</label>
+    <input type="text" id="customer" placeholder="ناوی کریار بنووسە" />
+
+    <div class="items-list" id="itemsList"></div>
+
+    <div class="total-summary" id="totalSummary">کۆی گشتی: 0.00 IQD</div>
+
+    <button id="submitBtn">ناردنی فرۆشتن</button>
   </div>
 
   <script>
-    const sale = JSON.parse(localStorage.getItem("lastSale"));
+    const products = [
+      { id: 1, name: "کالا A", price: 20000 },
+      { id: 2, name: "کالا B", price: 35000 },
+      { id: 3, name: "کالا C", price: 50000 }
+    ];
 
-    if (!sale) {
-      document.getElementById("saleData").innerHTML = "<p>هیچ زانیاری فرۆشتنێک نییە.</p>";
-    } else {
-      const html = `
-        <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
-        <table>
-          <thead>
-            <tr>
-              <th>ناوی کاڵا</th>
-              <th>ژمارە</th>
-              <th>نرخی تاک</th>
-              <th>داشکاندن (%)</th>
-              <th>کۆی گشتی</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sale.items.map(item => `
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unitPrice.toLocaleString()} IQD</td>
-                <td>${item.discount}%</td>
-                <td>${item.total.toLocaleString()} IQD</td>
-              </tr>`).join("")}
-          </tbody>
-        </table>
-        <p><strong>کۆی گشتی:</strong> ${sale.total.toLocaleString()} IQD</p>
-      `;
-      document.getElementById("saleData").innerHTML = html;
+    let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+
+    const itemsList = document.getElementById("itemsList");
+    const totalSummary = document.getElementById("totalSummary");
+    const customerInput = document.getElementById("customer");
+
+    function renderItems() {
+      itemsList.innerHTML = "";
+      cart.forEach(item => {
+        const total = item.quantity * item.price * (1 - item.discount / 100);
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">نرخ: ${item.price.toLocaleString()} IQD</div>
+          </div>
+          <div class="controls">
+            <div class="qty-control">
+              <button onclick="changeQty(${item.id}, -1)">-</button>
+              <input type="number" value="${item.quantity}" onchange="updateQty(${item.id}, this.value)" />
+              <button onclick="changeQty(${item.id}, 1)">+</button>
+            </div>
+            <div>
+              <input type="number" value="${item.discount}" onchange="updateDiscount(${item.id}, this.value)" placeholder="% داشکاندن" />
+            </div>
+            <div style="font-weight:bold;">${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} IQD</div>
+          </div>
+        `;
+        itemsList.appendChild(itemDiv);
+      });
+      updateTotal();
     }
+
+    function changeQty(id, delta) {
+      const item = cart.find(p => p.id === id);
+      item.quantity = Math.max(0, item.quantity + delta);
+      renderItems();
+    }
+
+    function updateQty(id, val) {
+      const item = cart.find(p => p.id === id);
+      item.quantity = Math.max(0, parseInt(val) || 0);
+      renderItems();
+    }
+
+    function updateDiscount(id, val) {
+      const item = cart.find(p => p.id === id);
+      item.discount = Math.max(0, Math.min(100, parseFloat(val) || 0));
+      renderItems();
+    }
+
+    function updateTotal() {
+      const total = cart.reduce((sum, item) => sum + item.quantity * item.price * (1 - item.discount / 100), 0);
+      totalSummary.textContent = `کۆی گشتی: ${total.toLocaleString(undefined, { minimumFractionDigits: 2 })} IQD`;
+    }
+
+    document.getElementById("submitBtn").addEventListener("click", () => {
+      const customer = customerInput.value.trim();
+      if (!customer) {
+        alert("تکایە ناوی کریار بنووسە");
+        return;
+      }
+      const saleItems = cart.filter(i => i.quantity > 0);
+      if (saleItems.length === 0) {
+        alert("هیچ کالایەکت هەلبژێردراو نییە!");
+        return;
+      }
+
+      const saleData = {
+        customer,
+        items: saleItems,
+        total: saleItems.reduce((sum, i) => sum + i.quantity * i.price * (1 - i.discount / 100), 0)
+      };
+
+      console.log("=== داتای فرۆشتن ===");
+      console.log(saleData);
+      alert("زانیاری فرۆشتن نێردرا. Console ببینە.");
+
+      customerInput.value = "";
+      cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+      renderItems();
+    });
+
+    renderItems();
   </script>
 </body>
 </html>
