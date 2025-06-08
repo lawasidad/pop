@@ -17,25 +17,31 @@
       margin: auto;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    input, select, button {
-      margin: 10px 0;
+    input, button {
       padding: 10px;
       font-size: 1em;
+      margin: 10px 0;
     }
-    table {
-      width: 100%;
-      margin-top: 15px;
-      border-collapse: collapse;
+    .product-list {
+      margin-top: 20px;
     }
-    th, td {
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      background: #f9f9f9;
     }
-    .btn-small {
+    .controls button {
+      margin: 0 5px;
       padding: 5px 10px;
-      font-size: 0.9em;
-      margin: 2px;
+      font-size: 1em;
+    }
+    .product-name {
+      font-weight: bold;
     }
   </style>
 </head>
@@ -46,100 +52,79 @@
     <label>ناوی کڕیار:</label>
     <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە">
 
-    <label>کالا:</label>
-    <select id="product">
-      <option value="کەڵەشین">کەڵەشین</option>
-      <option value="شووشە">شووشە</option>
-      <option value="ئێلکترۆنیک">ئێلکترۆنیک</option>
-    </select>
-
-    <label>نرخی تاک:</label>
-    <input type="number" id="unitPrice" value="1000">
-
-    <label>داشکاندن (%):</label>
-    <input type="number" id="discount" value="0">
-
-    <button onclick="addItem()">زیادکردنی بەرهەم</button>
-
-    <table id="itemList">
-      <thead>
-        <tr>
-          <th>کالا</th>
-          <th>ژمارە</th>
-          <th>+</th>
-          <th>-</th>
-          <th>نرخی تاک</th>
-          <th>داشکاندن</th>
-          <th>کۆی گشتی</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div class="product-list" id="productList">
+      <!-- Items will be added here -->
+    </div>
 
     <button onclick="submitSale()">ناردنی فرۆشتن</button>
     <div id="saleResult"></div>
   </div>
 
   <script>
-    let items = [];
+    const products = [
+      { name: "کەڵەشین", unitPrice: 1000, discount: 0 },
+      { name: "شووشە", unitPrice: 1500, discount: 5 },
+      { name: "ئێلکترۆنیک", unitPrice: 3000, discount: 10 },
+    ];
 
-    function addItem() {
-      const product = document.getElementById("product").value;
-      const unitPrice = parseFloat(document.getElementById("unitPrice").value);
-      const discount = parseFloat(document.getElementById("discount").value);
+    const items = products.map(p => ({
+      ...p,
+      quantity: 0
+    }));
 
-      const existing = items.find(i => i.name === product && i.unitPrice === unitPrice && i.discount === discount);
-      if (existing) {
-        existing.quantity++;
-      } else {
-        items.push({ name: product, quantity: 1, unitPrice, discount });
-      }
-      renderTable();
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      list.innerHTML = "";
+      items.forEach((item, index) => {
+        const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
+        list.innerHTML += `
+          <div class="product-item">
+            <div>
+              <div class="product-name">${item.name}</div>
+              <div>نرخی تاک: ${item.unitPrice} | داشکاندن: ${item.discount}%</div>
+              <div>ژمارە: ${item.quantity} | کۆی گشتی: ${total.toLocaleString()}</div>
+            </div>
+            <div class="controls">
+              <button onclick="changeQty(${index}, 1)">+</button>
+              <button onclick="changeQty(${index}, -1)">-</button>
+            </div>
+          </div>
+        `;
+      });
     }
 
     function changeQty(index, delta) {
       items[index].quantity += delta;
-      if (items[index].quantity <= 0) items.splice(index, 1);
-      renderTable();
-    }
-
-    function renderTable() {
-      const tbody = document.querySelector("#itemList tbody");
-      tbody.innerHTML = "";
-      items.forEach((item, i) => {
-        const total = item.unitPrice * (1 - item.discount / 100) * item.quantity;
-        tbody.innerHTML += `
-          <tr>
-            <td>${item.name}</td>
-            <td>${item.quantity}</td>
-            <td><button class="btn-small" onclick="changeQty(${i}, 1)">+</button></td>
-            <td><button class="btn-small" onclick="changeQty(${i}, -1)">-</button></td>
-            <td>${item.unitPrice}</td>
-            <td>${item.discount}%</td>
-            <td>${total.toLocaleString()}</td>
-          </tr>`;
-      });
+      if (items[index].quantity < 0) items[index].quantity = 0;
+      renderProducts();
     }
 
     function submitSale() {
       const customer = document.getElementById("customer").value;
-      const total = items.reduce((sum, i) => sum + (i.unitPrice * (1 - i.discount / 100) * i.quantity), 0);
+      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        discount: i.discount,
+        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+      }));
+
+      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
 
       const saleData = {
         customer,
-        items: items.map(i => ({
-          name: i.name,
-          quantity: i.quantity,
-          unitPrice: i.unitPrice,
-          discount: i.discount,
-          total: i.unitPrice * (1 - i.discount / 100) * i.quantity
-        })),
+        items: selectedItems,
         total
       };
 
       localStorage.setItem("lastSale", JSON.stringify(saleData));
       document.getElementById("saleResult").innerHTML = "<p>فرۆشتن تۆمار کرا</p>";
+
+      // Redirect optionally:
+      // window.location.href = "sales.html";
     }
+
+    renderProducts();
   </script>
 </body>
 </html>
