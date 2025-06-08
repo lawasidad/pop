@@ -1,187 +1,248 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Sales Form Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>فرۆشتنی کاڵا</title>
   <style>
-    /* (کۆدی style وەک خۆی هێشتووە - وەکو کۆدی سەرەتا) */
-    /* ... same styles as before ... */
+    body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background-color: #f2f2f2;
+      color: #333;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+      padding: 30px 20px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #005f73;
+      margin-bottom: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 10px;
+      font-size: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+    }
+
+    .search-box {
+      margin-bottom: 20px;
+    }
+
+    .products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+
+    .product-card {
+      flex: 1 1 calc(50% - 15px);
+      background-color: #fff;
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.05);
+    }
+
+    .product-name {
+      font-weight: bold;
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+    }
+
+    .price {
+      color: #0a9396;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .controls input {
+      width: 60px;
+      padding: 5px;
+      text-align: center;
+    }
+
+    .total {
+      margin-top: 30px;
+      font-size: 1.2rem;
+      text-align: center;
+      color: #005f73;
+    }
+
+    .submit-btn {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      background-color: #005f73;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: 0.3s;
+    }
+
+    .submit-btn:hover {
+      background-color: #0a9396;
+    }
+
+    @media (max-width: 600px) {
+      .product-card {
+        flex: 1 1 100%;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Sales Form Test</h2>
+    <h2>فۆرمی فرۆشتن</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
+    <div class="form-group">
+      <label for="customer">ناوی کریار</label>
+      <input type="text" id="customer" placeholder="ناوی کریار بنووسە" />
+    </div>
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
+    <div class="form-group search-box">
+      <label for="searchProduct">گەڕان بۆ کاڵا</label>
+      <input type="text" id="searchProduct" placeholder="ناوی کاڵا بنووسە..." />
+    </div>
 
-    <div class="items-list" id="itemsList"></div>
+    <div class="products" id="productsList"></div>
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+    <div class="total" id="totalAmount">کۆی گشتی: 0 دینار</div>
 
-    <button id="submitBtn">Submit Sale (Test Console)</button>
+    <button class="submit-btn" id="submitBtn">تۆمارکردنی فرۆشتن</button>
   </div>
 
 <script>
   const products = [
-    { id: 1, name: "Product A", price: 20000 },
-    { id: 2, name: "Product B", price: 35000 },
-    { id: 3, name: "Product C", price: 50000 },
-    { id: 4, name: "Product D", price: 15000 },
-    { id: 5, name: "Product E", price: 40000 },
+    { id: 1, name: "کالای ١", price: 2000 },
+    { id: 2, name: "کالای ٢", price: 3500 },
+    { id: 3, name: "کالای ٣", price: 5000 },
+    { id: 4, name: "کالای ٤", price: 1500 },
+    { id: 5, name: "کالای ٥", price: 8000 },
   ];
 
-  const itemsList = document.getElementById("itemsList");
-  const totalSummary = document.getElementById("totalSummary");
-  const submitBtn = document.getElementById("submitBtn");
-  const customerInput = document.getElementById("customer");
-  const searchInput = document.getElementById("searchProduct");
-
-  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+  let cart = products.map(p => ({ ...p, qty: 0, discount: 0 }));
   let filteredCart = [...cart];
 
-  function renderItems() {
-    itemsList.innerHTML = "";
-    filteredCart.forEach(item => {
-      const totalPrice = item.quantity * item.price * (1 - item.discount / 100);
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
+  const productsList = document.getElementById("productsList");
+  const totalAmount = document.getElementById("totalAmount");
+  const searchInput = document.getElementById("searchProduct");
+  const customerInput = document.getElementById("customer");
+  const submitBtn = document.getElementById("submitBtn");
 
-      itemDiv.innerHTML = `
-        <div class="item-info">
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
-        </div>
+  function renderProducts() {
+    productsList.innerHTML = "";
+    filteredCart.forEach(product => {
+      const total = product.qty * product.price * (1 - product.discount / 100);
+      const card = document.createElement("div");
+      card.className = "product-card";
+      card.innerHTML = `
+        <div class="product-name">${product.name}</div>
+        <div class="price">نرخی یەکە: ${product.price.toLocaleString()} دینار</div>
         <div class="controls">
-          <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="Quantity of ${item.name}" />
-            <button data-action="inc" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">+</button>
-          </div>
-          <div class="discount-control">
-            <label for="discount-${item.id}">Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="Discount percent for ${item.name}" />
-          </div>
-          <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
-          </div>
+          <label>ژمارە:</label>
+          <input type="number" min="0" value="${product.qty}" data-id="${product.id}" class="qty" />
+          <label>داشکاندن٪:</label>
+          <input type="number" min="0" max="100" value="${product.discount}" data-id="${product.id}" class="discount" />
         </div>
+        <div style="margin-top: 10px; font-weight: bold;">کۆ: ${total.toLocaleString()} دینار</div>
       `;
-      itemsList.appendChild(itemDiv);
+      productsList.appendChild(card);
     });
-    updateTotalSummary();
+    updateTotal();
   }
 
-  function updateTotalSummary() {
+  function updateTotal() {
     const total = cart.reduce((sum, item) => {
-      return sum + (item.quantity * item.price * (1 - item.discount / 100));
+      return sum + (item.qty * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    totalAmount.textContent = `کۆی گشتی: ${total.toLocaleString()} دینار`;
   }
+
+  productsList.addEventListener("input", (e) => {
+    const id = parseInt(e.target.dataset.id);
+    const index = cart.findIndex(p => p.id === id);
+    if (e.target.classList.contains("qty")) {
+      cart[index].qty = parseInt(e.target.value) || 0;
+    } else if (e.target.classList.contains("discount")) {
+      cart[index].discount = parseFloat(e.target.value) || 0;
+    }
+    renderProducts();
+  });
 
   searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    filteredCart = query
-      ? cart.filter(item => item.name.toLowerCase().includes(query))
-      : [...cart];
-    renderItems();
-  });
-
-  itemsList.addEventListener("click", (e) => {
-    const btn = e.target;
-    if (btn.tagName === "BUTTON") {
-      const id = parseInt(btn.getAttribute("data-id"));
-      const action = btn.getAttribute("data-action");
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      if (action === "inc") {
-        cart[index].quantity++;
-      } else if (action === "dec" && cart[index].quantity > 0) {
-        cart[index].quantity--;
-      }
-      renderItems();
-    }
-  });
-
-  itemsList.addEventListener("change", (e) => {
-    const input = e.target;
-    if (input.classList.contains("qty-input")) {
-      const id = parseInt(input.getAttribute("data-id"));
-      let val = parseInt(input.value);
-      if (isNaN(val) || val < 0) val = 0;
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      cart[index].quantity = val;
-      renderItems();
-    }
-    if (input.classList.contains("discount-input")) {
-      const id = parseInt(input.getAttribute("data-id"));
-      let val = parseFloat(input.value);
-      if (isNaN(val) || val < 0) val = 0;
-      if (val > 100) val = 100;
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      cart[index].discount = val;
-      renderItems();
-    }
+    const q = searchInput.value.trim().toLowerCase();
+    filteredCart = cart.filter(p => p.name.toLowerCase().includes(q));
+    renderProducts();
   });
 
   submitBtn.addEventListener("click", () => {
     const customer = customerInput.value.trim();
     if (!customer) {
-      alert("Please enter customer name!");
+      alert("تکایە ناوی کریار بنووسە");
       return;
     }
 
-    const saleItems = cart.filter(item => item.quantity > 0).map(item => ({
-      productName: item.name,
-      quantity: item.quantity,
-      unitPrice: item.price,
-      discountPercent: item.discount,
-      total: parseFloat((item.quantity * item.price * (1 - item.discount / 100)).toFixed(2))
+    const items = cart.filter(p => p.qty > 0).map(p => ({
+      product: p.name,
+      qty: p.qty,
+      unitPrice: p.price,
+      discount: p.discount,
+      total: p.qty * p.price * (1 - p.discount / 100)
     }));
 
-    if (saleItems.length === 0) {
-      alert("Please add at least one product quantity!");
+    if (items.length === 0) {
+      alert("هیچ کاڵایەکت هەلبژێردراووە!");
       return;
     }
 
-    const saleData = {
+    const newSales = items.map(item => ({
       customer,
-      items: saleItems,
-      totalAmount: parseFloat(saleItems.reduce((sum, item) => sum + item.total, 0).toFixed(2))
-    };
+      ...item
+    }));
 
-    // ✅ Save to localStorage in a flat format
-    let existingSales = JSON.parse(localStorage.getItem("salesList")) || [];
-    saleItems.forEach(item => {
-      existingSales.push({
-        customer: customer,
-        product: item.productName,
-        qty: item.quantity,
-        unitPrice: item.unitPrice,
-        discount: item.discountPercent,
-        total: item.total
-      });
-    });
-    localStorage.setItem("salesList", JSON.stringify(existingSales));
+    const existing = JSON.parse(localStorage.getItem("salesList") || "[]");
+    const updated = [...existing, ...newSales];
+    localStorage.setItem("salesList", JSON.stringify(updated));
 
-    console.log("=== Sale Data ===");
-    console.log(saleData);
+    alert("فرۆشتن تۆمار کرا!");
 
-    alert("Sale data saved and sent to console. Check developer tools.");
-
+    // reset form
     customerInput.value = "";
-    cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+    cart = products.map(p => ({ ...p, qty: 0, discount: 0 }));
     filteredCart = [...cart];
-    renderItems();
+    renderProducts();
   });
 
-  renderItems();
+  renderProducts();
 </script>
 </body>
 </html>
