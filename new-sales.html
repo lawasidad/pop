@@ -1,309 +1,44 @@
+<!-- new-sales.html -->
 <!DOCTYPE html>
-<html lang="ku" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>فۆرمی فرۆشتنی نوێ</title>
-  <style>
-    body {
-      font-family: "Tahoma", sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-      direction: ltr;
-      text-align: left;
-    }
-    .container {
-      max-width: 700px;
-      margin: auto;
-      background: white;
-      padding: 20px 30px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-      color: #2c3e50;
-    }
-    label {
-      display: block;
-      margin: 12px 0 6px;
-      font-weight: bold;
-      color: #34495e;
-    }
-    input[type="text"], input[type="number"] {
-      width: 100%;
-      padding: 8px 10px;
-      font-size: 16px;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-    .items-list {
-      margin-top: 15px;
-      max-height: 300px;
-      overflow-y: auto;
-      border: 1px solid #ddd;
-      border-radius: 5px;
-      padding: 10px;
-      background: #fafafa;
-    }
-    .item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 10px;
-      border-bottom: 1px solid #ddd;
-    }
-    .item:last-child {
-      border-bottom: none;
-    }
-    .item-info {
-      flex-grow: 1;
-      margin-left: 10px;
-    }
-    .item-name {
-      font-weight: bold;
-      font-size: 17px;
-      color: #2c3e50;
-      margin-bottom: 5px;
-    }
-    .item-price {
-      font-size: 14px;
-      color: #555;
-    }
-    .controls {
-      display: flex;
-      gap: 12px;
-      align-items: center;
-      min-width: 230px;
-      font-size: 14px;
-    }
-    .qty-control button,
-    .discount-control input[type="number"] {
-      cursor: pointer;
-      padding: 5px 10px;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 16px;
-      background-color: white;
-      user-select: none;
-    }
-    .qty-control input[type="number"] {
-      width: 50px;
-      text-align: center;
-      border: 1px solid #bbb;
-      border-radius: 5px;
-    }
-    .discount-control {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      min-width: 90px;
-    }
-    .discount-control label {
-      margin-bottom: 2px;
-      font-size: 13px;
-    }
-    .total-summary {
-      margin-top: 20px;
-      font-size: 20px;
-      font-weight: bold;
-      color: #1a3e72;
-      border-top: 2px solid #2c3e50;
-      padding-top: 10px;
-      text-align: left;
-    }
-    #submitBtn {
-      margin-top: 25px;
-      width: 100%;
-      background: #2c3e50;
-      color: white;
-      padding: 14px 0;
-      font-size: 18px;
-      font-weight: bold;
-      border: none;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    #submitBtn:hover {
-      background: #1a2a3a;
-    }
-  </style>
+  <title>Sales Form</title>
 </head>
 <body>
-  <div class="container">
-    <h2>فۆرمی فرۆشتنی نوێ</h2>
+  <h2>New Sale</h2>
+  <input type="text" id="customer" placeholder="Customer Name" />
+  <button onclick="submitSale()">Submit</button>
 
-    <label for="customer">ناوی کڕیار</label>
-    <input type="text" id="customer" placeholder="ناوی کڕیار داخڵ بکە" autocomplete="off" />
+  <script>
+    const products = [
+      { name: "Product A", price: 1000 },
+      { name: "Product B", price: 2000 }
+    ];
 
-    <label for="searchProduct">گەڕان لە ناوی کاڵا</label>
-    <input type="text" id="searchProduct" placeholder="ناوی کاڵاکە بنووسە" autocomplete="off" />
+    const cart = [
+      { product: "Product A", qty: 2, unitPrice: 1000, discount: 10, total: 1800 },
+      { product: "Product B", qty: 1, unitPrice: 2000, discount: 0, total: 2000 }
+    ];
 
-    <div class="items-list" id="itemsList"></div>
+    function submitSale() {
+      const customer = document.getElementById("customer").value;
+      const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
 
-    <div class="total-summary" id="totalSummary">کۆی گشتی: IQD 0.00</div>
+      cart.forEach(item => {
+        salesList.push({
+          customer: customer,
+          product: item.product,
+          qty: item.qty,
+          unitPrice: item.unitPrice,
+          discount: item.discount,
+          total: item.total
+        });
+      });
 
-    <button id="submitBtn">ناردنی فرۆشتن</button>
-  </div>
-
-<script>
-  // لیستی کاڵاکان بە فۆرمەتی ثابت
-  const products = [
-    { id: 1, name: "کاڵا A", price: 20000 },
-    { id: 2, name: "کاڵا B", price: 35000 },
-    { id: 3, name: "کاڵا C", price: 50000 },
-    { id: 4, name: "کاڵا D", price: 15000 },
-    { id: 5, name: "کاڵا E", price: 40000 },
-  ];
-
-  const itemsList = document.getElementById("itemsList");
-  const totalSummary = document.getElementById("totalSummary");
-  const submitBtn = document.getElementById("submitBtn");
-  const customerInput = document.getElementById("customer");
-  const searchInput = document.getElementById("searchProduct");
-
-  // کۆپی لە کاڵاکان بۆ فرۆشتن (کارت)
-  let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
-  let filteredCart = [...cart];
-
-  // بەرزکردنەوەی کاڵاکان لە لیست
-  function renderItems() {
-    itemsList.innerHTML = "";
-    filteredCart.forEach(item => {
-      const totalPrice = item.quantity * item.price * (1 - item.discount / 100);
-      const itemDiv = document.createElement("div");
-      itemDiv.className = "item";
-
-      itemDiv.innerHTML = `
-        <div class="item-info">
-          <div class="item-name">${item.name}</div>
-          <div class="item-price">نرخ: IQD ${item.price.toLocaleString()}</div>
-        </div>
-        <div class="controls">
-          <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}" aria-label="کەمکردنەوەی ژمارەی ${item.name}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="ژمارەی ${item.name}" />
-            <button data-action="inc" data-id="${item.id}" aria-label="زیادکردنی ژمارەی ${item.name}">+</button>
-          </div>
-          <div class="discount-control">
-            <label for="discount-${item.id}">دیسکاونت %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="دیسکاونتی ${item.name}" />
-          </div>
-          <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            کۆی: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
-          </div>
-        </div>
-      `;
-      itemsList.appendChild(itemDiv);
-    });
-    updateTotalSummary();
-  }
-
-  // نوێکردنەوەی کۆی گشتی
-  function updateTotalSummary() {
-    const total = cart.reduce((sum, item) => {
-      return sum + (item.quantity * item.price * (1 - item.discount / 100));
-    }, 0);
-    totalSummary.textContent = `کۆی گشتی: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-  }
-
-  // گەڕان لە ناوی کاڵا
-  searchInput.addEventListener("input", () => {
-    const query = searchInput.value.trim().toLowerCase();
-    filteredCart = query
-      ? cart.filter(item => item.name.toLowerCase().includes(query))
-      : [...cart];
-    renderItems();
-  });
-
-  // زیاد و کەمکردنەوەی ژمارە و دیسکاونت بە دوگمەکان و فیلد
-  itemsList.addEventListener("click", (e) => {
-    const btn = e.target;
-    if (btn.tagName === "BUTTON") {
-      const id = parseInt(btn.getAttribute("data-id"));
-      const action = btn.getAttribute("data-action");
-      const index = cart.findIndex(item => item.id === id);
-      if (index === -1) return;
-      if (action === "inc") {
-        cart[index].quantity++;
-      } else if (action === "dec" && cart[index].quantity > 0) {
-        cart[index].quantity--;
-      }
-      renderItems();
+      localStorage.setItem("salesList", JSON.stringify(salesList));
+      alert("Sale submitted!");
     }
-  });
-
-  itemsList.addEventListener("input", (e) => {
-    if (e.target.classList.contains("qty-input")) {
-      const id = parseInt(e.target.getAttribute("data-id"));
-      const val = parseInt(e.target.value);
-      if (isNaN(val) || val < 0) {
-        e.target.value = 0;
-        return;
-      }
-      const index = cart.findIndex(item => item.id === id);
-      if (index !== -1) {
-        cart[index].quantity = val;
-        renderItems();
-      }
-    }
-    if (e.target.classList.contains("discount-input")) {
-      const id = parseInt(e.target.getAttribute("data-id"));
-      let val = parseFloat(e.target.value);
-      if (isNaN(val) || val < 0) val = 0;
-      else if (val > 100) val = 100;
-      e.target.value = val;
-      const index = cart.findIndex(item => item.id === id);
-      if (index !== -1) {
-        cart[index].discount = val;
-        updateTotalSummary();
-      }
-    }
-  });
-
-  // ناردنی فرۆشتن (کۆنترۆڵکردن و چاپکردنی داتاکان)
-  submitBtn.addEventListener("click", () => {
-    const customerName = customerInput.value.trim();
-    if (!customerName) {
-      alert("تکایە ناوی کڕیار داخڵ بکە.");
-      return;
-    }
-    const itemsSold = cart.filter(item => item.quantity > 0);
-    if (itemsSold.length === 0) {
-      alert("هیچ کاڵایەک دیاری نەکراوە.");
-      return;
-    }
-    // داتاکان لە کونسۆڵ دا هەڵبژێرە بۆ تێستکردن
-    console.log("ناوی کڕیار:", customerName);
-    console.log("کاڵاکان:", itemsSold);
-
-    let receipt = `ناوی کڕیار: ${customerName}\n\n`;
-    receipt += "کاڵاکان:\n";
-    itemsSold.forEach(item => {
-      const totalItem = item.quantity * item.price * (1 - item.discount / 100);
-      receipt += `${item.name} - ژمارە: ${item.quantity}, نرخ: IQD ${item.price.toLocaleString()}, دیسکاونت: ${item.discount}%, کۆی: IQD ${totalItem.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}\n`;
-    });
-    const totalAll = itemsSold.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0);
-    receipt += `\nکۆی گشتی: IQD ${totalAll.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-
-    alert(receipt);
-
-    // ئەم جا دەتوانیت داتاکان بۆ localStorage یان بەکارهێنانی API بۆ ناردنی فرۆشتن بیکەیت
-    // localStorage.setItem("lastSale", JSON.stringify({customer: customerName, items: itemsSold}));
-
-    // دووبارە سەروەی فۆرمەکە بکەوە (ئەگەر دەتەوێت)
-    customerInput.value = "";
-    cart.forEach(item => { item.quantity = 0; item.discount = 0; });
-    filteredCart = [...cart];
-    searchInput.value = "";
-    renderItems();
-  });
-
-  // فەرمی بەرزکردنەوە بۆ یەکەم جار
-  renderItems();
-</script>
+  </script>
 </body>
 </html>
