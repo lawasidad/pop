@@ -1,94 +1,47 @@
+<!-- sales.html -->
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>لیستی فرۆشتنەکان</title>
+  <meta charset="UTF-8">
+  <title>Submitted Sales</title>
   <style>
-    body {
-      font-family: "Tahoma", sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-      direction: rtl;
-      text-align: right;
-    }
-    h2 {
-      text-align: center;
-      color: #2c3e50;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 20px;
-      background: white;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      border-radius: 8px;
-      overflow: hidden;
-    }
-    th, td {
-      padding: 10px 15px;
-      border-bottom: 1px solid #ddd;
-      text-align: center;
-    }
-    th {
-      background-color: #2c3e50;
-      color: white;
-    }
-    tbody tr:hover {
-      background-color: #f0f0f0;
-    }
-    .customer-row {
-      background-color: #e7f1ff;
-      font-weight: bold;
-    }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    th, td { border: 1px solid #ccc; padding: 8px; }
+    th { background: #eee; }
   </style>
 </head>
 <body>
-  <h2>لیستی فرۆشتنەکان</h2>
+  <h2>Submitted Sales</h2>
   <table>
     <thead>
       <tr>
-        <th>کڕیار</th>
-        <th>ناوی کاڵا</th>
-        <th>ژمارە</th>
-        <th>نرخ</th>
-        <th>داشکاندن %</th>
-        <th>کۆی گشتی</th>
+        <th>Customer</th>
+        <th>Product</th>
+        <th>Qty</th>
+        <th>Unit Price</th>
+        <th>Discount %</th>
+        <th>Total</th>
       </tr>
     </thead>
-    <tbody id="salesTableBody"></tbody>
+    <tbody id="salesTable"></tbody>
   </table>
 
   <script>
-    const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
-    const tbody = document.getElementById("salesTableBody");
+    const sales = JSON.parse(localStorage.getItem("salesList")) || [];
+    const tbody = document.getElementById("salesTable");
 
-    if (salesList.length === 0) {
-      const noDataRow = document.createElement("tr");
-      noDataRow.innerHTML = `<td colspan="6">هیچ فرۆشتنێک تۆمار نەکراوە</td>`;
-      tbody.appendChild(noDataRow);
-    } else {
-      salesList.forEach(sale => {
-        // نیشاندانی ناوی کڕیار لە خانەیەکی جیاواز بۆ هەریەک لە کاڵاکان
-        const customerRow = document.createElement("tr");
-        customerRow.classList.add("customer-row");
-        customerRow.innerHTML = `<td colspan="6">کڕیار: ${sale.customer} — کۆی گشتی: IQD ${sale.totalAmount.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>`;
-        tbody.appendChild(customerRow);
-
-        sale.items.forEach(item => {
-          const row = document.createElement("tr");
-          row.innerHTML = `
-            <td></td>
-            <td>${item.productName}</td>
-            <td>${item.quantity}</td>
-            <td>IQD ${item.unitPrice.toLocaleString()}</td>
-            <td>${item.discountPercent}%</td>
-            <td>IQD ${item.total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}</td>
-          `;
-          tbody.appendChild(row);
-        });
-      });
-    }
+    sales.forEach(sale => {
+      const row = document.createElement("tr");
+      row.innerHTML = `
+        <td>${sale.customer}</td>
+        <td>${sale.product}</td>
+        <td>${sale.qty}</td>
+        <td>${sale.unitPrice}</td>
+        <td>${sale.discount}</td>
+        <td>${sale.total.toFixed(2)}</td>
+      `;
+      tbody.appendChild(row);
+    });
   </script>
 </body>
 </html>
