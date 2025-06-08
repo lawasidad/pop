@@ -2,19 +2,20 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <title>New Sale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>New Sale (Responsive)</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
-      padding: 20px;
-      background: #eef2f7;
       margin: 0;
+      background: #f5f7fa;
+      padding: 15px 10px;
     }
     .container {
       max-width: 900px;
       margin: auto;
-      background: white;
-      padding: 20px 30px 40px 30px;
+      background: #fff;
+      padding: 20px 25px;
       border-radius: 12px;
       box-shadow: 0 0 15px rgba(0,0,0,0.1);
     }
@@ -22,10 +23,9 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 25px;
-      background: #2a9df4;
+      background: #246cd4;
       color: white;
-      padding: 12px 25px;
+      padding: 12px 18px;
       border-radius: 10px;
       font-weight: bold;
       font-size: 1.3em;
@@ -35,17 +35,17 @@
       z-index: 999;
     }
     .header .total {
-      background: #145ea8;
-      padding: 6px 15px;
+      background: #184f9f;
+      padding: 7px 16px;
       border-radius: 8px;
-      min-width: 150px;
+      min-width: 140px;
       text-align: center;
     }
     .header button {
-      background: #f49a1a;
+      background: #f78f1e;
       border: none;
       color: white;
-      padding: 10px 22px;
+      padding: 10px 20px;
       border-radius: 10px;
       font-weight: 600;
       font-size: 1em;
@@ -53,134 +53,172 @@
       transition: background-color 0.25s ease;
     }
     .header button:hover {
-      background: #e88200;
+      background: #db7f00;
     }
+
     label {
       font-weight: 600;
-      display: block;
-      margin-bottom: 8px;
       margin-top: 15px;
-      font-size: 1em;
+      display: block;
       color: #333;
+      font-size: 1em;
     }
     input[type="text"], input[type="number"] {
       width: 100%;
-      padding: 10px 12px;
+      padding: 9px 12px;
       font-size: 1em;
       border-radius: 8px;
-      border: 1.5px solid #ccc;
+      border: 1.4px solid #bbb;
       box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
     input[type="text"]:focus, input[type="number"]:focus {
-      border-color: #2a9df4;
+      border-color: #246cd4;
       outline: none;
     }
     #searchInput {
-      margin-bottom: 20px;
+      margin-bottom: 18px;
       font-size: 1.1em;
       font-weight: 600;
     }
+
     #productList {
-      max-height: 480px;
+      max-height: 520px;
       overflow-y: auto;
+      background: #fafafa;
       border-radius: 10px;
       border: 1.5px solid #ddd;
-      background: #fafafa;
       padding: 10px 15px;
     }
+
     .product-item {
       display: flex;
-      gap: 15px;
-      align-items: center;
-      padding: 14px 10px;
-      border-bottom: 1.2px solid #ddd;
       flex-wrap: wrap;
+      gap: 12px;
+      align-items: center;
+      padding: 12px 8px;
+      border-bottom: 1.2px solid #ddd;
     }
     .product-img {
-      width: 50px;
-      height: 50px;
-      border-radius: 8px;
-      background-color: #eee;
       flex-shrink: 0;
+      width: 52px;
+      height: 52px;
+      border-radius: 8px;
+      background: #dde5f2;
+      color: #5678a5;
+      font-weight: 800;
+      font-size: 1.5em;
       display: flex;
       justify-content: center;
       align-items: center;
-      font-weight: 700;
-      font-size: 1.4em;
-      color: #777;
       user-select: none;
       text-transform: uppercase;
     }
     .product-info {
-      flex: 1 1 140px;
+      flex: 1 1 130px;
       font-weight: 700;
       font-size: 1.05em;
-      color: #222;
+      color: #202020;
+      min-width: 100px;
     }
     .product-details {
-      flex: 1 1 180px;
+      flex: 1 1 170px;
       font-size: 0.9em;
       color: #555;
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
+      min-width: 130px;
     }
+
     .controls {
       display: flex;
+      gap: 10px;
+      flex: 1 1 300px;
       flex-wrap: wrap;
-      gap: 12px;
-      flex: 1 1 320px;
       justify-content: flex-end;
       align-items: center;
+      min-width: 180px;
     }
     .controls label {
       font-weight: 500;
       font-size: 0.9em;
-      margin-right: 4px;
       white-space: nowrap;
+      margin-right: 5px;
     }
     .controls input[type="number"] {
-      width: 70px;
-      padding: 6px 8px;
+      width: 65px;
+      padding: 6px 9px;
       font-size: 1em;
-      text-align: center;
       border-radius: 6px;
-      border: 1.2px solid #aaa;
+      border: 1.3px solid #999;
+      text-align: center;
     }
     .controls button {
-      width: 32px;
-      height: 32px;
+      width: 30px;
+      height: 30px;
       font-size: 1.3em;
-      line-height: 1;
-      background: #2a9df4;
+      background: #246cd4;
       color: white;
       border: none;
-      border-radius: 7px;
+      border-radius: 8px;
       cursor: pointer;
       user-select: none;
       transition: background-color 0.3s ease;
     }
     .controls button:hover:not(:disabled) {
-      background: #1a75d1;
+      background: #1b53a6;
     }
     .controls button:disabled {
       background: #bbb;
       cursor: not-allowed;
     }
     .total-product {
-      width: 140px;
       font-weight: 700;
       font-size: 1em;
+      min-width: 130px;
       text-align: center;
-      color: #145ea8;
+      color: #184f9f;
     }
+
     #saleResult {
-      margin-top: 25px;
+      margin-top: 28px;
       font-weight: 700;
-      font-size: 1.2em;
+      font-size: 1.25em;
       text-align: center;
       color: green;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 720px) {
+      .product-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .controls {
+        justify-content: flex-start;
+        gap: 10px 20px;
+      }
+      .product-info, .product-details, .total-product {
+        min-width: auto;
+        width: 100%;
+      }
+      .header {
+        flex-direction: column;
+        gap: 10px;
+        font-size: 1.15em;
+        padding: 10px 15px;
+      }
+      .header .total {
+        min-width: auto;
+        width: 100%;
+        padding: 10px 0;
+      }
+      .header button {
+        width: 100%;
+        padding: 12px 0;
+        font-size: 1.1em;
+      }
     }
   </style>
 </head>
@@ -203,7 +241,6 @@
   </div>
 
   <script>
-    // Sample images as simple initials in circles; here simplified as text inside .product-img
     const products = [
       { name: "Kalashin", unitPrice: 1000, discount: 0, img: "K" },
       { name: "Shusha", unitPrice: 1500, discount: 5, img: "S" },
@@ -212,23 +249,24 @@
       { name: "Computer", unitPrice: 7000, discount: 15, img: "C" },
     ];
 
+    // Keep track of quantities and discounts per product (no freeCase field now)
     const items = products.map(p => ({
       ...p,
       quantity: 0,
-      discountOverride: p.discount,
-      freeCase: null
+      discountOverride: p.discount
     }));
 
     function renderProducts(filter = "") {
       const list = document.getElementById("productList");
       const filterLC = filter.toLowerCase();
       list.innerHTML = "";
+
       items.forEach((item, index) => {
         if (!item.name.toLowerCase().includes(filterLC)) return;
 
         const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
-        const total = item.quantity > 0 && item.freeCase !== null
-          ? (priceAfterDiscount * item.quantity) + item.freeCase
+        const total = item.quantity > 0
+          ? priceAfterDiscount * item.quantity
           : 0;
 
         list.innerHTML += `
@@ -247,9 +285,6 @@
 
               <label>Discount %:</label>
               <input type="number" min="0" max="100" value="${item.discountOverride}" oninput="updateDiscount(${index}, this.value)" />
-
-              <label>Free Case (IQD):</label>
-              <input type="number" min="0" value="${item.freeCase === null ? '' : item.freeCase}" oninput="updateFreeCase(${index}, this.value)" required />
             </div>
             <div class="total-product">${total.toLocaleString()} IQD</div>
           </div>
@@ -275,24 +310,17 @@
       items[index].discountOverride = v;
       renderProducts(document.getElementById("searchInput").value);
     }
-    function updateFreeCase(index, val) {
-      let v = val.trim() === "" ? null : parseFloat(val);
-      if (v !== null && (isNaN(v) || v < 0)) v = 0;
-      items[index].freeCase = v;
-      renderProducts(document.getElementById("searchInput").value);
-    }
 
     function filterProducts() {
       const val = document.getElementById("searchInput").value;
       renderProducts(val);
     }
 
-    // Fixed total at top - sums all products with quantity >0 and freeCase entered
     function updateTotal() {
       const total = items.reduce((sum, item) => {
-        if (item.quantity > 0 && item.freeCase !== null) {
+        if (item.quantity > 0) {
           const priceAfterDiscount = item.unitPrice * (1 - (item.discountOverride || 0) / 100);
-          return sum + (priceAfterDiscount * item.quantity) + item.freeCase;
+          return sum + priceAfterDiscount * item.quantity;
         }
         return sum;
       }, 0);
@@ -302,52 +330,4 @@
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("Please enter the customer name.");
-        return;
-      }
-
-      // Validate freeCase required if quantity > 0
-      for (const i of items) {
-        if (i.quantity > 0 && (i.freeCase === null || i.freeCase === "")) {
-          alert(`Please enter Free Case amount for product: ${i.name}`);
-          return;
-        }
-      }
-
-      // Prepare sale data
-      const saleItems = items.filter(i => i.quantity > 0).map(i => {
-        const priceAfterDiscount = i.unitPrice * (1 - (i.discountOverride || 0) / 100);
-        return {
-          name: i.name,
-          quantity: i.quantity,
-          unitPrice: i.unitPrice,
-          discount: i.discountOverride,
-          freeCase: i.freeCase,
-          total: (priceAfterDiscount * i.quantity) + i.freeCase
-        };
-      });
-
-      if (saleItems.length === 0) {
-        alert("Please select at least one product with quantity greater than zero.");
-        return;
-      }
-
-      const totalSale = saleItems.reduce((sum, i) => sum + i.total, 0);
-
-      const saleData = {
-        customer,
-        items: saleItems,
-        total: totalSale
-      };
-
-      // Save sale data to localStorage for sales.html
-      localStorage.setItem("lastSale", JSON.stringify(saleData));
-
-      document.getElementById("saleResult").textContent = "Sale submitted successfully!";
-    }
-
-    // Initial render
-    renderProducts();
-  </script>
-</body>
-</html>
+        alert("Please
