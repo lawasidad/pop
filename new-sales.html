@@ -161,7 +161,6 @@
 <script>
   const { jsPDF } = window.jspdf;
 
-  // Sample products for testing
   const products = [
     { id: 1, name: "Product A", price: 20000, image: "https://via.placeholder.com/60?text=A" },
     { id: 2, name: "Product B", price: 35000, image: "https://via.placeholder.com/60?text=B" },
@@ -177,7 +176,6 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
-  // Cart array with quantity and discount for each product
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
@@ -258,11 +256,7 @@
   }
 
   function generatePDF(saleData) {
-    const doc = new jsPDF({
-      orientation: "portrait",
-      unit: "pt",
-      format: "a4"
-    });
+    const doc = new jsPDF({ orientation: "portrait", unit: "pt", format: "a4" });
 
     let y = 40;
     const leftMargin = 40;
@@ -340,12 +334,17 @@
 
     const grandTotal = items.reduce((sum, item) => sum + item.total, 0);
 
+    // Generate PDF (optional)
     generatePDF({ customer, items, grandTotal });
+
+    // Store sale data in localStorage for sales.html
+    localStorage.setItem("lastSale", JSON.stringify({ customer, items, grandTotal }));
+
+    // Redirect to sales.html
+    window.location.href = "sales.html";
   };
 
-  // Initial render
   renderItems();
-
 </script>
 </body>
 </html>
