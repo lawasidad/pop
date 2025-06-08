@@ -1,13 +1,13 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="ku" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sales Form</title>
+  <title>فۆرمی فرۆشتنی نوێ</title>
   <style>
     body {
       font-family: "Tahoma", sans-serif;
-      background: #f0f0f0;
+      background: #f9f9f9;
       padding: 20px;
       direction: ltr;
       text-align: left;
@@ -134,29 +134,29 @@
 </head>
 <body>
   <div class="container">
-    <h2>New Sales Form</h2>
+    <h2>فۆرمی فرۆشتنی نوێ</h2>
 
-    <label for="customer">Customer Name</label>
-    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
+    <label for="customer">ناوی کڕیار</label>
+    <input type="text" id="customer" placeholder="ناوی کڕیار داخڵ بکە" autocomplete="off" />
 
-    <label for="searchProduct">Search Product</label>
-    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
+    <label for="searchProduct">گەڕان لە ناوی کاڵا</label>
+    <input type="text" id="searchProduct" placeholder="ناوی کاڵاکە بنووسە" autocomplete="off" />
 
     <div class="items-list" id="itemsList"></div>
 
-    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+    <div class="total-summary" id="totalSummary">کۆی گشتی: IQD 0.00</div>
 
-    <button id="submitBtn">Submit Sale</button>
+    <button id="submitBtn">ناردنی فرۆشتن</button>
   </div>
 
 <script>
-  // Products hardcoded list
+  // لیستی کاڵاکان بە فۆرمەتی ثابت
   const products = [
-    { id: 1, name: "Product A", price: 20000 },
-    { id: 2, name: "Product B", price: 35000 },
-    { id: 3, name: "Product C", price: 50000 },
-    { id: 4, name: "Product D", price: 15000 },
-    { id: 5, name: "Product E", price: 40000 },
+    { id: 1, name: "کاڵا A", price: 20000 },
+    { id: 2, name: "کاڵا B", price: 35000 },
+    { id: 3, name: "کاڵا C", price: 50000 },
+    { id: 4, name: "کاڵا D", price: 15000 },
+    { id: 5, name: "کاڵا E", price: 40000 },
   ];
 
   const itemsList = document.getElementById("itemsList");
@@ -165,11 +165,11 @@
   const customerInput = document.getElementById("customer");
   const searchInput = document.getElementById("searchProduct");
 
-  // Initialize cart with quantity and discount
+  // کۆپی لە کاڵاکان بۆ فرۆشتن (کارت)
   let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
   let filteredCart = [...cart];
 
-  // Render product items
+  // بەرزکردنەوەی کاڵاکان لە لیست
   function renderItems() {
     itemsList.innerHTML = "";
     filteredCart.forEach(item => {
@@ -180,20 +180,20 @@
       itemDiv.innerHTML = `
         <div class="item-info">
           <div class="item-name">${item.name}</div>
-          <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
+          <div class="item-price">نرخ: IQD ${item.price.toLocaleString()}</div>
         </div>
         <div class="controls">
           <div class="qty-control">
-            <button data-action="dec" data-id="${item.id}" aria-label="Decrease quantity of ${item.name}">-</button>
-            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="Quantity of ${item.name}" />
-            <button data-action="inc" data-id="${item.id}" aria-label="Increase quantity of ${item.name}">+</button>
+            <button data-action="dec" data-id="${item.id}" aria-label="کەمکردنەوەی ژمارەی ${item.name}">-</button>
+            <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" aria-label="ژمارەی ${item.name}" />
+            <button data-action="inc" data-id="${item.id}" aria-label="زیادکردنی ژمارەی ${item.name}">+</button>
           </div>
           <div class="discount-control">
-            <label for="discount-${item.id}">Discount %:</label>
-            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="Discount percent for ${item.name}" />
+            <label for="discount-${item.id}">دیسکاونت %:</label>
+            <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" aria-label="دیسکاونتی ${item.name}" />
           </div>
           <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
-            Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            کۆی: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
           </div>
         </div>
       `;
@@ -202,15 +202,15 @@
     updateTotalSummary();
   }
 
-  // Update total sale summary
+  // نوێکردنەوەی کۆی گشتی
   function updateTotalSummary() {
     const total = cart.reduce((sum, item) => {
       return sum + (item.quantity * item.price * (1 - item.discount / 100));
     }, 0);
-    totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    totalSummary.textContent = `کۆی گشتی: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
   }
 
-  // Filter products by search
+  // گەڕان لە ناوی کاڵا
   searchInput.addEventListener("input", () => {
     const query = searchInput.value.trim().toLowerCase();
     filteredCart = query
@@ -219,7 +219,7 @@
     renderItems();
   });
 
-  // Quantity buttons (increment/decrement)
+  // زیاد و کەمکردنەوەی ژمارە و دیسکاونت بە دوگمەکان و فیلد
   itemsList.addEventListener("click", (e) => {
     const btn = e.target;
     if (btn.tagName === "BUTTON") {
@@ -236,5 +236,74 @@
     }
   });
 
-  // Change quantity or discount input fields
-  itemsList.add
+  itemsList.addEventListener("input", (e) => {
+    if (e.target.classList.contains("qty-input")) {
+      const id = parseInt(e.target.getAttribute("data-id"));
+      const val = parseInt(e.target.value);
+      if (isNaN(val) || val < 0) {
+        e.target.value = 0;
+        return;
+      }
+      const index = cart.findIndex(item => item.id === id);
+      if (index !== -1) {
+        cart[index].quantity = val;
+        renderItems();
+      }
+    }
+    if (e.target.classList.contains("discount-input")) {
+      const id = parseInt(e.target.getAttribute("data-id"));
+      let val = parseFloat(e.target.value);
+      if (isNaN(val) || val < 0) val = 0;
+      else if (val > 100) val = 100;
+      e.target.value = val;
+      const index = cart.findIndex(item => item.id === id);
+      if (index !== -1) {
+        cart[index].discount = val;
+        updateTotalSummary();
+      }
+    }
+  });
+
+  // ناردنی فرۆشتن (کۆنترۆڵکردن و چاپکردنی داتاکان)
+  submitBtn.addEventListener("click", () => {
+    const customerName = customerInput.value.trim();
+    if (!customerName) {
+      alert("تکایە ناوی کڕیار داخڵ بکە.");
+      return;
+    }
+    const itemsSold = cart.filter(item => item.quantity > 0);
+    if (itemsSold.length === 0) {
+      alert("هیچ کاڵایەک دیاری نەکراوە.");
+      return;
+    }
+    // داتاکان لە کونسۆڵ دا هەڵبژێرە بۆ تێستکردن
+    console.log("ناوی کڕیار:", customerName);
+    console.log("کاڵاکان:", itemsSold);
+
+    let receipt = `ناوی کڕیار: ${customerName}\n\n`;
+    receipt += "کاڵاکان:\n";
+    itemsSold.forEach(item => {
+      const totalItem = item.quantity * item.price * (1 - item.discount / 100);
+      receipt += `${item.name} - ژمارە: ${item.quantity}, نرخ: IQD ${item.price.toLocaleString()}, دیسکاونت: ${item.discount}%, کۆی: IQD ${totalItem.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}\n`;
+    });
+    const totalAll = itemsSold.reduce((sum, item) => sum + (item.quantity * item.price * (1 - item.discount / 100)), 0);
+    receipt += `\nکۆی گشتی: IQD ${totalAll.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+
+    alert(receipt);
+
+    // ئەم جا دەتوانیت داتاکان بۆ localStorage یان بەکارهێنانی API بۆ ناردنی فرۆشتن بیکەیت
+    // localStorage.setItem("lastSale", JSON.stringify({customer: customerName, items: itemsSold}));
+
+    // دووبارە سەروەی فۆرمەکە بکەوە (ئەگەر دەتەوێت)
+    customerInput.value = "";
+    cart.forEach(item => { item.quantity = 0; item.discount = 0; });
+    filteredCart = [...cart];
+    searchInput.value = "";
+    renderItems();
+  });
+
+  // فەرمی بەرزکردنەوە بۆ یەکەم جار
+  renderItems();
+</script>
+</body>
+</html>
