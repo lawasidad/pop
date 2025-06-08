@@ -1,47 +1,77 @@
-<!-- sales.html -->
 <!DOCTYPE html>
-<html>
+<html lang="ku" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <title>Submitted Sales</title>
+  <meta charset="UTF-8" />
+  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
   <style>
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; }
-    th { background: #eee; }
+    body {
+      font-family: Tahoma, sans-serif;
+      padding: 20px;
+      background: #f2f2f2;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: white;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
   </style>
 </head>
 <body>
-  <h2>Submitted Sales</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Customer</th>
-        <th>Product</th>
-        <th>Qty</th>
-        <th>Unit Price</th>
-        <th>Discount %</th>
-        <th>Total</th>
-      </tr>
-    </thead>
-    <tbody id="salesTable"></tbody>
-  </table>
+  <div class="container">
+    <h2>زانیاری فرۆشتنی کۆتا</h2>
+    <div id="saleData"></div>
+  </div>
 
   <script>
-    const sales = JSON.parse(localStorage.getItem("salesList")) || [];
-    const tbody = document.getElementById("salesTable");
+    const sale = JSON.parse(localStorage.getItem("lastSale"));
 
-    sales.forEach(sale => {
-      const row = document.createElement("tr");
-      row.innerHTML = `
-        <td>${sale.customer}</td>
-        <td>${sale.product}</td>
-        <td>${sale.qty}</td>
-        <td>${sale.unitPrice}</td>
-        <td>${sale.discount}</td>
-        <td>${sale.total.toFixed(2)}</td>
+    if (!sale) {
+      document.getElementById("saleData").innerHTML = "<p>هیچ زانیاری فرۆشتنێک نییە.</p>";
+    } else {
+      const html = `
+        <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>ناوی کاڵا</th>
+              <th>ژمارە</th>
+              <th>نرخی تاک</th>
+              <th>داشکاندن (%)</th>
+              <th>کۆی گشتی</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sale.items.map(item => `
+              <tr>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unitPrice.toLocaleString()} IQD</td>
+                <td>${item.discount}%</td>
+                <td>${item.total.toLocaleString()} IQD</td>
+              </tr>`).join("")}
+          </tbody>
+        </table>
+        <p><strong>کۆی گشتی:</strong> ${sale.total.toLocaleString()} IQD</p>
       `;
-      tbody.appendChild(row);
-    });
+      document.getElementById("saleData").innerHTML = html;
+    }
   </script>
 </body>
 </html>
