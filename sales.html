@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Submitted Sales</title>
-  <style>
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
-    th { background: #eee; }
-  </style>
+<meta charset="UTF-8">
+<title>Submitted Sales</title>
+<style>
+body{font-family:Tahoma,sans-serif;padding:20px;background:#f0f0f0;}
+.container{max-width:800px;margin:auto;background:white;padding:20px;border-radius:8px;box-shadow:0 0 8px rgba(0,0,0,0.1);}
+h2{margin-top:0;text-align:center;color:#2c3e50;}
+table{width:100%;border-collapse:collapse;}
+th,td{border:1px solid #ccc;padding:8px;text-align:center;}
+th{background:#eee}
+</style>
 </head>
 <body>
+<div class="container">
   <h2>Submitted Sales</h2>
   <table>
     <thead>
@@ -18,31 +22,29 @@
         <th>Product</th>
         <th>Qty</th>
         <th>Unit Price</th>
-        <th>Discount %</th>
+        <th>Discount%</th>
         <th>Total</th>
       </tr>
     </thead>
     <tbody id="salesTable"></tbody>
   </table>
-
-  <script>
-    const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
-    const tbody = document.getElementById("salesTable");
-
-    salesList.forEach(sale => {
-      sale.items.forEach(item => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-          <td>${sale.customer}</td>
-          <td>${item.productName}</td>
-          <td>${item.quantity}</td>
-          <td>${item.unitPrice.toLocaleString()}</td>
-          <td>${item.discountPercent}</td>
-          <td>${item.total.toFixed(2)}</td>
-        `;
-        tbody.appendChild(row);
-      });
-    });
-  </script>
+</div>
+<script>
+const tbody = document.getElementById('salesTable');
+const sales = JSON.parse(localStorage.getItem('salesList')||'[]');
+sales.forEach(sale => {
+  sale.items.forEach(it => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>${sale.customer}</td>
+      <td>${it.name}</td>
+      <td>${it.qty}</td>
+      <td>${it.price.toFixed(2)}</td>
+      <td>${it.disc}</td>
+      <td>${it.total.toFixed(2)}</td>`;
+    tbody.appendChild(tr);
+  });
+});
+</script>
 </body>
 </html>
