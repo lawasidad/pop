@@ -1,49 +1,295 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8">
-  <title>New Sale</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Sales Form Test</title>
+  <style>
+    body {
+      font-family: "Tahoma", sans-serif;
+      background: #f0f0f0;
+      padding: 20px;
+      direction: ltr;
+      text-align: left;
+    }
+    .container {
+      max-width: 700px;
+      margin: auto;
+      background: white;
+      padding: 20px 30px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      border-radius: 8px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    label {
+      display: block;
+      margin: 12px 0 6px;
+      font-weight: bold;
+      color: #34495e;
+    }
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 8px 10px;
+      font-size: 16px;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+      box-sizing: border-box;
+    }
+    .items-list {
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 10px;
+      background: #fafafa;
+    }
+    .item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .item:last-child {
+      border-bottom: none;
+    }
+    .item-info {
+      flex-grow: 1;
+      margin-left: 10px;
+    }
+    .item-name {
+      font-weight: bold;
+      font-size: 17px;
+      color: #2c3e50;
+      margin-bottom: 5px;
+    }
+    .item-price {
+      font-size: 14px;
+      color: #555;
+    }
+    .controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      min-width: 230px;
+      font-size: 14px;
+    }
+    .qty-control button,
+    .discount-control input[type="number"] {
+      cursor: pointer;
+      padding: 5px 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 16px;
+      background-color: white;
+      user-select: none;
+    }
+    .qty-control input[type="number"] {
+      width: 50px;
+      text-align: center;
+      border: 1px solid #bbb;
+      border-radius: 5px;
+    }
+    .discount-control {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      min-width: 90px;
+    }
+    .discount-control label {
+      margin-bottom: 2px;
+      font-size: 13px;
+    }
+    .total-summary {
+      margin-top: 20px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #1a3e72;
+      border-top: 2px solid #2c3e50;
+      padding-top: 10px;
+      text-align: left;
+    }
+    #submitBtn {
+      margin-top: 25px;
+      width: 100%;
+      background: #2c3e50;
+      color: white;
+      padding: 14px 0;
+      font-size: 18px;
+      font-weight: bold;
+      border: none;
+      border-radius: 7px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    #submitBtn:hover {
+      background: #1a2a3a;
+    }
+  </style>
 </head>
 <body>
-  <h2>Add New Sale</h2>
-  <form id="saleForm">
-    <label>Customer: <input type="text" id="customer" required></label><br><br>
-    <label>Product: <input type="text" id="product" required></label><br><br>
-    <label>Qty: <input type="number" id="qty" required></label><br><br>
-    <label>Unit Price: <input type="number" id="unitPrice" required></label><br><br>
-    <label>Discount %: <input type="number" id="discount" required></label><br><br>
-    <button type="submit">Submit Sale</button>
-  </form>
+  <div class="container">
+    <h2>Sales Form Test</h2>
+
+    <label for="customer">Customer Name</label>
+    <input type="text" id="customer" placeholder="Enter customer name" autocomplete="off" />
+
+    <label for="searchProduct">Search Product</label>
+    <input type="text" id="searchProduct" placeholder="Type product name to search" autocomplete="off" />
+
+    <div class="items-list" id="itemsList"></div>
+
+    <div class="total-summary" id="totalSummary">Total: IQD 0.00</div>
+
+    <button id="submitBtn">Submit Sale (Test Console)</button>
+  </div>
 
   <script>
-    document.getElementById("saleForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    const products = [
+      { id: 1, name: "Product A", price: 20000 },
+      { id: 2, name: "Product B", price: 35000 },
+      { id: 3, name: "Product C", price: 50000 },
+      { id: 4, name: "Product D", price: 15000 },
+      { id: 5, name: "Product E", price: 40000 },
+    ];
 
-      const customer = document.getElementById("customer").value;
-      const product = document.getElementById("product").value;
-      const qty = parseFloat(document.getElementById("qty").value);
-      const unitPrice = parseFloat(document.getElementById("unitPrice").value);
-      const discount = parseFloat(document.getElementById("discount").value);
+    const itemsList = document.getElementById("itemsList");
+    const totalSummary = document.getElementById("totalSummary");
+    const submitBtn = document.getElementById("submitBtn");
+    const customerInput = document.getElementById("customer");
+    const searchInput = document.getElementById("searchProduct");
 
-      const total = qty * unitPrice * (1 - discount / 100);
+    let cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+    let filteredCart = [...cart];
 
-      const sale = {
+    function renderItems() {
+      itemsList.innerHTML = "";
+      filteredCart.forEach(item => {
+        const totalPrice = item.quantity * item.price * (1 - item.discount / 100);
+        const itemDiv = document.createElement("div");
+        itemDiv.className = "item";
+        itemDiv.innerHTML = `
+          <div class="item-info">
+            <div class="item-name">${item.name}</div>
+            <div class="item-price">Price: IQD ${item.price.toLocaleString()}</div>
+          </div>
+          <div class="controls">
+            <div class="qty-control">
+              <button data-action="dec" data-id="${item.id}">-</button>
+              <input type="number" min="0" value="${item.quantity}" data-id="${item.id}" class="qty-input" />
+              <button data-action="inc" data-id="${item.id}">+</button>
+            </div>
+            <div class="discount-control">
+              <label for="discount-${item.id}">Discount %:</label>
+              <input type="number" min="0" max="100" value="${item.discount}" id="discount-${item.id}" data-id="${item.id}" class="discount-input" />
+            </div>
+            <div style="margin-top:8px; font-weight:bold; min-width:110px; text-align:left;">
+              Total: IQD ${totalPrice.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}
+            </div>
+          </div>
+        `;
+        itemsList.appendChild(itemDiv);
+      });
+      updateTotalSummary();
+    }
+
+    function updateTotalSummary() {
+      const total = cart.reduce((sum, item) =>
+        sum + (item.quantity * item.price * (1 - item.discount / 100)), 0);
+      totalSummary.textContent = `Total: IQD ${total.toLocaleString(undefined, {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    }
+
+    searchInput.addEventListener("input", () => {
+      const query = searchInput.value.trim().toLowerCase();
+      filteredCart = query
+        ? cart.filter(item => item.name.toLowerCase().includes(query))
+        : [...cart];
+      renderItems();
+    });
+
+    itemsList.addEventListener("click", (e) => {
+      const btn = e.target;
+      if (btn.tagName === "BUTTON") {
+        const id = parseInt(btn.getAttribute("data-id"));
+        const action = btn.getAttribute("data-action");
+        const index = cart.findIndex(item => item.id === id);
+        if (index === -1) return;
+        if (action === "inc") {
+          cart[index].quantity++;
+        } else if (action === "dec" && cart[index].quantity > 0) {
+          cart[index].quantity--;
+        }
+        renderItems();
+      }
+    });
+
+    itemsList.addEventListener("change", (e) => {
+      const input = e.target;
+      if (input.classList.contains("qty-input")) {
+        const id = parseInt(input.getAttribute("data-id"));
+        let val = parseInt(input.value);
+        if (isNaN(val) || val < 0) val = 0;
+        const index = cart.findIndex(item => item.id === id);
+        if (index === -1) return;
+        cart[index].quantity = val;
+        renderItems();
+      }
+      if (input.classList.contains("discount-input")) {
+        const id = parseInt(input.getAttribute("data-id"));
+        let val = parseFloat(input.value);
+        if (isNaN(val) || val < 0) val = 0;
+        if (val > 100) val = 100;
+        const index = cart.findIndex(item => item.id === id);
+        if (index === -1) return;
+        cart[index].discount = val;
+        renderItems();
+      }
+    });
+
+    submitBtn.addEventListener("click", () => {
+      const customer = customerInput.value.trim();
+      if (!customer) {
+        alert("Please enter customer name!");
+        return;
+      }
+
+      const saleItems = cart.filter(item => item.quantity > 0).map(item => ({
+        productName: item.name,
+        quantity: item.quantity,
+        unitPrice: item.price,
+        discountPercent: item.discount,
+        total: parseFloat((item.quantity * item.price * (1 - item.discount / 100)).toFixed(2))
+      }));
+
+      if (saleItems.length === 0) {
+        alert("Please add at least one product quantity!");
+        return;
+      }
+
+      const saleData = {
         customer,
-        product,
-        qty,
-        unitPrice,
-        discount,
-        total
+        items: saleItems,
+        totalAmount: parseFloat(saleItems.reduce((sum, item) => sum + item.total, 0).toFixed(2))
       };
 
-      const salesList = JSON.parse(localStorage.getItem("salesList")) || [];
-      salesList.push(sale);
-      localStorage.setItem("salesList", JSON.stringify(salesList));
+      console.log("=== Sale Data ===");
+      console.log(saleData);
+      alert("Sale data sent to console. Check developer tools.");
 
-      // Clear form
-      this.reset();
-      alert("Sale submitted!");
+      // Reset form
+      customerInput.value = "";
+      cart = products.map(p => ({ ...p, quantity: 0, discount: 0 }));
+      filteredCart = [...cart];
+      renderItems();
     });
+
+    renderItems();
   </script>
 </body>
 </html>
