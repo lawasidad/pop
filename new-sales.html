@@ -4,37 +4,12 @@
   <meta charset="UTF-8">
   <title>New Sale</title>
   <style>
-    body {
-      font-family: sans-serif;
-      background: #f9f9f9;
-      padding: 20px;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      max-width: 700px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      border-radius: 8px;
-    }
-    input, button {
-      padding: 8px;
-      margin: 5px 0;
-      width: 100%;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 15px;
-    }
-    th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
-      text-align: center;
-    }
-    th {
-      background: #eee;
-    }
+    body { font-family: sans-serif; background: #f9f9f9; padding: 20px; }
+    .container { background: white; padding: 20px; max-width: 700px; margin: auto; box-shadow: 0 0 10px rgba(0,0,0,0.1); border-radius: 8px; }
+    input, button { padding: 8px; margin: 5px 0; width: 100%; }
+    table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+    th, td { padding: 8px; border: 1px solid #ccc; text-align: center; }
+    th { background: #eee; }
   </style>
 </head>
 <body>
@@ -73,7 +48,6 @@
       const price = parseFloat(document.getElementById('price').value);
       const disc = parseFloat(document.getElementById('disc').value) || 0;
       const total = qty * price * (1 - disc / 100);
-
       items.push({ name: prodName, qty, price, disc, total });
       renderItems();
     }
