@@ -24,10 +24,9 @@
     }
     .top-bar {
       display: flex;
-      justify-content: flex-end;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
-      gap: 15px;
       flex-wrap: wrap;
     }
     .total-amount {
@@ -37,6 +36,16 @@
       padding: 8px 15px;
       border-radius: 8px;
       color: #155724;
+      min-width: 150px;
+      text-align: center;
+    }
+    .quantity-total {
+      font-weight: bold;
+      font-size: 1.2em;
+      background: #cce5ff;
+      padding: 8px 15px;
+      border-radius: 8px;
+      color: #004085;
       min-width: 150px;
       text-align: center;
     }
@@ -85,6 +94,7 @@
 <body>
   <div class="container">
     <div class="top-bar">
+      <div class="quantity-total" id="totalQty">Qty: 0</div>
       <div class="total-amount" id="totalAmount">Total: 0 IQD</div>
       <button onclick="submitSale()">Submit Sale</button>
     </div>
@@ -138,7 +148,7 @@
         `;
       });
 
-      updateTotal();
+      updateSummary();
     }
 
     function toggleDetails(index) {
@@ -152,9 +162,11 @@
       renderProducts();
     }
 
-    function updateTotal() {
+    function updateSummary() {
       const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
+      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
       document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
     }
 
     function submitSale() {
@@ -178,23 +190,24 @@
       }
 
       const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
+      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
 
       const saleData = {
         customer,
         items: selectedItems,
-        total
+        total,
+        totalQty: qty
       };
 
       localStorage.setItem("lastSale", JSON.stringify(saleData));
 
-      // Reset form
-      document.getElementById("totalAmount").textContent = "Total: 0 IQD";
+      // Reset form and quantities
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
       renderProducts();
 
-      alert("Sale submitted! You can view it on sales.html.");
+      alert("Sale submitted! Check sales.html.");
     }
 
     renderProducts();
