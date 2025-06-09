@@ -80,15 +80,15 @@
     <h2>Summary of All Sales</h2>
 
     <div class="search-container">
-      <input type="text" id="searchInput" placeholder="گەڕان بۆ ناوی کریار..." />
+      <input type="text" id="searchInput" placeholder="Search by customer..." />
     </div>
 
     <div class="select-all">
       <input type="checkbox" id="selectAll" checked />
-      <label for="selectAll">هەموو وەسلەکان دیاری بکە</label>
+      <label for="selectAll">Select All Receipts</label>
     </div>
 
-    <button class="print-btn" onclick="printSelected()">پرێنتی وەسلە دیاریکراوەکان</button>
+    <button class="print-btn" onclick="printSelected()">Print Selected Receipts</button>
 
     <div id="saleData"></div>
   </div>
@@ -99,7 +99,7 @@
 
     function renderSales(data) {
       if (data.length === 0) {
-        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        saleDataDiv.innerHTML = "<p>No sales data found.</p>";
         return;
       }
 
@@ -113,19 +113,19 @@
           <div class="customer-row">
             <div>
               <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
-              <label for="saleCheckbox${index}">کریار: ${sale.customer}</label>
+              <label for="saleCheckbox${index}">Customer: ${sale.customer}</label>
             </div>
-            <div>بەروار: ${sale.date || 'نەدراوە'}</div>
+            <div>Date: ${sale.date || 'N/A'}</div>
           </div>
           <div class="sale-block" data-index="${index}">
             <table>
               <thead>
                 <tr>
-                  <th>ناوی بەرهەم</th>
-                  <th>ژمارە</th>
-                  <th>نرخی یەکە</th>
-                  <th>داشکاندن (%)</th>
-                  <th>کۆی گشتی</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Discount (%)</th>
+                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -141,7 +141,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td colspan="4" style="text-align:right;">Total Sale</td>
                   <td>${sale.total.toLocaleString()} IQD</td>
                 </tr>
               </tfoot>
@@ -153,7 +153,7 @@
 
       html += `
         <h3 style="text-align:right; margin-top:20px;">
-          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
+          Grand Total of All Sales: ${grandTotalAllSales.toLocaleString()} IQD
         </h3>
       `;
 
@@ -188,7 +188,7 @@
 
       const printWindow = window.open("", "_blank");
       printWindow.document.write(`
-        <html dir="rtl"><head><title>پرێنتی وەسلە</title>
+        <html dir="rtl"><head><title>Print Receipts</title>
         <style>
           body { font-family: Tahoma; padding: 20px; }
           table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl; }
