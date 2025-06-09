@@ -102,7 +102,6 @@
       allSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
 
-        // Format date (assumed sale.date exists)
         const formattedDate = sale.date ? formatDate(sale.date) : "";
 
         html += `
@@ -113,6 +112,7 @@
             <div style="flex-grow:1; text-align:right;">
               کریار: <span style="font-weight:bold; font-size:1.1em;">${sale.customer}</span>
               <span class="customer-info">Date: ${formattedDate}</span>
+              <span class="customer-info">Sale Date: ${formattedDate}</span>
             </div>
           </div>
           <table>
@@ -155,13 +155,11 @@
 
       saleDataDiv.innerHTML = html;
 
-      // Select all checkbox logic
       selectAllCheckbox.addEventListener("change", function() {
         const checkboxes = document.querySelectorAll(".saleCheckbox");
         checkboxes.forEach(cb => cb.checked = this.checked);
       });
 
-      // Print selected sales
       printButton.addEventListener("click", () => {
         const checkedIndexes = Array.from(document.querySelectorAll(".saleCheckbox:checked")).map(cb => parseInt(cb.dataset.index));
         if (checkedIndexes.length === 0) {
