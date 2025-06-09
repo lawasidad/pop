@@ -249,9 +249,13 @@
         timestamp: new Date().toISOString()
       };
 
-      localStorage.setItem("lasttSale", JSON.stringify(saleData));
+      // ====== چاکسازی: داتاکان زیادکردن بۆ localStorage لە allSales ======
+      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      allSales.push(saleData);
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+      // ====== پایان چاکسازی ======
 
-      // Reset everything
+      // Reset form
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
