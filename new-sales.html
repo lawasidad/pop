@@ -3,165 +3,173 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>New Sale - Modern +/- Buttons with Decimal Qty</title>
+<title>New Sale - Modern Stylish +/- Buttons</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background: #f0f4f8;
-    margin: 0; padding: 15px;
+    margin: 0; padding: 20px;
     color: #333;
   }
   .container {
     max-width: 900px;
     margin: auto;
     background: white;
-    padding: 25px 30px;
-    border-radius: 16px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 12px 25px rgba(0,0,0,0.12);
   }
   h1 {
     margin-bottom: 25px;
     color: #004080;
+    font-weight: 800;
+    letter-spacing: 1.2px;
   }
   input[type="text"], input[type="number"] {
     width: 100%;
-    max-width: 350px;
+    max-width: 360px;
     padding: 14px 18px;
-    margin: 8px 0 20px 0;
-    font-size: 1.1em;
-    border-radius: 12px;
+    margin: 10px 0 24px 0;
+    font-size: 1.15em;
+    border-radius: 16px;
     border: 2px solid #ccc;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   input[type="text"]:focus, input[type="number"]:focus {
     outline: none;
-    border-color: #007bff;
-    box-shadow: 0 0 10px rgba(0,123,255,0.4);
+    border-color: #0056b3;
+    box-shadow: 0 0 12px rgba(0,86,179,0.5);
   }
   .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: 18px;
+    margin-bottom: 36px;
   }
   .summary {
     background: #007bff;
     color: white;
-    padding: 14px 25px;
-    border-radius: 16px;
-    font-weight: 700;
-    font-size: 1.3em;
-    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
+    padding: 18px 30px;
+    border-radius: 20px;
+    font-weight: 900;
+    font-size: 1.4em;
+    box-shadow: 0 6px 20px rgba(0,123,255,0.3);
     user-select: none;
-    min-width: 140px;
+    min-width: 160px;
     text-align: center;
+    letter-spacing: 1px;
   }
   button.submit-btn {
-    background: #28a745;
+    background: linear-gradient(135deg, #28a745, #1e7e34);
     color: white;
     border: none;
-    padding: 16px 36px;
-    font-size: 1.15em;
-    border-radius: 16px;
-    font-weight: 700;
+    padding: 18px 42px;
+    font-size: 1.2em;
+    border-radius: 20px;
+    font-weight: 900;
     cursor: pointer;
-    box-shadow: 0 5px 15px rgba(40,167,69,0.5);
+    box-shadow: 0 8px 22px rgba(40,167,69,0.6);
     transition: background-color 0.3s ease;
     white-space: nowrap;
   }
   button.submit-btn:hover {
-    background: #218838;
+    background: linear-gradient(135deg, #1e7e34, #145214);
   }
   .product-list {
-    margin-top: 10px;
+    margin-top: 12px;
   }
   .product-item {
     background: #f9fbff;
-    border-radius: 16px;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    padding: 18px 22px;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.07);
+    padding: 22px 28px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 18px;
-    gap: 14px;
+    margin-bottom: 22px;
+    gap: 18px;
     transition: background-color 0.3s ease;
   }
   .product-item:hover {
-    background-color: #e4f0ff;
+    background-color: #e7f1ff;
   }
   .product-name {
-    flex: 1 1 220px;
-    font-weight: 700;
-    font-size: 1.15em;
+    flex: 1 1 240px;
+    font-weight: 900;
+    font-size: 1.2em;
     color: #004080;
     user-select: none;
   }
   .details {
-    flex: 1 1 300px;
-    font-size: 0.95em;
+    flex: 1 1 320px;
+    font-size: 1em;
     color: #555;
+    user-select: none;
   }
   .qty-control {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
   }
   .qty-control button {
     background: #007bff;
     border: none;
     color: white;
-    width: 38px;
-    height: 38px;
-    font-size: 1.3em;
-    font-weight: 700;
+    width: 42px;
+    height: 42px;
+    font-size: 1.5em;
+    font-weight: 900;
     border-radius: 50%;
     cursor: pointer;
-    box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+    box-shadow: 0 6px 18px rgba(0,123,255,0.5);
     transition: background-color 0.3s ease;
     user-select: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    line-height: 1;
   }
   .qty-control button:active {
-    background-color: #0056b3;
+    background-color: #004a99;
   }
   .qty-control input {
-    width: 70px;
+    width: 80px;
     text-align: center;
-    border-radius: 12px;
+    border-radius: 16px;
     border: 2px solid #ccc;
-    font-size: 1.1em;
-    padding: 8px 12px;
-    transition: border-color 0.3s ease;
+    font-size: 1.2em;
+    padding: 10px 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
   }
   .qty-control input:focus {
     border-color: #007bff;
-    box-shadow: 0 0 10px rgba(0,123,255,0.4);
+    box-shadow: 0 0 12px rgba(0,123,255,0.5);
     outline: none;
   }
   .total-price {
-    flex: 1 1 150px;
-    font-weight: 700;
-    font-size: 1.05em;
+    flex: 1 1 160px;
+    font-weight: 900;
+    font-size: 1.1em;
     color: #004080;
     user-select: none;
     text-align: right;
-    min-width: 120px;
+    min-width: 140px;
   }
-  @media (max-width: 650px) {
+  @media (max-width: 700px) {
     .product-item {
       flex-direction: column;
       align-items: flex-start;
     }
     .qty-control {
-      margin-top: 10px;
+      margin-top: 14px;
     }
     .total-price {
       width: 100%;
       text-align: left;
-      margin-top: 8px;
+      margin-top: 10px;
     }
   }
 </style>
@@ -171,7 +179,7 @@
     <h1>فڕۆشتن نوێ</h1>
 
     <div class="top-bar">
-      <div class="summary" id="totalQty">کۆی ژمارە: 0</div>
+      <div class="summary" id="totalQty">کۆی ژمارە: 0.00</div>
       <div class="summary" id="totalAmount">کۆی گشتی: 0 IQD</div>
       <button class="submit-btn" onclick="submitSale()">پێشکەشکردن</button>
     </div>
@@ -190,10 +198,8 @@
     { name: "ئەلکتڕۆنیک", unitPrice: 3000, discount: 10, stock: 20 },
   ];
 
-  // items پێویستە quantity decimal پشتیوانی بکات
   const items = products.map(p => ({ ...p, quantity: 0 }));
 
-  // فەرمی نیشاندانی کاڵاکان
   function renderProducts() {
     const list = document.getElementById("productList");
     const search = document.getElementById("searchBox").value.trim().toLowerCase();
@@ -230,7 +236,6 @@
     updateSummary();
   }
 
-  // زیاد/کەمکردن بە 1 یەکەیەک (هەروەها quantity دەتوانێت decimal بێت)
   function changeQtyByOne(index, delta) {
     let newQty = items[index].quantity + delta;
     if (newQty < 0) newQty = 0;
@@ -239,7 +244,6 @@
     renderProducts();
   }
 
-  // گۆڕینی ڕاستەوخۆ لە input (decimal دەتوانێت بێت)
   function changeQtyDirect(index, value) {
     let val = parseFloat(value);
     if (isNaN(val) || val < 0) val = 0;
@@ -248,7 +252,6 @@
     renderProducts();
   }
 
-  // نوێکردنەوەی کۆی ژمارە و کۆی گشتی نرخ
   function updateSummary() {
     const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
     const qty = items.reduce((sum, i) => sum + i.quantity, 0);
@@ -256,7 +259,6 @@
     document.getElementById("totalQty").textContent = `کۆی ژمارە: ${qty.toFixed(2)}`;
   }
 
-  // ناردنی داتاکان بۆ localStorage
   function submitSale() {
     const customer = document.getElementById("customer").value.trim();
     if (!customer) {
@@ -292,7 +294,6 @@
     allSales.push(saleData);
     localStorage.setItem("allSales", JSON.stringify(allSales));
 
-    // پاککردن فۆرمەکان بۆ فرۆشتنی دواتر
     document.getElementById("customer").value = "";
     document.getElementById("searchBox").value = "";
     items.forEach(i => i.quantity = 0);
@@ -301,8 +302,6 @@
     alert("فرۆشتنەکەت پاشکەوت کرا! دەتوانیت لە sales.html ببینیت.");
   }
 
-  // لە دوای بارکردن نیشاندانی کاڵاکان
   renderProducts();
 </script>
-</body>
-</html>
+</body
