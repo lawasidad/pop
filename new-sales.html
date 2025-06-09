@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>New Sale - Decimal Quantity</title>
+<title>New Sale - Quantity with decimal input and +/- by 1</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -142,7 +142,7 @@
     { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
   ];
 
-  // quantity as decimal allowed, initialize to 0
+  // quantity as decimal allowed (init 0)
   const items = products.map(p => ({ ...p, quantity: 0 }));
 
   function renderProducts() {
@@ -152,6 +152,7 @@
 
     items.forEach((item, index) => {
       if (search && !item.name.toLowerCase().includes(search)) return;
+
       const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
       list.innerHTML += `
         <div class="product-item">
@@ -160,17 +161,17 @@
             <div class="details">
               Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
               Qty: 
-              <button aria-label="Decrease quantity" onclick="changeQty(${index}, -0.1)">-</button>
+              <button aria-label="Decrease quantity" onclick="changeQtyByOne(${index}, -1)">-</button>
               <input 
                 type="number" 
                 min="0" 
-                step="0.1"
+                step="0.01"
                 max="${item.stock}" 
                 value="${item.quantity}" 
                 onchange="changeQtyDirect(${index}, this.value)" 
                 style="width: 70px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
               />
-              <button aria-label="Increase quantity" onclick="changeQty(${index}, 0.1)">+</button>
+              <button aria-label="Increase quantity" onclick="changeQtyByOne(${index}, 1)">+</button>
               | Total: ${total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} IQD
             </div>
           </div>
@@ -181,13 +182,16 @@
     updateSummary();
   }
 
-  function changeQty(index, delta) {
-    items[index].quantity = +(items[index].quantity + delta).toFixed(2);
-    if (items[index].quantity < 0) items[index].quantity = 0;
-    if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
+  // change quantity by 1 (integer step), but quantity can be decimal
+  function changeQtyByOne(index, delta) {
+    let newQty = items[index].quantity + delta;
+    if (newQty < 0) newQty = 0;
+    if (newQty > items[index].stock) newQty = items[index].stock;
+    items[index].quantity = +newQty.toFixed(2);
     renderProducts();
   }
 
+  // direct input change, quantity can be decimal
   function changeQtyDirect(index, value) {
     let val = parseFloat(value);
     if (isNaN(val) || val < 0) val = 0;
