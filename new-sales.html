@@ -68,7 +68,7 @@
 <body>
   <div class="container">
     <h1>List of Sales</h1>
-    <table id="salesTable">
+    <table id="salesTable" aria-label="List of sales">
       <thead>
         <tr>
           <th>Customer</th>
@@ -89,6 +89,7 @@
   </div>
 
 <script>
+  // Format datetime for Kurdish Iraq locale
   function formatDateTime(dateString) {
     const d = new Date(dateString);
     return d.toLocaleString('ku-IQ', { 
@@ -97,6 +98,7 @@
     });
   }
 
+  // Load sales from localStorage and render in table
   function loadSales() {
     const salesBody = document.getElementById('salesBody');
     const noSalesMessage = document.getElementById('noSalesMessage');
@@ -111,14 +113,20 @@
       noSalesMessage.style.display = 'none';
     }
 
-    // For each sale, list all products in separate rows
     allSales.forEach(sale => {
       sale.items.forEach(item => {
         const tr = document.createElement('tr');
 
+        // Escape HTML to avoid XSS risks (simple method)
+        function escapeHTML(str) {
+          return str.replace(/[&<>"']/g, function(m) {
+            return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[m];
+          });
+        }
+
         tr.innerHTML = `
-          <td>${sale.customer}</td>
-          <td>${item.name}</td>
+          <td>${escapeHTML(sale.customer)}</td>
+          <td>${escapeHTML(item.name)}</td>
           <td>${item.quantity.toFixed(2)}</td>
           <td>${item.unitPrice.toLocaleString()}</td>
           <td>${item.discount}</td>
@@ -130,6 +138,7 @@
     });
   }
 
+  // Initial load on page open
   loadSales();
 </script>
 </body>
