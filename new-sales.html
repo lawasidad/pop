@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>فرۆشتنی نوێ</title>
+  <title>New Sale</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -21,10 +22,13 @@
       padding: 10px;
       font-size: 1em;
       margin: 10px 0;
+      width: 100%;
+      box-sizing: border-box;
     }
     .top-bar {
       display: flex;
-      justify-content: flex-end;
+      flex-wrap: wrap;
+      justify-content: space-between;
       align-items: center;
       margin-bottom: 20px;
       gap: 15px;
@@ -52,9 +56,14 @@
       border-radius: 8px;
       background: #f9f9f9;
       cursor: pointer;
+      flex-wrap: wrap;
+    }
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     .controls button {
-      margin: 0 5px;
       padding: 5px 10px;
       font-size: 1em;
       cursor: pointer;
@@ -74,22 +83,34 @@
       font-size: 0.9em;
       color: #555;
     }
+
+    @media (max-width: 600px) {
+      .product-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .controls {
+        width: 100%;
+        justify-content: flex-start;
+        margin-top: 10px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="top-bar">
-      <div class="total-amount" id="totalAmount">کۆی گشتی: 0 IQD</div>
-      <button onclick="submitSale()">ناردنی فرۆشتن</button>
+      <div class="total-amount" id="totalAmount">Total: 0 IQD</div>
+      <button onclick="submitSale()">Submit Sale</button>
     </div>
 
     <div class="customer-section">
-      <label>ناوی کڕیار:</label>
-      <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" />
+      <label>Customer Name:</label>
+      <input type="text" id="customer" placeholder="Enter customer name" />
     </div>
 
     <div class="search-bar">
-      <input type="text" id="searchBox" oninput="renderProducts()" placeholder="گەڕان بۆ کالا..." />
+      <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." />
     </div>
 
     <div class="product-list" id="productList"></div>
@@ -97,9 +118,9 @@
 
   <script>
     const products = [
-      { name: "کەڵەشین", unitPrice: 1000, discount: 0, stock: 50 },
-      { name: "شووشە", unitPrice: 1500, discount: 5, stock: 30 },
-      { name: "ئێلکترۆنیک", unitPrice: 3000, discount: 10, stock: 20 },
+      { name: "Kaleshin", unitPrice: 1000, discount: 0, stock: 50 },
+      { name: "Shusha", unitPrice: 1500, discount: 0, stock: 30 },
+      { name: "Electronics", unitPrice: 3000, discount: 0, stock: 20 },
     ];
 
     const items = products.map(p => ({ ...p, quantity: 0 }));
@@ -112,16 +133,15 @@
       items.forEach((item, index) => {
         if (search && !item.name.includes(search)) return;
 
-        const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
+        const total = item.quantity * item.unitPrice;
         list.innerHTML += `
           <div class="product-item" onclick="toggleDetails(${index})">
             <div>
               <div class="product-name">${item.name}</div>
-              <div>نرخی تاک: ${item.unitPrice} IQD | داشکاندن: ${item.discount}%</div>
-              <div>ژمارە: ${item.quantity} | کۆی گشتی: ${total.toLocaleString()} IQD</div>
+              <div>Unit Price: ${item.unitPrice} IQD</div>
+              <div>Qty: ${item.quantity} | Total: ${total.toLocaleString()} IQD</div>
               <div id="details-${index}" class="details">
-                <div>داشکاندن: ${item.discount}%</div>
-                <div>ستۆک: ${item.stock}</div>
+                <div>Stock: ${item.stock}</div>
               </div>
             </div>
             <div class="controls">
@@ -147,14 +167,14 @@
     }
 
     function updateTotal() {
-      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
-      document.getElementById("totalAmount").textContent = `کۆی گشتی: ${total.toLocaleString()} IQD`;
+      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0);
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
     }
 
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("تکایە ناوی کڕیار بنووسە");
+        alert("Please enter the customer name.");
         return;
       }
 
@@ -162,12 +182,11 @@
         name: i.name,
         quantity: i.quantity,
         unitPrice: i.unitPrice,
-        discount: i.discount,
-        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+        total: i.unitPrice * i.quantity
       }));
 
       if (selectedItems.length === 0) {
-        alert("هیچ کاڵایەک هەڵنەبژێردراوە");
+        alert("No items selected.");
         return;
       }
 
@@ -179,17 +198,16 @@
         total
       };
 
-      // Save to localStorage for sales.html
       localStorage.setItem("lastSale", JSON.stringify(saleData));
 
-      // Reset
-      document.getElementById("totalAmount").textContent = "کۆی گشتی: 0 IQD";
+      // Reset form
+      document.getElementById("totalAmount").textContent = "Total: 0 IQD";
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
       renderProducts();
 
-      // Navigate to sales.html
+      // Redirect to sales.html
       window.location.href = "sales.html";
     }
 
