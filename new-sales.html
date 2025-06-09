@@ -91,9 +91,9 @@
 
   <script>
     const products = [
-      { name: "Kalashin", unitPrice: 1000, discount: 0 },
-      { name: "Shooshe", unitPrice: 1500, discount: 5 },
-      { name: "Electronics", unitPrice: 3000, discount: 10 },
+      { name: "Kalashin", unitPrice: 1000, discount: 0, stock: 100 },
+      { name: "Shooshe", unitPrice: 1500, discount: 5, stock: 80 },
+      { name: "Electronics", unitPrice: 3000, discount: 10, stock: 50 },
     ];
 
     const items = products.map(p => ({ ...p, quantity: 0 }));
@@ -108,7 +108,7 @@
 
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
         list.innerHTML += `
-          <div class="product-item" onclick="changeQty(${index}, 1)">
+          <div class="product-item" onclick="showInfo(${index})">
             <div>
               <div class="product-name">${item.name}</div>
               <div>Unit Price: ${item.unitPrice} IQD | Discount: ${item.discount}%</div>
@@ -123,6 +123,11 @@
       });
 
       updateTotal();
+    }
+
+    function showInfo(index) {
+      const item = items[index];
+      alert(`Product: ${item.name}\nDiscount: ${item.discount}%\nStock: ${item.stock}`);
     }
 
     function changeQty(index, delta) {
@@ -148,6 +153,7 @@
         quantity: i.quantity,
         unitPrice: i.unitPrice,
         discount: i.discount,
+        stock: i.stock,
         total: i.unitPrice * i.quantity * (1 - i.discount / 100)
       }));
 
