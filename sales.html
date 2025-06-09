@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
+  <title>Sales Summary</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -27,6 +27,10 @@
       border: 1px solid #ddd;
       text-align: center;
     }
+    tfoot td {
+      font-weight: bold;
+      background-color: #f9f9f9;
+    }
     h2 {
       text-align: center;
       margin-bottom: 15px;
@@ -35,26 +39,27 @@
 </head>
 <body>
   <div class="container">
-    <h2>زانیاری فرۆشتنی کۆتا</h2>
+    <h2>Latest Sale Information</h2>
     <div id="saleData"></div>
   </div>
 
   <script>
+    // Read sale data from localStorage saved by new-sales.html
     const sale = JSON.parse(localStorage.getItem("lastSale"));
 
     if (!sale) {
-      document.getElementById("saleData").innerHTML = "<p>هیچ زانیاری فرۆشتنێک نییە.</p>";
+      document.getElementById("saleData").innerHTML = "<p>No sale data found.</p>";
     } else {
       const html = `
-        <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
+        <p><strong>Customer Name:</strong> ${sale.customer}</p>
         <table>
           <thead>
             <tr>
-              <th>ناوی کاڵا</th>
-              <th>ژمارە</th>
-              <th>نرخی تاک</th>
-              <th>داشکاندن (%)</th>
-              <th>کۆی گشتی</th>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Discount (%)</th>
+              <th>Total</th>
             </tr>
           </thead>
           <tbody>
@@ -65,10 +70,16 @@
                 <td>${item.unitPrice.toLocaleString()} IQD</td>
                 <td>${item.discount}%</td>
                 <td>${item.total.toLocaleString()} IQD</td>
-              </tr>`).join("")}
+              </tr>
+            `).join("")}
           </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4">Grand Total</td>
+              <td>${sale.total.toLocaleString()} IQD</td>
+            </tr>
+          </tfoot>
         </table>
-        <p><strong>کۆی گشتی:</strong> ${sale.total.toLocaleString()} IQD</p>
       `;
       document.getElementById("saleData").innerHTML = html;
     }
