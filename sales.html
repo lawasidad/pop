@@ -102,6 +102,14 @@
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     const saleDataDiv = document.getElementById("saleData");
 
+    function formatDate(dateStr) {
+      const date = new Date(dateStr);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    }
+
     function renderSales(data) {
       if (data.length === 0) {
         saleDataDiv.innerHTML = "<p>No sales data found.</p>";
@@ -113,6 +121,7 @@
 
       data.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
+        const formattedDate = sale.date ? formatDate(sale.date) : 'N/A';
 
         html += `
           <div class="customer-row">
@@ -120,7 +129,7 @@
               <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
               <label for="saleCheckbox${index}">Customer: ${sale.customer}</label>
             </div>
-            <div>Date: ${sale.date || 'N/A'}</div>
+            <div>Date: ${formattedDate}</div>
           </div>
           <div class="sale-block" data-index="${index}">
             <table>
