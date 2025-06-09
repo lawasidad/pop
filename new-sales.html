@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <title>فرۆشتنی نوێ</title>
+  <title>New Sale</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -73,17 +73,17 @@
 <body>
   <div class="container">
     <div class="top-bar">
-      <div class="total-amount" id="totalAmount">کۆی گشتی: 0 IQD</div>
-      <button onclick="submitSale()">ناردنی فرۆشتن</button>
+      <div class="total-amount" id="totalAmount">Total: 0 IQD</div>
+      <button onclick="submitSale()">Submit Sale</button>
     </div>
 
     <div class="customer-section">
-      <label>ناوی کڕیار:</label>
-      <input type="text" id="customer" placeholder="ناوی کڕیار بنووسە" />
+      <label>Customer Name:</label>
+      <input type="text" id="customer" placeholder="Enter customer name" />
     </div>
 
     <div class="search-bar">
-      <input type="text" id="searchBox" oninput="renderProducts()" placeholder="گەڕان بۆ کالا..." />
+      <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search for product..." />
     </div>
 
     <div class="product-list" id="productList"></div>
@@ -91,9 +91,9 @@
 
   <script>
     const products = [
-      { name: "کەڵەشین", unitPrice: 1000, discount: 0 },
-      { name: "شووشە", unitPrice: 1500, discount: 5 },
-      { name: "ئێلکترۆنیک", unitPrice: 3000, discount: 10 },
+      { name: "Kalashin", unitPrice: 1000, discount: 0 },
+      { name: "Shooshe", unitPrice: 1500, discount: 5 },
+      { name: "Electronics", unitPrice: 3000, discount: 10 },
     ];
 
     const items = products.map(p => ({ ...p, quantity: 0 }));
@@ -104,15 +104,15 @@
       list.innerHTML = "";
 
       items.forEach((item, index) => {
-        if (search && !item.name.includes(search)) return;
+        if (search && !item.name.toLowerCase().includes(search.toLowerCase())) return;
 
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
         list.innerHTML += `
           <div class="product-item" onclick="changeQty(${index}, 1)">
             <div>
               <div class="product-name">${item.name}</div>
-              <div>نرخی تاک: ${item.unitPrice} IQD | داشکاندن: ${item.discount}%</div>
-              <div>ژمارە: ${item.quantity} | کۆی گشتی: ${total.toLocaleString()} IQD</div>
+              <div>Unit Price: ${item.unitPrice} IQD | Discount: ${item.discount}%</div>
+              <div>Quantity: ${item.quantity} | Total: ${total.toLocaleString()} IQD</div>
             </div>
             <div class="controls">
               <button onclick="event.stopPropagation(); changeQty(${index}, 1)">+</button>
@@ -133,13 +133,13 @@
 
     function updateTotal() {
       const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
-      document.getElementById("totalAmount").textContent = `کۆی گشتی: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
     }
 
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("تکایە ناوی کڕیار بنووسە");
+        alert("Please enter customer name");
         return;
       }
 
@@ -152,7 +152,7 @@
       }));
 
       if (selectedItems.length === 0) {
-        alert("هیچ کاڵایەک هەڵنەبژێردراوە");
+        alert("No products selected");
         return;
       }
 
@@ -165,16 +165,16 @@
       };
 
       localStorage.setItem("lastSale", JSON.stringify(saleData));
-      document.getElementById("totalAmount").textContent = "کۆی گشتی: 0 IQD";
+      document.getElementById("totalAmount").textContent = "Total: 0 IQD";
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
       renderProducts();
 
-      alert("فرۆشتن تۆمار کرا");
+      alert("Sale submitted");
 
-      // ئەمە دەتوانێت بگۆڕێت بۆەوەی بڕۆیتە sales.html
-      // window.location.href = "sales.html";
+      // Redirect to sales.html
+      window.location.href = "sales.html";
     }
 
     renderProducts();
