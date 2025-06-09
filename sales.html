@@ -53,6 +53,16 @@
       gap: 10px;
       font-weight: bold;
     }
+    .print-btn {
+      margin-bottom: 15px;
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
@@ -64,6 +74,9 @@
       <input type="checkbox" id="selectAll" checked />
       <label for="selectAll">هەموو وەسلەکان دیاری بکە</label>
     </div>
+
+    <!-- Print Button -->
+    <button class="print-btn" onclick="printSelected()">پرێنتی وەسلە دیاریکراوەکان</button>
 
     <div id="saleData"></div>
   </div>
@@ -86,35 +99,37 @@
             <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
             <label for="saleCheckbox${index}">کریار: ${sale.customer}</label>
           </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => `
+          <div class="sale-block" data-index="${index}">
+            <table>
+              <thead>
                 <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
                 </tr>
-              `).join("")}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-          <br/>
+              </thead>
+              <tbody>
+                ${sale.items.map(item => `
+                  <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toLocaleString()} IQD</td>
+                    <td>${item.discount}</td>
+                    <td>${item.total.toLocaleString()} IQD</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td>${sale.total.toLocaleString()} IQD</td>
+                </tr>
+              </tfoot>
+            </table>
+            <br/>
+          </div>
         `;
       });
 
@@ -126,11 +141,38 @@
 
       saleDataDiv.innerHTML = html;
 
-      // Select All checkbox logic
       document.getElementById("selectAll").addEventListener("change", function () {
         const allCheckboxes = document.querySelectorAll(".saleCheckbox");
         allCheckboxes.forEach(cb => cb.checked = this.checked);
       });
+    }
+
+    function printSelected() {
+      const checkboxes = document.querySelectorAll(".saleCheckbox");
+      const saleBlocks = document.querySelectorAll(".sale-block");
+      let printContent = "";
+      checkboxes.forEach((cb, idx) => {
+        if (cb.checked) {
+          printContent += saleBlocks[idx].previousElementSibling.outerHTML; // Customer row
+          printContent += saleBlocks[idx].outerHTML; // Sale table
+        }
+      });
+
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
+        <html dir="rtl"><head><title>پرێنتی وەسلە</title>
+        <style>
+          body { font-family: Tahoma; padding: 20px; }
+          table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl; }
+          th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
+          tfoot td { font-weight: bold; background-color: #f9f9f9; }
+          .customer-row { background-color: #f0f0f0; font-weight: bold; padding: 10px; font-size: 1.1em; text-align: right; }
+        </style></head><body>
+        ${printContent}
+        </body></html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
     }
   </script>
 </body>
