@@ -43,17 +43,40 @@
       padding: 10px;
       font-size: 1.1em;
     }
+    .sale-entry {
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      padding: 10px;
+      border-radius: 5px;
+    }
+    .checkbox-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .print-button {
+      margin: 15px 0;
+      padding: 8px 16px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+    <div class="checkbox-container">
+      <label><input type="checkbox" id="selectAll"> هەموو دیاری بکە</label>
+      <button class="print-button" onclick="printSelected()">پرینت</button>
+    </div>
     <div id="saleData"></div>
   </div>
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-
     const saleDataDiv = document.getElementById("saleData");
 
     function formatDate(dateStr) {
@@ -77,39 +100,41 @@
         const formattedDate = formatDate(sale.date || new Date());
 
         html += `
-          <div class="customer-row">
-            کریار: ${sale.customer}
-            <span style="font-weight: normal; font-size: 0.9em; margin-right: 10px;">بەروار: ${formattedDate}</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => `
+          <div class="sale-entry" data-sale-index="${index}">
+            <label><input type="checkbox" class="sale-checkbox"></label>
+            <div class="customer-row">
+              کریار: ${sale.customer}
+              <span style="font-weight: normal; font-size: 0.9em; margin-right: 10px;">بەروار: ${formattedDate}</span>
+            </div>
+            <table>
+              <thead>
                 <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
                 </tr>
-              `).join("")}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-          <br/>
+              </thead>
+              <tbody>
+                ${sale.items.map(item => `
+                  <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toLocaleString()} IQD</td>
+                    <td>${item.discount}</td>
+                    <td>${item.total.toLocaleString()} IQD</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td>${sale.total.toLocaleString()} IQD</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         `;
       });
 
@@ -120,6 +145,29 @@
       `;
 
       saleDataDiv.innerHTML = html;
+    }
+
+    document.getElementById("selectAll").addEventListener("change", function() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      checkboxes.forEach(cb => cb.checked = this.checked);
+    });
+
+    function printSelected() {
+      const selectedEntries = Array.from(document.querySelectorAll(".sale-entry"))
+        .filter(entry => entry.querySelector(".sale-checkbox").checked)
+        .map(entry => entry.outerHTML);
+
+      if (selectedEntries.length === 0) {
+        alert("تکایە بەلایەنی یەک وەسل دیاری بکە بۆ پرینت.");
+        return;
+      }
+
+      const printWindow = window.open('', '_blank');
+      printWindow.document.write(`
+        <html><head><title>Print</title></head><body>${selectedEntries.join("")}</body></html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
     }
   </script>
 </body>
