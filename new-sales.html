@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
+    /* کۆدی ستایلی تۆ هەمانە */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #eef6fb;
@@ -109,35 +110,6 @@
       margin-top: 6px;
       user-select: none;
     }
-    .controls {
-      display: flex;
-      gap: 10px;
-    }
-    .controls button {
-      background: #007bff;
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 36px;
-      height: 36px;
-      font-size: 22px;
-      font-weight: 700;
-      line-height: 1;
-      cursor: pointer;
-      box-shadow: 0 3px 10px rgba(0,123,255,0.5);
-      transition: background-color 0.3s ease;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      user-select: none;
-    }
-    .controls button:hover {
-      background: #0056b3;
-    }
-    .controls button:active {
-      box-shadow: 0 2px 6px rgba(0,86,179,0.8);
-      transform: scale(0.9);
-    }
     @media (min-width: 600px) {
       input[type="text"] {
         max-width: 320px;
@@ -191,12 +163,19 @@
               <div class="product-name">${item.name}</div>
               <div class="details">
                 Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                Qty: ${item.quantity} | Total: ${total.toLocaleString()} IQD
+                Qty: 
+                <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="${item.stock}" 
+                  value="${item.quantity}" 
+                  onchange="changeQtyDirect(${index}, this.value)" 
+                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
+                />
+                <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
+                | Total: ${total.toLocaleString()} IQD
               </div>
-            </div>
-            <div class="controls">
-              <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
-              <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
             </div>
           </div>
         `;
@@ -208,6 +187,15 @@
     function changeQty(index, delta) {
       items[index].quantity += delta;
       if (items[index].quantity < 0) items[index].quantity = 0;
+      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
+      renderProducts();
+    }
+
+    function changeQtyDirect(index, value) {
+      let val = parseInt(value);
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > items[index].stock) val = items[index].stock;
+      items[index].quantity = val;
       renderProducts();
     }
 
@@ -249,7 +237,10 @@
         timestamp: new Date().toISOString()
       };
 
-      localStorage.setItem("lastSale", JSON.stringify(saleData));
+      // **کۆدی زیادکراو** - وەرگرتن و نوسینی داتای قبلی بۆ زۆرکردنی داتاکان
+      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      allSales.push(saleData);
+      localStorage.setItem("allSales", JSON.stringify(allSales));
 
       // Reset everything
       document.getElementById("customer").value = "";
