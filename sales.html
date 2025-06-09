@@ -2,7 +2,7 @@
 <html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Sales Summary (Multiple Receipts)</title>
+  <title>Sales Summary</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -10,13 +10,12 @@
       background: #f2f2f2;
     }
     .container {
-      max-width: 1000px;
+      max-width: 800px;
       margin: auto;
       background: white;
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      overflow-x: auto;
     }
     table {
       width: 100%;
@@ -31,93 +30,59 @@
     tfoot td {
       font-weight: bold;
       background-color: #f9f9f9;
-      text-align: right;
     }
     h2 {
       text-align: center;
       margin-bottom: 15px;
     }
-    .old-sale {
-      background-color: #ddd; /* رەنگی رەش بۆ وەسڵە کۆن */
-      color: #555;
-    }
+    /* هیچ ڕەنگی تایبەتی بۆ کریارەکان نییە */
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Sales Receipts Summary</h2>
+    <h2>Latest Sale Information</h2>
     <div id="saleData"></div>
   </div>
 
   <script>
-    /*
-      گومان دەکەین وەسڵەکان لە localStorage بە شێوەی 
-      array of objects وەسڵەکان بە ناوی "allSales" پاشەکەوت بوون:
-      هەر وەسڵەیەک شتێک وەکو:
-      {
-        customer: "Customer Name",
-        items: [
-          { name, quantity, unitPrice, discount, total },
-          ...
-        ],
-        total: totalAmount,
-        timestamp: 123456789  // بۆ دواتر دیاریکردنی وەسڵە نوێ/کۆن
-      }
-    */
+    // خواندنی داتاکانی فرۆشتن لە localStorage لە فۆرمی new_sales.html
+    const sale = JSON.parse(localStorage.getItem("lastSale"));
 
-    // وەسڵەکان بخوێنەوە
-    let sales = JSON.parse(localStorage.getItem("allSales")) || [];
-
-    if (sales.length === 0) {
-      document.getElementById("saleData").innerHTML = "<p>No sales data found.</p>";
+    if (!sale) {
+      document.getElementById("saleData").innerHTML = "<p>No sale data found.</p>";
     } else {
-      // فەرمی HTML دروست بکە بۆ هەر وەسڵێک لە تەیبلەکەدا
-      // وەسڵە نوێکان بە رەنگی عادی، وەسڵە کۆن بە رەنگی رەش (بە سەرنجی timestamp)
-      
-      // وەسڵەکان بە پێی کات (timestamp) جێگیر بکە (کۆنەکان یەکەم)
-      sales.sort((a,b) => a.timestamp - b.timestamp);
-
-      const html = sales.map((sale, index) => {
-        // جیاکردنەوەی ڕەنگی ڕەش بۆ وەسڵە کۆنەکان (هەموو بە بەشی ئێستا دوایین ڕەنگی عادی)
-        // یەکەم وەسڵ (کۆن) بۆ index< sales.length -1 رەش دەبێت
-        const isOldSale = index < sales.length - 1;
-        const rowClass = isOldSale ? "old-sale" : "";
-
-        return `
-          <table>
-            <thead>
+      // نیشاندانی داتا بە شێوەی تەیبل
+      const html = `
+        <p><strong>Customer Name:</strong> ${sale.customer}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Discount (%)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sale.items.map(item => `
               <tr>
-                <th>Customer Name</th>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Discount (%)</th>
-                <th>Total</th>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unitPrice.toLocaleString()} IQD</td>
+                <td>${item.discount}%</td>
+                <td>${item.total.toLocaleString()} IQD</td>
               </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => `
-                <tr class="${rowClass}">
-                  <td>${sale.customer}</td>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}%</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
-                </tr>
-              `).join("")}
-            </tbody>
-            <tfoot>
-              <tr class="${rowClass}">
-                <td colspan="5" style="text-align:right;">Grand Total</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-          <br />
-        `;
-      }).join("");
-
+            `).join("")}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="text-align:right;">Grand Total</td>
+              <td>${sale.total.toLocaleString()} IQD</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
       document.getElementById("saleData").innerHTML = html;
     }
   </script>
