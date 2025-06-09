@@ -54,6 +54,18 @@
       box-sizing: border-box;
       direction: rtl;
     }
+    select#selectSale {
+      margin-bottom: 15px;
+      padding: 10px;
+      width: 100%;
+      max-width: 320px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1.5px solid #666;
+      direction: rtl;
+      background: white;
+      cursor: pointer;
+    }
     button#printBtn {
       background-color: #007bff;
       color: white;
@@ -77,6 +89,11 @@
 
     <input type="text" id="filterCustomer" placeholder="فیلتەر بە ناوی کریار..." oninput="renderSales()" />
 
+    <!-- سلێکتی وەسلەکان زیادکرا -->
+    <select id="selectSale" onchange="renderSelectedSale()">
+      <option value="all">هەموو وەسلەکان</option>
+    </select>
+
     <button id="printBtn" onclick="window.print()">پرینت</button>
 
     <div id="saleData"></div>
@@ -85,23 +102,45 @@
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
+    const saleDataDiv = document.getElementById("saleData");
+    const selectSale = document.getElementById("selectSale");
+
+    function populateSelectSales(filteredSales) {
+      // پاککردنی هەموو هۆپەکان
+      selectSale.innerHTML = '<option value="all">هەموو وەسلەکان</option>';
+
+      filteredSales.forEach((sale, idx) => {
+        const option = document.createElement("option");
+        option.value = idx; // index ی فیلترکراو
+        option.textContent = `کریار: ${sale.customer} - کۆی فرۆشتن: ${sale.total.toLocaleString()} IQD`;
+        selectSale.appendChild(option);
+      });
+    }
+
     function renderSales() {
       const filterText = document.getElementById("filterCustomer").value.trim().toLowerCase();
-      const saleDataDiv = document.getElementById("saleData");
-
-      const filteredSales = allSales.filter(sale =>
+      let filteredSales = allSales.filter(sale =>
         sale.customer.toLowerCase().includes(filterText)
       );
 
       if (filteredSales.length === 0) {
         saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        // خالی کردن سلێکت
+        selectSale.innerHTML = '<option value="all">هیچ داتای فرۆشتنێک نەدۆزرایەوە</option>';
         return;
       }
 
+      populateSelectSales(filteredSales);
+
+      // دیفۆلتی هەموو فرۆشتنەکان نیشان بدە
+      renderSalesHTML(filteredSales);
+    }
+
+    function renderSalesHTML(salesArray) {
       let grandTotalAllSales = 0;
       let html = "";
 
-      filteredSales.forEach((sale, index) => {
+      salesArray.forEach((sale) => {
         grandTotalAllSales += sale.total;
 
         html += `
@@ -147,6 +186,26 @@
       saleDataDiv.innerHTML = html;
     }
 
+    function renderSelectedSale() {
+      const selectedValue = selectSale.value;
+      const filterText = document.getElementById("filterCustomer").value.trim().toLowerCase();
+      const filteredSales = allSales.filter(sale =>
+        sale.customer.toLowerCase().includes(filterText)
+      );
+
+      if (selectedValue === "all") {
+        renderSalesHTML(filteredSales);
+      } else {
+        const selectedSale = filteredSales[selectedValue];
+        if (!selectedSale) {
+          saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+          return;
+        }
+        renderSalesHTML([selectedSale]);
+      }
+    }
+
+    // پێش هەموو شتێک ریندەر بکە
     renderSales();
   </script>
 </body>
