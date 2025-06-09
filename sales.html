@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Sales Summary</title>
+  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -24,81 +24,76 @@
     }
     th, td {
       padding: 8px;
-      border: 1px solid #ddd;
+      border: 1px solid #ccc;
       text-align: center;
     }
     tfoot td {
       font-weight: bold;
-      background-color: #f9f9f9;
-    }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
+      background: #f9f9f9;
     }
     .sale-block {
       margin-bottom: 40px;
       border-bottom: 2px solid #ccc;
-      padding-bottom: 20px;
-    }
-    .sale-header {
-      font-weight: bold;
-      margin-bottom: 10px;
+      padding-bottom: 15px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Sales Summary</h2>
+    <h2>هەموو وەسڵەکان</h2>
     <div id="saleData"></div>
   </div>
 
   <script>
-    const sales = JSON.parse(localStorage.getItem("allSales")) || [];
+    function renderSales() {
+      const sales = JSON.parse(localStorage.getItem("allSales")) || [];
+      const container = document.getElementById("saleData");
 
-    if (sales.length === 0) {
-      document.getElementById("saleData").innerHTML = "<p>No sales data found.</p>";
-    } else {
-      // پێکهاتەی وەسڵەکان بە شێوەی تەرتیبی کۆن بۆ نوێ
-      sales.sort((a, b) => a.timestamp - b.timestamp);
+      if (sales.length === 0) {
+        container.innerHTML = "<p>هیچ وەسڵێک نەدۆزرایەوە.</p>";
+        return;
+      }
 
-      let html = sales.map((sale, index) => {
-        return `
-          <div class="sale-block">
-            <div class="sale-header">Customer Name: ${sale.customer}</div>
-            <table>
-              <thead>
+      container.innerHTML = sales.map(sale => `
+        <div class="sale-block">
+          <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
+          <table>
+            <thead>
+              <tr>
+                <th>ناوی کاڵا</th>
+                <th>ژمارە</th>
+                <th>نرخی تاک</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆ</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sale.items.map(item => `
                 <tr>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Discount (%)</th>
-                  <th>Total</th>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}%</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${sale.items.map(item => `
-                  <tr>
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.unitPrice.toLocaleString()} IQD</td>
-                    <td>${item.discount}%</td>
-                    <td>${item.total.toLocaleString()} IQD</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4" style="text-align:right;">Grand Total</td>
-                  <td>${sale.total.toLocaleString()} IQD</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
-        `;
-      }).join("");
-
-      document.getElementById("saleData").innerHTML = html;
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      `).join("");
     }
+
+    // هەرکاتێک داتای localStorage نوێ دەبێت، ئەم فانکشنی renderSales بگەڕێتەوە
+    window.addEventListener("storage", renderSales);
+
+    // بۆ جارە یەکەم
+    renderSales();
   </script>
 </body>
 </html>
