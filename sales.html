@@ -2,7 +2,7 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>گەڕاندنەوەی هەموو وەسڵەکان</title>
+  <title>هەموو وەسڵەکان</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -40,24 +40,27 @@
       border-bottom: 2px dashed #ccc;
       padding-bottom: 15px;
     }
+    .invoice p {
+      margin: 5px 0;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>هەموو وەسڵە فرۆشتنەکان</h2>
-    <div id="salesList"></div>
+    <div id="saleData"></div>
   </div>
 
   <script>
     // گەڕاندنەوەی هەموو وەسڵەکان لە localStorage
     const sales = JSON.parse(localStorage.getItem("sales")) || [];
 
-    const salesListDiv = document.getElementById("salesList");
+    const container = document.getElementById("saleData");
 
     if (sales.length === 0) {
-      salesListDiv.innerHTML = "<p>هیچ وەسڵێک بەردەست نییە.</p>";
+      container.innerHTML = "<p>هیچ وەسڵێک بەردەست نییە.</p>";
     } else {
-      salesListDiv.innerHTML = sales.map((sale, index) => `
+      container.innerHTML = sales.map((sale, index) => `
         <div class="invoice">
           <p><strong>وەسڵ ${index + 1}</strong></p>
           <p><strong>ناوی کریار:</strong> ${sale.customer}</p>
@@ -66,7 +69,7 @@
               <tr>
                 <th>ناوی بەرهەم</th>
                 <th>بڕ</th>
-                <th>نرخ یەکە</th>
+                <th>نرخی یەکە</th>
                 <th>داشکاندن (%)</th>
                 <th>کۆی گشتی</th>
               </tr>
