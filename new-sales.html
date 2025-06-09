@@ -94,7 +94,6 @@
       margin-bottom: 14px;
       box-shadow: 0 2px 7px rgba(0,0,0,0.04);
       transition: background-color 0.3s ease;
-      cursor: pointer;
     }
     .product-item:hover {
       background-color: #e8f2ff;
@@ -103,21 +102,16 @@
       font-weight: 700;
       font-size: 1.1em;
       color: #003366;
-      flex-grow: 1;
-      user-select: none;
     }
     .details {
       font-size: 0.95em;
       color: #444;
       margin-top: 6px;
       user-select: none;
-      min-width: 220px;
-      text-align: right;
     }
     .controls {
       display: flex;
       gap: 10px;
-      align-items: center;
     }
     .controls button {
       background: #007bff;
@@ -144,16 +138,6 @@
       box-shadow: 0 2px 6px rgba(0,86,179,0.8);
       transform: scale(0.9);
     }
-    .qty-input {
-      width: 70px;
-      border-radius: 10px;
-      border: 1.5px solid #bbb;
-      font-size: 1em;
-      padding: 5px 10px;
-      text-align: center;
-      margin-left: 10px;
-      user-select: text;
-    }
     @media (min-width: 600px) {
       input[type="text"] {
         max-width: 320px;
@@ -166,10 +150,6 @@
       }
       .details {
         margin-top: 0;
-        text-align: right;
-      }
-      .product-name {
-        flex-grow: 1;
       }
     }
   </style>
@@ -197,8 +177,6 @@
 
     const items = products.map(p => ({ ...p, quantity: 0 }));
 
-    let editingIndex = null; // to track which product is being edited
-
     function renderProducts() {
       const list = document.getElementById("productList");
       const search = document.getElementById("searchBox").value.trim().toLowerCase();
@@ -206,35 +184,83 @@
 
       items.forEach((item, index) => {
         if (search && !item.name.toLowerCase().includes(search)) return;
-
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
-
-        // If editing this product, show input for quantity
-        if (editingIndex === index) {
-          list.innerHTML += `
-            <div class="product-item" >
-              <div class="product-name">${item.name}</div>
-              <div class="details">
-                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                Qty: <input type="number" min="0" max="${item.stock}" class="qty-input" 
-                  id="qtyInput" value="${item.quantity}" autofocus />
-                | Total: ${total.toLocaleString()} IQD
-              </div>
-              <div class="controls">
-                <button onclick="saveQty(${index})" title="Save">✔️</button>
-                <button onclick="cancelEdit()" title="Cancel">✖️</button>
-              </div>
-            </div>
-          `;
-        } else {
-          list.innerHTML += `
-            <div class="product-item" onclick="startEdit(${index})" title="Click to edit quantity">
+        list.innerHTML += `
+          <div class="product-item">
+            <div>
               <div class="product-name">${item.name}</div>
               <div class="details">
                 Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
                 Qty: ${item.quantity} | Total: ${total.toLocaleString()} IQD
               </div>
-              <div class="controls" style="pointer-events:none;opacity:0.3;">
-                <button>+</button>
-                <button>-</button>
-              </div>
+            </div>
+            <div class="controls">
+              <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
+              <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
+            </div>
+          </div>
+        `;
+      });
+
+      updateSummary();
+    }
+
+    function changeQty(index, delta) {
+      items[index].quantity += delta;
+      if (items[index].quantity < 0) items[index].quantity = 0;
+      renderProducts();
+    }
+
+    function updateSummary() {
+      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
+      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
+    }
+
+    function submitSale() {
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("Please enter a customer name.");
+        return;
+      }
+
+      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        discount: i.discount,
+        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+      }));
+
+      if (selectedItems.length === 0) {
+        alert("No products selected.");
+        return;
+      }
+
+      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
+      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      const saleData = {
+        customer,
+        items: selectedItems,
+        total,
+        totalQty: qty,
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem("lastSale", JSON.stringify(saleData));
+
+      // Reset everything
+      document.getElementById("customer").value = "";
+      document.getElementById("searchBox").value = "";
+      items.forEach(i => i.quantity = 0);
+      renderProducts();
+
+      alert("Sale submitted! View it on sales.html.");
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
