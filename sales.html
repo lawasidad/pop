@@ -84,13 +84,13 @@
     const selectAllCheckbox = document.getElementById("selectAll");
     const printButton = document.getElementById("printSelected");
 
-    function formatDate(dateStr) {
+    function formatDateNumber(dateStr) {
       const d = new Date(dateStr);
-      // Format as YYYY-MM-DD
+      // Format as YYYYMMDD number string
       const yyyy = d.getFullYear();
       const mm = String(d.getMonth() + 1).padStart(2, '0');
       const dd = String(d.getDate()).padStart(2, '0');
-      return `${yyyy}-${mm}-${dd}`;
+      return Number(`${yyyy}${mm}${dd}`);
     }
 
     if (allSales.length === 0) {
@@ -102,7 +102,7 @@
       allSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
 
-        const formattedDate = sale.date ? formatDate(sale.date) : "";
+        const dateNumber = sale.date ? formatDateNumber(sale.date) : "";
 
         html += `
           <div class="customer-row">
@@ -111,8 +111,8 @@
             </label>
             <div style="flex-grow:1; text-align:right;">
               کریار: <span style="font-weight:bold; font-size:1.1em;">${sale.customer}</span>
-              <span class="customer-info">Date: ${formattedDate}</span>
-              <span class="customer-info">Sale Date: ${formattedDate}</span>
+              <span class="customer-info">Date Number: ${dateNumber}</span>
+              <span class="customer-info">Sale Date Number: ${dateNumber}</span>
             </div>
           </div>
           <table>
@@ -170,11 +170,11 @@
         let printContent = "";
         checkedIndexes.forEach(i => {
           const sale = allSales[i];
-          const formattedDate = sale.date ? formatDate(sale.date) : "";
+          const dateNumber = sale.date ? formatDateNumber(sale.date) : "";
           printContent += `
             <div class="customer-row">
               کریار: <strong>${sale.customer}</strong>
-              <span style="margin-right: 15px;">Date: ${formattedDate}</span>
+              <span style="margin-right: 15px;">Date Number: ${dateNumber}</span>
             </div>
             <table border="1" cellspacing="0" cellpadding="5" style="width:100%; border-collapse:collapse; direction: rtl;">
               <thead>
