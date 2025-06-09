@@ -79,10 +79,10 @@
 
 <script>
   const allSales = JSON.parse(localStorage.getItem("allSales")) || [
-    // Example data (no changes done)
+    // Example data with time added
     {
       customer: "کریار 1",
-      date: "2025-06-09",
+      date: "2025-06-09T14:35:00",
       items: [
         {name:"بەرهەم A", quantity:2, unitPrice:1000, discount:5, total:1900},
         {name:"بەرهەم B", quantity:1, unitPrice:5000, discount:0, total:5000}
@@ -91,7 +91,7 @@
     },
     {
       customer: "کریار 2",
-      date: "2025-06-08",
+      date: "2025-06-08T09:20:00",
       items: [
         {name:"بەرهەم C", quantity:1, unitPrice:2000, discount:0, total:2000}
       ],
@@ -104,9 +104,20 @@
   const printButton = document.getElementById("printSelected");
   const dateSelect = document.getElementById("dateSelect");
 
-  // فۆرماتی بەروار بۆ 09/06/2025
-  function formatDate(dateStr) {
-    const d = new Date(dateStr);
+  // فۆرماتکردنی بەروار و کات (DD/MM/YYYY - HH:mm)
+  function formatDateTime(dateTimeStr) {
+    const d = new Date(dateTimeStr);
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const yyyy = d.getFullYear();
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${dd}/${mm}/${yyyy} - ${hh}:${min}`;
+  }
+
+  // تەنها بەروار بۆ ژمارەی دیاری کردنی ڕووکاری هەڵبژاردن
+  function formatDateOnly(dateTimeStr) {
+    const d = new Date(dateTimeStr);
     const dd = String(d.getDate()).padStart(2, '0');
     const mm = String(d.getMonth() + 1).padStart(2, '0');
     const yyyy = d.getFullYear();
@@ -114,12 +125,12 @@
   }
 
   function populateDateSelect() {
-    // وەردەگری هەموو بەروارەکان بێ تکرار
-    const uniqueDates = [...new Set(allSales.map(s => s.date))].sort((a,b) => new Date(a) - new Date(b));
+    // وەردەگری هەموو بەروارەکان (فەقط بەروار بێ کاتی)
+    const uniqueDates = [...new Set(allSales.map(s => s.date.slice(0,10)))].sort((a,b) => new Date(a) - new Date(b));
     uniqueDates.forEach(date => {
       const option = document.createElement("option");
       option.value = date;
-      option.textContent = formatDate(date);
+      option.textContent = formatDateOnly(date);
       dateSelect.appendChild(option);
     });
   }
@@ -141,7 +152,7 @@
             <input type="checkbox" class="saleCheckbox" data-index="${index}" />
           </label>
           <div>
-            کریار: <strong>${sale.customer}</strong> — Date: ${formatDate(sale.date)}
+            کریار: <strong>${sale.customer}</strong> — Date: ${formatDateTime(sale.date)}
           </div>
         </div>
         <table>
@@ -196,7 +207,7 @@
     if (selectedDate === "") {
       renderSales(allSales);
     } else {
-      const filtered = allSales.filter(s => s.date === selectedDate);
+      const filtered = allSales.filter(s => s.date.startsWith(selectedDate));
       renderSales(filtered);
     }
   });
@@ -210,10 +221,10 @@
     let printContent = "";
     checkedBoxes.forEach(cb => {
       const i = parseInt(cb.dataset.index);
-      const sale = (dateSelect.value === "") ? allSales[i] : allSales.filter(s => s.date === dateSelect.value)[i];
+      const sale = (dateSelect.value === "") ? allSales[i] : allSales.filter(s => s.date.startsWith(dateSelect.value))[i];
       printContent += `
         <div style="font-weight:bold; margin-bottom:5px;">
-          کریار: ${sale.customer} — Date: ${formatDate(sale.date)}
+          کریار: ${sale.customer} — Date: ${formatDateTime(sale.date)}
         </div>
         <table border="1" cellspacing="0" cellpadding="5" style="width:100%; border-collapse:collapse; direction: rtl;">
           <thead>
