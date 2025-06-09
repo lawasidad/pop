@@ -10,7 +10,7 @@
       background: #f2f2f2;
     }
     .container {
-      max-width: 800px;
+      max-width: 900px;
       margin: auto;
       background: white;
       padding: 25px;
@@ -21,6 +21,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-top: 15px;
+      direction: rtl;
     }
     th, td {
       padding: 10px;
@@ -35,53 +36,79 @@
       text-align: center;
       margin-bottom: 15px;
     }
+    .customer-row {
+      background-color: #f0f0f0;
+      font-weight: bold;
+      text-align: right;
+      padding: 10px;
+      font-size: 1.1em;
+    }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Latest Sale Information</h2>
+    <h2>Summary of All Sales</h2>
     <div id="saleData"></div>
   </div>
 
   <script>
-    // Read sale data from localStorage saved by new_sales.html
-    const sale = JSON.parse(localStorage.getItem("lastSale"));
+    // From localStorage get all sales array or fallback to empty array
+    const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
-    if (!sale) {
-      document.getElementById("saleData").innerHTML = "<p>No sale data found.</p>";
+    const saleDataDiv = document.getElementById("saleData");
+
+    if (allSales.length === 0) {
+      saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
     } else {
-      const html = `
-        <p><strong>Customer Name:</strong> ${sale.customer}</p>
-        <table>
-          <thead>
-            <tr>
-              <th>Product Name</th>
-              <th>Quantity</th>
-              <th>Unit Price</th>
-              <th>Discount (%)</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sale.items.map(item => `
+      let grandTotalAllSales = 0;
+
+      // Build html for all sales
+      let html = "";
+
+      allSales.forEach((sale, index) => {
+        grandTotalAllSales += sale.total;
+
+        html += `
+          <div class="customer-row">کریار: ${sale.customer}</div>
+          <table>
+            <thead>
               <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unitPrice.toLocaleString()} IQD</td>
-                <td>${item.discount}%</td>
-                <td>${item.total.toLocaleString()} IQD</td>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
               </tr>
-            `).join("")}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="4" style="text-align:right;">Grand Total</td>
-              <td>${sale.total.toLocaleString()} IQD</td>
-            </tr>
-          </tfoot>
-        </table>
+            </thead>
+            <tbody>
+              ${sale.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
+                </tr>
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+          <br/>
+        `;
+      });
+
+      html += `
+        <h3 style="text-align:right; margin-top:20px;">
+          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
+        </h3>
       `;
-      document.getElementById("saleData").innerHTML = html;
+
+      saleDataDiv.innerHTML = html;
     }
   </script>
 </body>
