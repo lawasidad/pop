@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>هەموو وەسڵەکان</title>
+  <title>Sales Summary</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -10,91 +10,81 @@
       background: #f2f2f2;
     }
     .container {
-      max-width: 1000px;
+      max-width: 800px;
       margin: auto;
       background: white;
       padding: 25px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
-    h2 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-    .sale-block {
-      margin-bottom: 30px;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 15px;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-top: 10px;
+      margin-top: 15px;
     }
     th, td {
-      padding: 8px;
-      border: 1px solid #ccc;
+      padding: 10px;
+      border: 1px solid #ddd;
       text-align: center;
     }
     tfoot td {
       font-weight: bold;
       background-color: #f9f9f9;
     }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    /* هیچ ڕەنگی تایبەتی بۆ کریارەکان نییە */
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>هەموو وەسڵەکان</h2>
+    <h2>Latest Sale Information</h2>
     <div id="saleData"></div>
   </div>
 
   <script>
-    function renderSales() {
-      const sales = JSON.parse(localStorage.getItem("allSales")) || [];
-      const container = document.getElementById("saleData");
+    // خواندنی داتاکانی فرۆشتن لە localStorage لە فۆرمی new_sales.html
+    const sale = JSON.parse(localStorage.getItem("lastSale"));
 
-      if (sales.length === 0) {
-        container.innerHTML = "<p>هیچ وەسڵێک نەدۆزرایەوە.</p>";
-        return;
-      }
-
-      container.innerHTML = sales.map(sale => `
-        <div class="sale-block">
-          <p><strong>ناوی کڕیار:</strong> ${sale.customer}</p>
-          <table>
-            <thead>
+    if (!sale) {
+      document.getElementById("saleData").innerHTML = "<p>No sale data found.</p>";
+    } else {
+      // نیشاندانی داتا بە شێوەی تەیبل
+      const html = `
+        <p><strong>Customer Name:</strong> ${sale.customer}</p>
+        <table>
+          <thead>
+            <tr>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Unit Price</th>
+              <th>Discount (%)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${sale.items.map(item => `
               <tr>
-                <th>Product Name</th>
-                <th>Quantity</th>
-                <th>Unit Price</th>
-                <th>Discount (%)</th>
-                <th>Total</th>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>${item.unitPrice.toLocaleString()} IQD</td>
+                <td>${item.discount}%</td>
+                <td>${item.total.toLocaleString()} IQD</td>
               </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}%</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
-                </tr>
-              `).join("")}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" style="text-align:right;">Grand Total</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
-      `).join("");
+            `).join("")}
+          </tbody>
+          <tfoot>
+            <tr>
+              <td colspan="4" style="text-align:right;">Grand Total</td>
+              <td>${sale.total.toLocaleString()} IQD</td>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+      document.getElementById("saleData").innerHTML = html;
     }
-
-    // جیاوازە لە storage event بۆ کراس پەیج — بۆ ئەم پەیجە render بکە
-    renderSales();
   </script>
 </body>
 </html>
