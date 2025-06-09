@@ -42,64 +42,18 @@
       text-align: right;
       padding: 10px;
       font-size: 1.1em;
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-    .select-all {
-      margin-bottom: 15px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: bold;
-    }
-    .print-btn {
-      margin-bottom: 15px;
-      background: #007bff;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 1em;
-    }
-    .search-container {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-    }
-    .search-container input, .search-container select {
-      flex: 1;
-      padding: 8px;
-      font-size: 1em;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
-
-    <div class="search-container">
-      <input type="text" id="searchInput" placeholder="Search by customer..." />
-      <select id="dateFilter">
-        <option value="all">All</option>
-        <option value="today">Today</option>
-        <option value="yesterday">Yesterday</option>
-      </select>
-    </div>
-
-    <div class="select-all">
-      <input type="checkbox" id="selectAll" checked />
-      <label for="selectAll">Select All Receipts</label>
-    </div>
-
-    <button class="print-btn" onclick="printSelected()">Print Selected Receipts</button>
-
     <div id="saleData"></div>
   </div>
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+
     const saleDataDiv = document.getElementById("saleData");
 
     function formatDate(dateStr) {
@@ -107,142 +61,65 @@
       const year = date.getFullYear();
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}-${month}-${day} ${hours}:${minutes}`;
     }
 
-    function renderSales(data) {
-      if (data.length === 0) {
-        saleDataDiv.innerHTML = "<p>No sales data found.</p>";
-        return;
-      }
-
+    if (allSales.length === 0) {
+      saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+    } else {
       let grandTotalAllSales = 0;
       let html = "";
 
-      data.forEach((sale, index) => {
+      allSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
-        const formattedDate = sale.date ? formatDate(sale.date) : 'N/A';
+        const formattedDate = formatDate(sale.date || new Date());
 
         html += `
           <div class="customer-row">
-            <div>
-              <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
-              <label for="saleCheckbox${index}">Customer: ${sale.customer}</label>
-            </div>
-            <div>Date: ${formattedDate}</div>
+            کریار: ${sale.customer}
+            <span style="font-weight: normal; font-size: 0.9em; margin-right: 10px;">بەروار: ${formattedDate}</span>
           </div>
-          <div class="sale-block" data-index="${index}">
-            <table>
-              <thead>
+          <table>
+            <thead>
+              <tr>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sale.items.map(item => `
                 <tr>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Discount (%)</th>
-                  <th>Total</th>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              </thead>
-              <tbody>
-                ${sale.items.map(item => `
-                  <tr>
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.unitPrice.toLocaleString()} IQD</td>
-                    <td>${item.discount}</td>
-                    <td>${item.total.toLocaleString()} IQD</td>
-                  </tr>
-                `).join("")}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4" style="text-align:right;">Total Sale</td>
-                  <td>${sale.total.toLocaleString()} IQD</td>
-                </tr>
-              </tfoot>
-            </table>
-            <br/>
-          </div>
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+          <br/>
         `;
       });
 
       html += `
         <h3 style="text-align:right; margin-top:20px;">
-          Grand Total of All Sales: ${grandTotalAllSales.toLocaleString()} IQD
+          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
         </h3>
       `;
 
       saleDataDiv.innerHTML = html;
-
-      document.getElementById("selectAll").addEventListener("change", function () {
-        const allCheckboxes = document.querySelectorAll(".saleCheckbox");
-        allCheckboxes.forEach(cb => cb.checked = this.checked);
-      });
-    }
-
-    function isToday(dateStr) {
-      const d = new Date(dateStr);
-      const now = new Date();
-      return d.toDateString() === now.toDateString();
-    }
-
-    function isYesterday(dateStr) {
-      const d = new Date(dateStr);
-      const y = new Date();
-      y.setDate(y.getDate() - 1);
-      return d.toDateString() === y.toDateString();
-    }
-
-    function filterAndRender() {
-      const query = document.getElementById("searchInput").value.trim().toLowerCase();
-      const filter = document.getElementById("dateFilter").value;
-      let filtered = allSales;
-
-      if (query) {
-        filtered = filtered.filter(sale =>
-          sale.customer.toLowerCase().includes(query)
-        );
-      }
-
-      if (filter === "today") {
-        filtered = filtered.filter(sale => isToday(sale.date));
-      } else if (filter === "yesterday") {
-        filtered = filtered.filter(sale => isYesterday(sale.date));
-      }
-
-      renderSales(filtered);
-    }
-
-    document.getElementById("searchInput").addEventListener("input", filterAndRender);
-    document.getElementById("dateFilter").addEventListener("change", filterAndRender);
-
-    renderSales(allSales);
-
-    function printSelected() {
-      const checkboxes = document.querySelectorAll(".saleCheckbox");
-      const saleBlocks = document.querySelectorAll(".sale-block");
-      let printContent = "";
-      checkboxes.forEach((cb, idx) => {
-        if (cb.checked) {
-          printContent += saleBlocks[idx].previousElementSibling.outerHTML;
-          printContent += saleBlocks[idx].outerHTML;
-        }
-      });
-
-      const printWindow = window.open("", "_blank");
-      printWindow.document.write(`
-        <html dir="rtl"><head><title>Print Receipts</title>
-        <style>
-          body { font-family: Tahoma; padding: 20px; }
-          table { width: 100%; border-collapse: collapse; margin-top: 15px; direction: rtl; }
-          th, td { padding: 10px; border: 1px solid #ddd; text-align: center; }
-          tfoot td { font-weight: bold; background-color: #f9f9f9; }
-          .customer-row { background-color: #f0f0f0; font-weight: bold; padding: 10px; font-size: 1.1em; text-align: right; }
-        </style></head><body>
-        ${printContent}
-        </body></html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
     }
   </script>
 </body>
