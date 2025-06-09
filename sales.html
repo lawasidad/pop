@@ -94,29 +94,14 @@
       <button id="printSelected">Print Selected Sales</button>
     </div>
 
-    <div id="saleData"></div>
+    <div id="saleData">
+      <!-- هیچ داتایەک نەدراوە -->
+    </div>
   </div>
 
 <script>
-  const allSales = JSON.parse(localStorage.getItem("allSales")) || [
-    {
-      customer: "کریار 1",
-      date: "2025-06-09T14:35:00",
-      items: [
-        {name:"بەرهەم A", quantity:2, unitPrice:1000, discount:5, total:1900},
-        {name:"بەرهەم B", quantity:1, unitPrice:5000, discount:0, total:5000}
-      ],
-      total: 6900
-    },
-    {
-      customer: "کریار 2",
-      date: "2025-06-08T09:20:00",
-      items: [
-        {name:"بەرهەم C", quantity:1, unitPrice:2000, discount:0, total:2000}
-      ],
-      total: 2000
-    }
-  ];
+  // هیچ داتایەک نیە، لە localStorage داتاکان واگیران نەکراون
+  const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
   const saleDataDiv = document.getElementById("saleData");
   const selectAllCheckbox = document.getElementById("selectAll");
@@ -231,7 +216,7 @@
   printButton.addEventListener("click", () => {
     const checkedBoxes = Array.from(document.querySelectorAll(".saleCheckbox:checked"));
     if (checkedBoxes.length === 0) {
-      alert("Please select at least one sale to print.");
+      alert("تکایە هەندێک وەسلە هەڵبژێرە بۆ چاپکردن.");
       return;
     }
     let printContent = "";
@@ -281,4 +266,23 @@
           <style>
             body { font-family: Tahoma, sans-serif; padding: 20px; direction: rtl; }
             table { width: 100%; border-collapse: collapse; margin-top: 10px;}
-            th, td
+            th, td { border: 1px solid #000; padding: 5px; text-align: center; font-size: 11pt; }
+            th { background: #eee; }
+            @page { size: A4 portrait; margin: 20mm; }
+          </style>
+        </head>
+        <body>${printContent}</body>
+      </html>
+    `);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
+  });
+
+  // initial load
+  populateDateSelect();
+  renderSales(allSales);
+</script>
+</body>
+</html>
