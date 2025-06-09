@@ -42,25 +42,23 @@
       text-align: right;
       padding: 10px;
       font-size: 1.1em;
-    }
-    .sale-entry {
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-      padding: 10px;
-      border-radius: 5px;
-    }
-    .checkbox-container {
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
-    .print-button {
-      margin: 15px 0;
-      padding: 8px 16px;
-      background: #3498db;
-      color: white;
-      border: none;
-      border-radius: 5px;
+    .customer-info {
+      font-weight: normal;
+      font-size: 0.9em;
+      margin-right: 15px;
+    }
+    .select-all-container {
+      text-align: right;
+      margin-bottom: 10px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 8px 15px;
+      font-size: 1em;
       cursor: pointer;
     }
   </style>
@@ -68,25 +66,31 @@
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
-    <div class="checkbox-container">
-      <label><input type="checkbox" id="selectAll"> هەموو دیاری بکە</label>
-      <button class="print-button" onclick="printSelected()">پرینت</button>
+
+    <div class="select-all-container">
+      <label>
+        <input type="checkbox" id="selectAll" />
+        Select All Sales
+      </label>
+      <button id="printSelected">Print Selected Sales</button>
     </div>
+
     <div id="saleData"></div>
   </div>
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     const saleDataDiv = document.getElementById("saleData");
+    const selectAllCheckbox = document.getElementById("selectAll");
+    const printButton = document.getElementById("printSelected");
 
     function formatDate(dateStr) {
-      const date = new Date(dateStr);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      return `${year}-${month}-${day} ${hours}:${minutes}`;
+      const d = new Date(dateStr);
+      // Format as YYYY-MM-DD
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
     }
 
     if (allSales.length === 0) {
@@ -97,16 +101,84 @@
 
       allSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
-        const formattedDate = formatDate(sale.date || new Date());
+
+        // Format date (assumed sale.date exists)
+        const formattedDate = sale.date ? formatDate(sale.date) : "";
 
         html += `
-          <div class="sale-entry" data-sale-index="${index}">
-            <label><input type="checkbox" class="sale-checkbox"></label>
-            <div class="customer-row">
-              کریار: ${sale.customer}
-              <span style="font-weight: normal; font-size: 0.9em; margin-right: 10px;">بەروار: ${formattedDate}</span>
+          <div class="customer-row">
+            <label style="flex-grow:0;">
+              <input type="checkbox" class="saleCheckbox" data-index="${index}" />
+            </label>
+            <div style="flex-grow:1; text-align:right;">
+              کریار: <span style="font-weight:bold; font-size:1.1em;">${sale.customer}</span>
+              <span class="customer-info">Date: ${formattedDate}</span>
             </div>
-            <table>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sale.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
+                </tr>
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+          <br/>
+        `;
+      });
+
+      html += `
+        <h3 style="text-align:right; margin-top:20px;">
+          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
+        </h3>
+      `;
+
+      saleDataDiv.innerHTML = html;
+
+      // Select all checkbox logic
+      selectAllCheckbox.addEventListener("change", function() {
+        const checkboxes = document.querySelectorAll(".saleCheckbox");
+        checkboxes.forEach(cb => cb.checked = this.checked);
+      });
+
+      // Print selected sales
+      printButton.addEventListener("click", () => {
+        const checkedIndexes = Array.from(document.querySelectorAll(".saleCheckbox:checked")).map(cb => parseInt(cb.dataset.index));
+        if (checkedIndexes.length === 0) {
+          alert("Please select at least one sale to print.");
+          return;
+        }
+
+        let printContent = "";
+        checkedIndexes.forEach(i => {
+          const sale = allSales[i];
+          const formattedDate = sale.date ? formatDate(sale.date) : "";
+          printContent += `
+            <div class="customer-row">
+              کریار: <strong>${sale.customer}</strong>
+              <span style="margin-right: 15px;">Date: ${formattedDate}</span>
+            </div>
+            <table border="1" cellspacing="0" cellpadding="5" style="width:100%; border-collapse:collapse; direction: rtl;">
               <thead>
                 <tr>
                   <th>ناوی بەرهەم</th>
@@ -134,40 +206,33 @@
                 </tr>
               </tfoot>
             </table>
-          </div>
-        `;
+            <br/>
+          `;
+        });
+
+        const printWindow = window.open('', '', 'width=900,height=700');
+        printWindow.document.write(`
+          <html lang="en" dir="rtl">
+            <head>
+              <title>Print Selected Sales</title>
+              <style>
+                body { font-family: Tahoma, sans-serif; padding: 20px; direction: rtl; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+                .customer-row { background-color: #f0f0f0; font-weight: bold; text-align: right; padding: 10px; font-size: 1.1em; display: flex; justify-content: space-between; }
+              </style>
+            </head>
+            <body>
+              <h2 style="text-align:center;">Selected Sales Printout</h2>
+              ${printContent}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
       });
-
-      html += `
-        <h3 style="text-align:right; margin-top:20px;">
-          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
-        </h3>
-      `;
-
-      saleDataDiv.innerHTML = html;
-    }
-
-    document.getElementById("selectAll").addEventListener("change", function() {
-      const checkboxes = document.querySelectorAll(".sale-checkbox");
-      checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-
-    function printSelected() {
-      const selectedEntries = Array.from(document.querySelectorAll(".sale-entry"))
-        .filter(entry => entry.querySelector(".sale-checkbox").checked)
-        .map(entry => entry.outerHTML);
-
-      if (selectedEntries.length === 0) {
-        alert("تکایە بەلایەنی یەک وەسل دیاری بکە بۆ پرینت.");
-        return;
-      }
-
-      const printWindow = window.open('', '_blank');
-      printWindow.document.write(`
-        <html><head><title>Print</title></head><body>${selectedEntries.join("")}</body></html>
-      `);
-      printWindow.document.close();
-      printWindow.print();
     }
   </script>
 </body>
