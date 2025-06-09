@@ -3,148 +3,197 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>New Sale - Quantity with decimal input and +/- by 1</title>
+<title>New Sale - Modern +/- Buttons with Decimal Qty</title>
 <style>
   body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: #eef6fb;
-    margin: 0; padding: 10px;
+    background: #f0f4f8;
+    margin: 0; padding: 15px;
+    color: #333;
   }
   .container {
-    background: white;
-    padding: 20px 25px;
-    border-radius: 12px;
     max-width: 900px;
     margin: auto;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    background: white;
+    padding: 25px 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  h1 {
+    margin-bottom: 25px;
+    color: #004080;
+  }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    max-width: 350px;
+    padding: 14px 18px;
+    margin: 8px 0 20px 0;
+    font-size: 1.1em;
+    border-radius: 12px;
+    border: 2px solid #ccc;
+    transition: border-color 0.3s ease;
+  }
+  input[type="text"]:focus, input[type="number"]:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0,123,255,0.4);
   }
   .top-bar {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 10px;
     flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 30px;
   }
   .summary {
-    font-size: 1.3em;
+    background: #007bff;
+    color: white;
+    padding: 14px 25px;
+    border-radius: 16px;
     font-weight: 700;
-    padding: 12px 20px;
-    border-radius: 12px;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    font-size: 1.3em;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.3);
     user-select: none;
-  }
-  .total-qty {
-    background: #d0e8ff;
-    color: #003366;
-    min-width: 90px;
-    text-align: center;
-  }
-  .total-amount {
-    background: #d7f0dc;
-    color: #1a4d1a;
-    min-width: 130px;
+    min-width: 140px;
     text-align: center;
   }
   button.submit-btn {
-    background-color: #28a745;
+    background: #28a745;
     color: white;
     border: none;
-    padding: 12px 30px;
+    padding: 16px 36px;
+    font-size: 1.15em;
+    border-radius: 16px;
     font-weight: 700;
-    font-size: 1.1em;
-    border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 3px 8px rgba(40,167,69,0.5);
+    box-shadow: 0 5px 15px rgba(40,167,69,0.5);
+    transition: background-color 0.3s ease;
     white-space: nowrap;
-    transition: background-color 0.25s ease;
   }
   button.submit-btn:hover {
-    background-color: #218838;
-  }
-  input[type="text"], input[type="number"] {
-    padding: 12px 15px;
-    font-size: 1em;
-    margin-top: 5px;
-    border-radius: 12px;
-    border: 1.8px solid #bbb;
-    width: 100%;
-    max-width: 100%;
-    box-sizing: border-box;
-    transition: border-color 0.3s ease;
-  }
-  input[type="text"]:focus, input[type="number"]:focus {
-    outline: none;
-    border-color: #28a745;
-    box-shadow: 0 0 6px #8ddf8d;
+    background: #218838;
   }
   .product-list {
-    margin-top: 25px;
+    margin-top: 10px;
   }
   .product-item {
+    background: #f9fbff;
+    border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+    padding: 18px 22px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
     align-items: center;
-    border: 1.2px solid #ddd;
-    padding: 15px 20px;
-    border-radius: 14px;
-    background: #f9fbff;
-    margin-bottom: 14px;
-    box-shadow: 0 2px 7px rgba(0,0,0,0.04);
+    margin-bottom: 18px;
+    gap: 14px;
     transition: background-color 0.3s ease;
   }
   .product-item:hover {
-    background-color: #e8f2ff;
+    background-color: #e4f0ff;
   }
   .product-name {
+    flex: 1 1 220px;
     font-weight: 700;
-    font-size: 1.1em;
-    color: #003366;
-  }
-  .details {
-    font-size: 0.95em;
-    color: #444;
-    margin-top: 6px;
+    font-size: 1.15em;
+    color: #004080;
     user-select: none;
   }
-  @media (min-width: 600px) {
-    input[type="text"], input[type="number"] {
-      max-width: 320px;
-    }
+  .details {
+    flex: 1 1 300px;
+    font-size: 0.95em;
+    color: #555;
+  }
+  .qty-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .qty-control button {
+    background: #007bff;
+    border: none;
+    color: white;
+    width: 38px;
+    height: 38px;
+    font-size: 1.3em;
+    font-weight: 700;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,123,255,0.4);
+    transition: background-color 0.3s ease;
+    user-select: none;
+  }
+  .qty-control button:active {
+    background-color: #0056b3;
+  }
+  .qty-control input {
+    width: 70px;
+    text-align: center;
+    border-radius: 12px;
+    border: 2px solid #ccc;
+    font-size: 1.1em;
+    padding: 8px 12px;
+    transition: border-color 0.3s ease;
+  }
+  .qty-control input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 10px rgba(0,123,255,0.4);
+    outline: none;
+  }
+  .total-price {
+    flex: 1 1 150px;
+    font-weight: 700;
+    font-size: 1.05em;
+    color: #004080;
+    user-select: none;
+    text-align: right;
+    min-width: 120px;
+  }
+  @media (max-width: 650px) {
     .product-item {
-      flex-wrap: nowrap;
+      flex-direction: column;
+      align-items: flex-start;
     }
-    .details {
-      margin-top: 0;
+    .qty-control {
+      margin-top: 10px;
+    }
+    .total-price {
+      width: 100%;
+      text-align: left;
+      margin-top: 8px;
     }
   }
 </style>
 </head>
 <body>
   <div class="container">
+    <h1>فڕۆشتن نوێ</h1>
+
     <div class="top-bar">
-      <div class="summary total-qty" id="totalQty">Qty: 0</div>
-      <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
-      <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
+      <div class="summary" id="totalQty">کۆی ژمارە: 0</div>
+      <div class="summary" id="totalAmount">کۆی گشتی: 0 IQD</div>
+      <button class="submit-btn" onclick="submitSale()">پێشکەشکردن</button>
     </div>
 
-    <input type="text" id="customer" placeholder="Customer name" autocomplete="off" />
-    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
+    <input type="text" id="customer" placeholder="ناوی کڕیار" autocomplete="off" />
+    <input type="text" id="searchBox" placeholder="گەڕان لە ناوی کاڵا..." oninput="renderProducts()" autocomplete="off" />
 
     <div class="product-list" id="productList"></div>
   </div>
 
 <script>
+  // نمونە کاڵاکان
   const products = [
-    { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
-    { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
-    { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
+    { name: "کەلەشین", unitPrice: 1000, discount: 0, stock: 50 },
+    { name: "بۆتڵ", unitPrice: 1500, discount: 5, stock: 30 },
+    { name: "ئەلکتڕۆنیک", unitPrice: 3000, discount: 10, stock: 20 },
   ];
 
-  // quantity as decimal allowed (init 0)
+  // items پێویستە quantity decimal پشتیوانی بکات
   const items = products.map(p => ({ ...p, quantity: 0 }));
 
+  // فەرمی نیشاندانی کاڵاکان
   function renderProducts() {
     const list = document.getElementById("productList");
     const search = document.getElementById("searchBox").value.trim().toLowerCase();
@@ -156,25 +205,24 @@
       const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
       list.innerHTML += `
         <div class="product-item">
-          <div>
-            <div class="product-name">${item.name}</div>
-            <div class="details">
-              Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-              Qty: 
-              <button aria-label="Decrease quantity" onclick="changeQtyByOne(${index}, -1)">-</button>
-              <input 
-                type="number" 
-                min="0" 
-                step="0.01"
-                max="${item.stock}" 
-                value="${item.quantity}" 
-                onchange="changeQtyDirect(${index}, this.value)" 
-                style="width: 70px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
-              />
-              <button aria-label="Increase quantity" onclick="changeQtyByOne(${index}, 1)">+</button>
-              | Total: ${total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} IQD
-            </div>
+          <div class="product-name">${item.name}</div>
+          <div class="details">
+            نرخ: ${item.unitPrice.toLocaleString()} IQD | داشکاندن: ${item.discount}% | بەردەست: ${item.stock}
           </div>
+          <div class="qty-control" aria-label="Quantity controls for ${item.name}">
+            <button aria-label="کەمکردن" onclick="changeQtyByOne(${index}, -1)">−</button>
+            <input 
+              type="number" 
+              min="0" 
+              step="0.01" 
+              max="${item.stock}" 
+              value="${item.quantity}" 
+              onchange="changeQtyDirect(${index}, this.value)" 
+              aria-live="polite"
+            />
+            <button aria-label="زیادکردن" onclick="changeQtyByOne(${index}, 1)">+</button>
+          </div>
+          <div class="total-price">${total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} IQD</div>
         </div>
       `;
     });
@@ -182,7 +230,7 @@
     updateSummary();
   }
 
-  // change quantity by 1 (integer step), but quantity can be decimal
+  // زیاد/کەمکردن بە 1 یەکەیەک (هەروەها quantity دەتوانێت decimal بێت)
   function changeQtyByOne(index, delta) {
     let newQty = items[index].quantity + delta;
     if (newQty < 0) newQty = 0;
@@ -191,7 +239,7 @@
     renderProducts();
   }
 
-  // direct input change, quantity can be decimal
+  // گۆڕینی ڕاستەوخۆ لە input (decimal دەتوانێت بێت)
   function changeQtyDirect(index, value) {
     let val = parseFloat(value);
     if (isNaN(val) || val < 0) val = 0;
@@ -200,17 +248,19 @@
     renderProducts();
   }
 
+  // نوێکردنەوەی کۆی ژمارە و کۆی گشتی نرخ
   function updateSummary() {
     const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
     const qty = items.reduce((sum, i) => sum + i.quantity, 0);
-    document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} IQD`;
-    document.getElementById("totalQty").textContent = `Qty: ${qty.toFixed(2)}`;
+    document.getElementById("totalAmount").textContent = `کۆی گشتی: ${total.toLocaleString(undefined, {minimumFractionDigits: 0, maximumFractionDigits: 2})} IQD`;
+    document.getElementById("totalQty").textContent = `کۆی ژمارە: ${qty.toFixed(2)}`;
   }
 
+  // ناردنی داتاکان بۆ localStorage
   function submitSale() {
     const customer = document.getElementById("customer").value.trim();
     if (!customer) {
-      alert("Please enter a customer name.");
+      alert("تکایە ناوی کڕیار بنوسە.");
       return;
     }
 
@@ -223,7 +273,7 @@
     }));
 
     if (selectedItems.length === 0) {
-      alert("No products selected.");
+      alert("هیچ کاڵایەک هەڵنەبژێردراوە.");
       return;
     }
 
@@ -242,14 +292,16 @@
     allSales.push(saleData);
     localStorage.setItem("allSales", JSON.stringify(allSales));
 
+    // پاککردن فۆرمەکان بۆ فرۆشتنی دواتر
     document.getElementById("customer").value = "";
     document.getElementById("searchBox").value = "";
     items.forEach(i => i.quantity = 0);
     renderProducts();
 
-    alert("Sale submitted! View it on sales.html.");
+    alert("فرۆشتنەکەت پاشکەوت کرا! دەتوانیت لە sales.html ببینیت.");
   }
 
+  // لە دوای بارکردن نیشاندانی کاڵاکان
   renderProducts();
 </script>
 </body>
