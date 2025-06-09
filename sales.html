@@ -2,7 +2,7 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>فۆرمی گەڕانەوەی فرۆشتن</title>
+  <title>هەموو وەسڵەکان</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -17,6 +17,15 @@
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .sale-block {
+      margin-bottom: 30px;
+      border-bottom: 2px solid #ccc;
+      padding-bottom: 15px;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -29,12 +38,7 @@
     }
     tfoot td {
       font-weight: bold;
-      background: #f9f9f9;
-    }
-    .sale-block {
-      margin-bottom: 40px;
-      border-bottom: 2px solid #ccc;
-      padding-bottom: 15px;
+      background-color: #f9f9f9;
     }
   </style>
 </head>
@@ -60,11 +64,11 @@
           <table>
             <thead>
               <tr>
-                <th>ناوی کاڵا</th>
-                <th>ژمارە</th>
-                <th>نرخی تاک</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆ</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Discount (%)</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -80,7 +84,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی</td>
+                <td colspan="4" style="text-align:right;">Grand Total</td>
                 <td>${sale.total.toLocaleString()} IQD</td>
               </tr>
             </tfoot>
@@ -89,10 +93,7 @@
       `).join("");
     }
 
-    // هەرکاتێک داتای localStorage نوێ دەبێت، ئەم فانکشنی renderSales بگەڕێتەوە
-    window.addEventListener("storage", renderSales);
-
-    // بۆ جارە یەکەم
+    // جیاوازە لە storage event بۆ کراس پەیج — بۆ ئەم پەیجە render بکە
     renderSales();
   </script>
 </body>
