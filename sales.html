@@ -54,17 +54,21 @@
       box-sizing: border-box;
       direction: rtl;
     }
-    select#selectSale {
+    #checkboxContainer {
       margin-bottom: 15px;
-      padding: 10px;
-      width: 100%;
-      max-width: 320px;
-      font-size: 1em;
+      max-height: 150px;
+      overflow-y: auto;
+      border: 1px solid #ccc;
+      padding: 8px;
       border-radius: 8px;
-      border: 1.5px solid #666;
+      background: #fafafa;
       direction: rtl;
-      background: white;
+    }
+    #checkboxContainer label {
+      display: block;
+      padding: 4px 0;
       cursor: pointer;
+      font-weight: normal;
     }
     button#printBtn {
       background-color: #007bff;
@@ -89,12 +93,9 @@
 
     <input type="text" id="filterCustomer" placeholder="فیلتەر بە ناوی کریار..." oninput="renderSales()" />
 
-    <!-- سلێکتی وەسلەکان زیادکرا -->
-    <select id="selectSale" onchange="renderSelectedSale()">
-      <option value="all">هەموو وەسلەکان</option>
-    </select>
+    <div id="checkboxContainer"></div>
 
-    <button id="printBtn" onclick="window.print()">پرینت</button>
+    <button id="printBtn" onclick="printSelectedSales()">پرینت</button>
 
     <div id="saleData"></div>
   </div>
@@ -103,36 +104,31 @@
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
     const saleDataDiv = document.getElementById("saleData");
-    const selectSale = document.getElementById("selectSale");
+    const checkboxContainer = document.getElementById("checkboxContainer");
 
-    function populateSelectSales(filteredSales) {
-      // پاککردنی هەموو هۆپەکان
-      selectSale.innerHTML = '<option value="all">هەموو وەسلەکان</option>';
-
+    function renderCheckboxes(filteredSales) {
+      checkboxContainer.innerHTML = "";
+      if (filteredSales.length === 0) {
+        checkboxContainer.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        return;
+      }
       filteredSales.forEach((sale, idx) => {
-        const option = document.createElement("option");
-        option.value = idx; // index ی فیلترکراو
-        option.textContent = `کریار: ${sale.customer} - کۆی فرۆشتن: ${sale.total.toLocaleString()} IQD`;
-        selectSale.appendChild(option);
+        const label = document.createElement("label");
+        label.innerHTML = `
+          <input type="checkbox" value="${idx}" checked />
+          کریار: ${sale.customer} - کۆی فرۆشتن: ${sale.total.toLocaleString()} IQD
+        `;
+        checkboxContainer.appendChild(label);
       });
     }
 
     function renderSales() {
       const filterText = document.getElementById("filterCustomer").value.trim().toLowerCase();
-      let filteredSales = allSales.filter(sale =>
+      const filteredSales = allSales.filter(sale =>
         sale.customer.toLowerCase().includes(filterText)
       );
 
-      if (filteredSales.length === 0) {
-        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
-        // خالی کردن سلێکت
-        selectSale.innerHTML = '<option value="all">هیچ داتای فرۆشتنێک نەدۆزرایەوە</option>';
-        return;
-      }
-
-      populateSelectSales(filteredSales);
-
-      // دیفۆلتی هەموو فرۆشتنەکان نیشان بدە
+      renderCheckboxes(filteredSales);
       renderSalesHTML(filteredSales);
     }
 
@@ -186,23 +182,104 @@
       saleDataDiv.innerHTML = html;
     }
 
-    function renderSelectedSale() {
-      const selectedValue = selectSale.value;
+    function printSelectedSales() {
+      const checkboxes = checkboxContainer.querySelectorAll("input[type='checkbox']");
       const filterText = document.getElementById("filterCustomer").value.trim().toLowerCase();
       const filteredSales = allSales.filter(sale =>
         sale.customer.toLowerCase().includes(filterText)
       );
 
-      if (selectedValue === "all") {
-        renderSalesHTML(filteredSales);
-      } else {
-        const selectedSale = filteredSales[selectedValue];
-        if (!selectedSale) {
-          saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
-          return;
+      const selectedSales = [];
+      checkboxes.forEach(chk => {
+        if (chk.checked) {
+          const idx = parseInt(chk.value);
+          if (filteredSales[idx]) selectedSales.push(filteredSales[idx]);
         }
-        renderSalesHTML([selectedSale]);
+      });
+
+      if (selectedSales.length === 0) {
+        alert("تکایە یەک وەسلە هەڵبژێرە بۆ پرینت کردن");
+        return;
       }
+
+      // دروستکردنی وینۆوی نوێ بۆ پرینت
+      const printWindow = window.open("", "_blank");
+      printWindow.document.write(`
+        <html lang="en" dir="rtl">
+          <head>
+            <meta charset="UTF-8" />
+            <title>پرینتی وەسلەکان</title>
+            <style>
+              body {
+                font-family: Tahoma, sans-serif;
+                padding: 20px;
+                background: white;
+                direction: rtl;
+              }
+              table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 15px;
+              }
+              th, td {
+                padding: 10px;
+                border: 1px solid #ddd;
+                text-align: center;
+              }
+              tfoot td {
+                font-weight: bold;
+                background-color: #f9f9f9;
+              }
+              .customer-row {
+                background-color: #f0f0f0;
+                font-weight: bold;
+                text-align: right;
+                padding: 10px;
+                font-size: 1.1em;
+                margin-top: 20px;
+              }
+            </style>
+          </head>
+          <body>
+            <h2 style="text-align:center;">پرینتی وەسلەکان</h2>
+            ${selectedSales.map(sale => `
+              <div class="customer-row">کریار: ${sale.customer}</div>
+              <table>
+                <thead>
+                  <tr>
+                    <th>ناوی بەرهەم</th>
+                    <th>ژمارە</th>
+                    <th>نرخی یەکە</th>
+                    <th>داشکاندن (%)</th>
+                    <th>کۆی گشتی</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${sale.items.map(item => `
+                    <tr>
+                      <td>${item.name}</td>
+                      <td>${item.quantity}</td>
+                      <td>${item.unitPrice.toLocaleString()} IQD</td>
+                      <td>${item.discount}</td>
+                      <td>${item.total.toLocaleString()} IQD</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                    <td>${sale.total.toLocaleString()} IQD</td>
+                  </tr>
+                </tfoot>
+              </table>
+            `).join("")}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.focus();
+      printWindow.print();
+      printWindow.close();
     }
 
     // پێش هەموو شتێک ریندەر بکە
