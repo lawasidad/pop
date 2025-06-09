@@ -43,29 +43,65 @@
       padding: 10px;
       font-size: 1.1em;
     }
+    #filterCustomer {
+      margin-bottom: 15px;
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      font-size: 1em;
+      border-radius: 8px;
+      border: 1.5px solid #ccc;
+      box-sizing: border-box;
+      direction: rtl;
+    }
+    button#printBtn {
+      background-color: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      font-size: 1em;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 3px 8px rgba(0,123,255,0.5);
+      transition: background-color 0.3s ease;
+      margin-bottom: 15px;
+    }
+    button#printBtn:hover {
+      background-color: #0056b3;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+
+    <input type="text" id="filterCustomer" placeholder="فیلتەر بە ناوی کریار..." oninput="renderSales()" />
+
+    <button id="printBtn" onclick="window.print()">پرینت</button>
+
     <div id="saleData"></div>
   </div>
 
   <script>
-    // From localStorage get all sales array or fallback to empty array
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
-    const saleDataDiv = document.getElementById("saleData");
+    function renderSales() {
+      const filterText = document.getElementById("filterCustomer").value.trim().toLowerCase();
+      const saleDataDiv = document.getElementById("saleData");
 
-    if (allSales.length === 0) {
-      saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
-    } else {
+      const filteredSales = allSales.filter(sale =>
+        sale.customer.toLowerCase().includes(filterText)
+      );
+
+      if (filteredSales.length === 0) {
+        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        return;
+      }
+
       let grandTotalAllSales = 0;
-
-      // Build html for all sales
       let html = "";
 
-      allSales.forEach((sale, index) => {
+      filteredSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
 
         html += `
@@ -110,6 +146,8 @@
 
       saleDataDiv.innerHTML = html;
     }
+
+    renderSales();
   </script>
 </body>
 </html>
