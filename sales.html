@@ -43,8 +43,8 @@
       padding: 10px;
       font-size: 1.1em;
       display: flex;
-      align-items: center;
-      gap: 10px;
+      flex-direction: column;
+      gap: 5px;
     }
     .select-all {
       margin-bottom: 15px;
@@ -63,19 +63,31 @@
       cursor: pointer;
       font-size: 1em;
     }
+    .search-container {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+    }
+    .search-container input {
+      flex: 1;
+      padding: 8px;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
 
-    <!-- Select All Checkbox -->
+    <div class="search-container">
+      <input type="text" id="searchInput" placeholder="گەڕان بۆ ناوی کریار..." />
+    </div>
+
     <div class="select-all">
       <input type="checkbox" id="selectAll" checked />
       <label for="selectAll">هەموو وەسلەکان دیاری بکە</label>
     </div>
 
-    <!-- Print Button -->
     <button class="print-btn" onclick="printSelected()">پرێنتی وەسلە دیاریکراوەکان</button>
 
     <div id="saleData"></div>
@@ -85,19 +97,25 @@
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     const saleDataDiv = document.getElementById("saleData");
 
-    if (allSales.length === 0) {
-      saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
-    } else {
+    function renderSales(data) {
+      if (data.length === 0) {
+        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        return;
+      }
+
       let grandTotalAllSales = 0;
       let html = "";
 
-      allSales.forEach((sale, index) => {
+      data.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
 
         html += `
           <div class="customer-row">
-            <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
-            <label for="saleCheckbox${index}">کریار: ${sale.customer}</label>
+            <div>
+              <input type="checkbox" class="saleCheckbox" id="saleCheckbox${index}" checked />
+              <label for="saleCheckbox${index}">کریار: ${sale.customer}</label>
+            </div>
+            <div>بەروار: ${sale.date || 'نەدراوە'}</div>
           </div>
           <div class="sale-block" data-index="${index}">
             <table>
@@ -147,14 +165,24 @@
       });
     }
 
+    renderSales(allSales);
+
+    document.getElementById("searchInput").addEventListener("input", function () {
+      const query = this.value.trim();
+      const filtered = allSales.filter(sale =>
+        sale.customer.toLowerCase().includes(query.toLowerCase())
+      );
+      renderSales(filtered);
+    });
+
     function printSelected() {
       const checkboxes = document.querySelectorAll(".saleCheckbox");
       const saleBlocks = document.querySelectorAll(".sale-block");
       let printContent = "";
       checkboxes.forEach((cb, idx) => {
         if (cb.checked) {
-          printContent += saleBlocks[idx].previousElementSibling.outerHTML; // Customer row
-          printContent += saleBlocks[idx].outerHTML; // Sale table
+          printContent += saleBlocks[idx].previousElementSibling.outerHTML;
+          printContent += saleBlocks[idx].outerHTML;
         }
       });
 
