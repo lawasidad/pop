@@ -68,7 +68,7 @@
       display: flex;
       gap: 10px;
     }
-    .search-container input {
+    .search-container input, .search-container select {
       flex: 1;
       padding: 8px;
       font-size: 1em;
@@ -81,6 +81,11 @@
 
     <div class="search-container">
       <input type="text" id="searchInput" placeholder="Search by customer..." />
+      <select id="dateFilter">
+        <option value="all">All</option>
+        <option value="today">Today</option>
+        <option value="yesterday">Yesterday</option>
+      </select>
     </div>
 
     <div class="select-all">
@@ -165,15 +170,43 @@
       });
     }
 
-    renderSales(allSales);
+    function isToday(dateStr) {
+      const d = new Date(dateStr);
+      const now = new Date();
+      return d.toDateString() === now.toDateString();
+    }
 
-    document.getElementById("searchInput").addEventListener("input", function () {
-      const query = this.value.trim();
-      const filtered = allSales.filter(sale =>
-        sale.customer.toLowerCase().includes(query.toLowerCase())
-      );
+    function isYesterday(dateStr) {
+      const d = new Date(dateStr);
+      const y = new Date();
+      y.setDate(y.getDate() - 1);
+      return d.toDateString() === y.toDateString();
+    }
+
+    function filterAndRender() {
+      const query = document.getElementById("searchInput").value.trim().toLowerCase();
+      const filter = document.getElementById("dateFilter").value;
+      let filtered = allSales;
+
+      if (query) {
+        filtered = filtered.filter(sale =>
+          sale.customer.toLowerCase().includes(query)
+        );
+      }
+
+      if (filter === "today") {
+        filtered = filtered.filter(sale => isToday(sale.date));
+      } else if (filter === "yesterday") {
+        filtered = filtered.filter(sale => isYesterday(sale.date));
+      }
+
       renderSales(filtered);
-    });
+    }
+
+    document.getElementById("searchInput").addEventListener("input", filterAndRender);
+    document.getElementById("dateFilter").addEventListener("change", filterAndRender);
+
+    renderSales(allSales);
 
     function printSelected() {
       const checkboxes = document.querySelectorAll(".saleCheckbox");
