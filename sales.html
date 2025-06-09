@@ -1,288 +1,239 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>وەسلەکان</title>
+  <title>Sales Summary</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
-      background: #f2f2f2;
       padding: 20px;
+      background: #f2f2f2;
     }
     .container {
       max-width: 900px;
       margin: auto;
       background: white;
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      direction: rtl;
+    }
+    th, td {
+      padding: 10px;
+      border: 1px solid #ddd;
+      text-align: center;
+    }
+    tfoot td {
+      font-weight: bold;
+      background-color: #f9f9f9;
     }
     h2 {
       text-align: center;
       margin-bottom: 15px;
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      direction: rtl;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-      font-size: 12pt;
-    }
-    th {
-      background: #eee;
-    }
     .customer-row {
-      background: #f9f9f9;
+      background-color: #f0f0f0;
       font-weight: bold;
-      padding: 10px;
       text-align: right;
+      padding: 10px;
+      font-size: 1.1em;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
+    .customer-info {
+      font-weight: normal;
+      font-size: 0.9em;
+      margin-right: 15px;
+    }
     .select-all-container {
-      margin-bottom: 10px;
       text-align: right;
+      margin-bottom: 10px;
     }
     button {
       margin-top: 10px;
-      padding: 7px 15px;
+      padding: 8px 15px;
       font-size: 1em;
       cursor: pointer;
-    }
-    /* print styles for A4 portrait */
-    @media print {
-      @page {
-        size: A4 portrait;
-        margin: 20mm;
-      }
-      body {
-        margin: 0;
-        background: white;
-        -webkit-print-color-adjust: exact;
-      }
-      .no-print {
-        display: none;
-      }
-      table, th, td {
-        font-size: 11pt;
-        border: 1px solid #000;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>کۆتایی هەموو وەسلەکان</h2>
+    <h2>Summary of All Sales</h2>
 
-    <div class="select-all-container no-print">
+    <div class="select-all-container">
       <label>
-        Select by Date:
-        <select id="dateSelect">
-          <option value="">Select Date</option>
-        </select>
-      </label>
-      &nbsp;&nbsp;&nbsp;
-      <label>
-        <input type="checkbox" id="selectAll" /> Select All Sales
+        <input type="checkbox" id="selectAll" />
+        Select All Sales
       </label>
       <button id="printSelected">Print Selected Sales</button>
     </div>
 
-    <div id="saleData">
-      <!-- هیچ داتایەک نەدراوە -->
-    </div>
+    <div id="saleData"></div>
   </div>
 
-<script>
-  // هیچ داتایەک نیە، لە localStorage داتاکان واگیران نەکراون
-  const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+  <script>
+    const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+    const saleDataDiv = document.getElementById("saleData");
+    const selectAllCheckbox = document.getElementById("selectAll");
+    const printButton = document.getElementById("printSelected");
 
-  const saleDataDiv = document.getElementById("saleData");
-  const selectAllCheckbox = document.getElementById("selectAll");
-  const printButton = document.getElementById("printSelected");
-  const dateSelect = document.getElementById("dateSelect");
-
-  function formatDateTime(dateTimeStr) {
-    const d = new Date(dateTimeStr);
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    const hh = String(d.getHours()).padStart(2, '0');
-    const min = String(d.getMinutes()).padStart(2, '0');
-    return `${dd}/${mm}/${yyyy} - ${hh}:${min}`;
-  }
-
-  function formatDateOnly(dateTimeStr) {
-    const d = new Date(dateTimeStr);
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  }
-
-  function populateDateSelect() {
-    const uniqueDates = [...new Set(allSales.map(s => s.date.slice(0,10)))].sort((a,b) => new Date(a) - new Date(b));
-    uniqueDates.forEach(date => {
-      const option = document.createElement("option");
-      option.value = date;
-      option.textContent = formatDateOnly(date);
-      dateSelect.appendChild(option);
-    });
-  }
-
-  function renderSales(filteredSales) {
-    if(filteredSales.length === 0) {
-      saleDataDiv.innerHTML = "<p>هیچ وەسڵێک نەدۆزرایەوە.</p>";
-      return;
+    function formatDate(dateStr) {
+      const d = new Date(dateStr);
+      // Format as YYYY-MM-DD
+      const yyyy = d.getFullYear();
+      const mm = String(d.getMonth() + 1).padStart(2, '0');
+      const dd = String(d.getDate()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd}`;
     }
 
-    let grandTotalAllSales = 0;
-    let html = "";
-
-    filteredSales.forEach((sale, index) => {
-      grandTotalAllSales += sale.total;
-      html += `
-        <div class="customer-row">
-          <label>
-            <input type="checkbox" class="saleCheckbox" data-index="${index}" />
-          </label>
-          <div>
-            کریار: <strong>${sale.customer}</strong> — Date: ${formatDateTime(sale.date)}
-          </div>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th>ناوی بەرهەم</th>
-              <th>ژمارە</th>
-              <th>نرخی یەکە</th>
-              <th>داشکاندن (%)</th>
-              <th>کۆی گشتی</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sale.items.map(item => `
-              <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unitPrice.toLocaleString()} IQD</td>
-                <td>${item.discount}</td>
-                <td>${item.total.toLocaleString()} IQD</td>
-              </tr>
-            `).join("")}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-              <td>${sale.total.toLocaleString()} IQD</td>
-            </tr>
-          </tfoot>
-        </table>
-        <br/>
-      `;
-    });
-
-    html += `
-      <h3 style="text-align:right;">
-        کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
-      </h3>
-    `;
-
-    saleDataDiv.innerHTML = html;
-
-    selectAllCheckbox.checked = false;
-    selectAllCheckbox.addEventListener("change", function() {
-      const checkboxes = document.querySelectorAll(".saleCheckbox");
-      checkboxes.forEach(cb => cb.checked = this.checked);
-    });
-  }
-
-  dateSelect.addEventListener("change", () => {
-    const selectedDate = dateSelect.value;
-    if (selectedDate === "") {
-      renderSales(allSales);
+    if (allSales.length === 0) {
+      saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
     } else {
-      const filtered = allSales.filter(s => s.date.startsWith(selectedDate));
-      renderSales(filtered);
-    }
-  });
+      let grandTotalAllSales = 0;
+      let html = "";
 
-  printButton.addEventListener("click", () => {
-    const checkedBoxes = Array.from(document.querySelectorAll(".saleCheckbox:checked"));
-    if (checkedBoxes.length === 0) {
-      alert("تکایە هەندێک وەسلە هەڵبژێرە بۆ چاپکردن.");
-      return;
-    }
-    let printContent = "";
-    checkedBoxes.forEach(cb => {
-      const i = parseInt(cb.dataset.index);
-      const sale = (dateSelect.value === "") ? allSales[i] : allSales.filter(s => s.date.startsWith(dateSelect.value))[i];
-      printContent += `
-        <div style="font-weight:bold; margin-bottom:5px;">
-          کریار: ${sale.customer} — Date: ${formatDateTime(sale.date)}
-        </div>
-        <table border="1" cellspacing="0" cellpadding="5" style="width:100%; border-collapse:collapse; direction: rtl;">
-          <thead>
-            <tr>
-              <th>ناوی بەرهەم</th>
-              <th>ژمارە</th>
-              <th>نرخی یەکە</th>
-              <th>داشکاندن (%)</th>
-              <th>کۆی گشتی</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${sale.items.map(item => `
+      allSales.forEach((sale, index) => {
+        grandTotalAllSales += sale.total;
+
+        // Format date (assumed sale.date exists)
+        const formattedDate = sale.date ? formatDate(sale.date) : "";
+
+        html += `
+          <div class="customer-row">
+            <label style="flex-grow:0;">
+              <input type="checkbox" class="saleCheckbox" data-index="${index}" />
+            </label>
+            <div style="flex-grow:1; text-align:right;">
+              کریار: <span style="font-weight:bold; font-size:1.1em;">${sale.customer}</span>
+              <span class="customer-info">Date: ${formattedDate}</span>
+            </div>
+          </div>
+          <table>
+            <thead>
               <tr>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>${item.unitPrice.toLocaleString()} IQD</td>
-                <td>${item.discount}</td>
-                <td>${item.total.toLocaleString()} IQD</td>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
               </tr>
-            `).join("")}
-          </tbody>
-          <tfoot>
-            <tr>
-              <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-              <td>${sale.total.toLocaleString()} IQD</td>
-            </tr>
-          </tfoot>
-        </table>
-        <br style="page-break-after: always;" />
-      `;
-    });
-    const printWindow = window.open('', '', 'width=900,height=700');
-    printWindow.document.write(`
-      <html lang="ku" dir="rtl">
-        <head>
-          <title>Print Selected Sales</title>
-          <style>
-            body { font-family: Tahoma, sans-serif; padding: 20px; direction: rtl; }
-            table { width: 100%; border-collapse: collapse; margin-top: 10px;}
-            th, td { border: 1px solid #000; padding: 5px; text-align: center; font-size: 11pt; }
-            th { background: #eee; }
-            @page { size: A4 portrait; margin: 20mm; }
-          </style>
-        </head>
-        <body>${printContent}</body>
-      </html>
-    `);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
-  });
+            </thead>
+            <tbody>
+              ${sale.items.map(item => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
+                </tr>
+              `).join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+          <br/>
+        `;
+      });
 
-  // initial load
-  populateDateSelect();
-  renderSales(allSales);
-</script>
+      html += `
+        <h3 style="text-align:right; margin-top:20px;">
+          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
+        </h3>
+      `;
+
+      saleDataDiv.innerHTML = html;
+
+      // Select all checkbox logic
+      selectAllCheckbox.addEventListener("change", function() {
+        const checkboxes = document.querySelectorAll(".saleCheckbox");
+        checkboxes.forEach(cb => cb.checked = this.checked);
+      });
+
+      // Print selected sales
+      printButton.addEventListener("click", () => {
+        const checkedIndexes = Array.from(document.querySelectorAll(".saleCheckbox:checked")).map(cb => parseInt(cb.dataset.index));
+        if (checkedIndexes.length === 0) {
+          alert("Please select at least one sale to print.");
+          return;
+        }
+
+        let printContent = "";
+        checkedIndexes.forEach(i => {
+          const sale = allSales[i];
+          const formattedDate = sale.date ? formatDate(sale.date) : "";
+          printContent += `
+            <div class="customer-row">
+              کریار: <strong>${sale.customer}</strong>
+              <span style="margin-right: 15px;">Date: ${formattedDate}</span>
+            </div>
+            <table border="1" cellspacing="0" cellpadding="5" style="width:100%; border-collapse:collapse; direction: rtl;">
+              <thead>
+                <tr>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sale.items.map(item => `
+                  <tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toLocaleString()} IQD</td>
+                    <td>${item.discount}</td>
+                    <td>${item.total.toLocaleString()} IQD</td>
+                  </tr>
+                `).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td>${sale.total.toLocaleString()} IQD</td>
+                </tr>
+              </tfoot>
+            </table>
+            <br/>
+          `;
+        });
+
+        const printWindow = window.open('', '', 'width=900,height=700');
+        printWindow.document.write(`
+          <html lang="en" dir="rtl">
+            <head>
+              <title>Print Selected Sales</title>
+              <style>
+                body { font-family: Tahoma, sans-serif; padding: 20px; direction: rtl; }
+                table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+                th, td { border: 1px solid #ddd; padding: 10px; text-align: center; }
+                .customer-row { background-color: #f0f0f0; font-weight: bold; text-align: right; padding: 10px; font-size: 1.1em; display: flex; justify-content: space-between; }
+              </style>
+            </head>
+            <body>
+              <h2 style="text-align:center;">Selected Sales Printout</h2>
+              ${printContent}
+            </body>
+          </html>
+        `);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+        printWindow.close();
+      });
+    }
+  </script>
 </body>
 </html>
