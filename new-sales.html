@@ -2,14 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
-      background: #eef;
       margin: 0;
       padding: 10px;
+      background: repeating-linear-gradient(
+        45deg,
+        #a0c4ff,
+        #a0c4ff 10px,
+        #caf0f8 10px,
+        #caf0f8 20px
+      );
     }
     .container {
       background: white;
@@ -58,6 +64,7 @@
       margin: 0 5px;
       padding: 6px 12px;
       font-size: 1em;
+      cursor: pointer;
     }
     .product-name {
       font-weight: bold;
@@ -65,6 +72,7 @@
     .details {
       font-size: 0.9em;
       color: #555;
+      margin-top: 4px;
     }
     input, button {
       padding: 10px;
@@ -73,13 +81,23 @@
       width: 100%;
       max-width: 100%;
       box-sizing: border-box;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+    }
+    button.submit-btn {
+      width: auto;
+      cursor: pointer;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      transition: background-color 0.3s ease;
+    }
+    button.submit-btn:hover {
+      background-color: #218838;
     }
     @media (min-width: 600px) {
       input[type="text"] {
         max-width: 300px;
-      }
-      button.submit-btn {
-        width: auto;
       }
     }
   </style>
@@ -181,13 +199,13 @@
 
       localStorage.setItem("lastSale", JSON.stringify(saleData));
 
-      // Reset everything
+      // Reset form
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
       renderProducts();
 
-      alert("Sale submitted! View it on sales.html.");
+      alert("Sale submitted! You can view it on sales.html");
     }
 
     renderProducts();
