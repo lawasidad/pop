@@ -1,48 +1,196 @@
-function submitSale() {
-  const customer = document.getElementById("customer").value.trim();
-  if (!customer) {
-    alert("Please enter a customer name.");
-    return;
-  }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>New Sale</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      background: #eef;
+      margin: 0;
+      padding: 10px;
+    }
+    .container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 900px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .top-bar {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .summary {
+      font-size: 1.2em;
+      font-weight: bold;
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+    .total-qty {
+      background: #cce5ff;
+      color: #004085;
+    }
+    .total-amount {
+      background: #d4edda;
+      color: #155724;
+    }
+    .product-list {
+      margin-top: 20px;
+    }
+    .product-item {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      border: 1px solid #ccc;
+      padding: 10px;
+      border-radius: 8px;
+      background: #f9f9f9;
+      margin-bottom: 10px;
+    }
+    .controls button {
+      margin: 0 5px;
+      padding: 6px 12px;
+      font-size: 1em;
+    }
+    .product-name {
+      font-weight: bold;
+    }
+    .details {
+      font-size: 0.9em;
+      color: #555;
+    }
+    input, button {
+      padding: 10px;
+      font-size: 1em;
+      margin-top: 5px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    @media (min-width: 600px) {
+      input[type="text"] {
+        max-width: 300px;
+      }
+      button.submit-btn {
+        width: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="top-bar">
+      <div class="summary total-qty" id="totalQty">Qty: 0</div>
+      <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
+      <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
+    </div>
 
-  const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
-    name: i.name,
-    quantity: i.quantity,
-    unitPrice: i.unitPrice,
-    discount: i.discount,
-    total: i.unitPrice * i.quantity * (1 - i.discount / 100)
-  }));
+    <input type="text" id="customer" placeholder="Customer name" />
+    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." />
 
-  if (selectedItems.length === 0) {
-    alert("No products selected.");
-    return;
-  }
+    <div class="product-list" id="productList"></div>
+  </div>
 
-  const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
-  const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+  <script>
+    const products = [
+      { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
+      { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
+      { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
+    ];
 
-  // 🟢 بەروار بە شێوەی تایبەتی ISO بگۆڕە بۆ "dd/mm/yyyy hh:mm:ss"
-  const now = new Date();
-  const formattedDate = now.toLocaleDateString('en-GB'); // 09/06/2025
-  const formattedTime = now.toLocaleTimeString('en-GB'); // 14:30:00
-  const fullDateTime = `${formattedDate} ${formattedTime}`;
+    const items = products.map(p => ({ ...p, quantity: 0 }));
 
-  const saleData = {
-    customer,
-    items: selectedItems,
-    total,
-    totalQty: qty,
-    timestamp: fullDateTime // ✅ زیادکردنی بەروار بە شێوەی دەرست
-  };
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      const search = document.getElementById("searchBox").value.trim().toLowerCase();
+      list.innerHTML = "";
 
-  let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-  allSales.push(saleData);
-  localStorage.setItem("allSales", JSON.stringify(allSales));
+      items.forEach((item, index) => {
+        if (search && !item.name.toLowerCase().includes(search)) return;
+        const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
+        list.innerHTML += `
+          <div class="product-item">
+            <div>
+              <div class="product-name">${item.name}</div>
+              <div class="details">
+                Price: ${item.unitPrice} IQD | Discount: ${item.discount}%<br>
+                Qty: ${item.quantity} | Total: ${total.toLocaleString()} IQD
+              </div>
+            </div>
+            <div class="controls">
+              <button onclick="changeQty(${index}, 1)">+</button>
+              <button onclick="changeQty(${index}, -1)">-</button>
+            </div>
+          </div>
+        `;
+      });
 
-  document.getElementById("customer").value = "";
-  document.getElementById("searchBox").value = "";
-  items.forEach(i => i.quantity = 0);
-  renderProducts();
+      updateSummary();
+    }
 
-  alert("Sale submitted! View it on sales.html.");
-}
+    function changeQty(index, delta) {
+      items[index].quantity += delta;
+      if (items[index].quantity < 0) items[index].quantity = 0;
+      renderProducts();
+    }
+
+    function updateSummary() {
+      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
+      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
+    }
+
+    function submitSale() {
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("Please enter a customer name.");
+        return;
+      }
+
+      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        discount: i.discount,
+        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+      }));
+
+      if (selectedItems.length === 0) {
+        alert("No products selected.");
+        return;
+      }
+
+      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
+      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      const saleData = {
+        customer,
+        items: selectedItems,
+        total,
+        totalQty: qty,
+        timestamp: new Date().toISOString()
+      };
+
+      localStorage.setItem("lastSale", JSON.stringify(saleData));
+
+      // Reset everything
+      document.getElementById("customer").value = "";
+      document.getElementById("searchBox").value = "";
+      items.forEach(i => i.quantity = 0);
+      renderProducts();
+
+      alert("Sale submitted! View it on sales.html.");
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
