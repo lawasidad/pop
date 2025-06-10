@@ -74,15 +74,29 @@
     .checkbox-cell {
       width: 30px;
     }
+    .date-filter {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      font-size: 0.9em;
+    }
+    .date-filter input {
+      padding: 4px 6px;
+      font-size: 0.9em;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
-    
-    <div class="no-print" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 15px; gap: 10px;">
-      <label style="font-size: 0.9em;">Filter by Date:</label>
-      <input type="date" id="filterDate" style="padding: 5px; font-size: 0.9em;" />
+
+    <!-- ✅ Date filter -->
+    <div class="no-print date-filter">
+      <label>Filter by Date:</label>
+      <input type="date" id="startDate" />
+      <span>➜</span>
+      <input type="date" id="endDate" />
     </div>
 
     <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
@@ -119,7 +133,9 @@
     }
 
     function renderSales() {
-      const selectedDate = document.getElementById("filterDate").value;
+      const startDate = document.getElementById("startDate").value;
+      const endDate = document.getElementById("endDate").value;
+
       if (allSales.length === 0) {
         saleDataDiv.innerHTML = "<p>No sales data found.</p>";
         return;
@@ -127,10 +143,9 @@
 
       let html = "";
       allSales.forEach((sale, index) => {
-        if (selectedDate) {
-          const saleDate = new Date(sale.timestamp).toISOString().split("T")[0];
-          if (saleDate !== selectedDate) return;
-        }
+        const saleDate = new Date(sale.timestamp).toISOString().split("T")[0];
+        if (startDate && saleDate < startDate) return;
+        if (endDate && saleDate > endDate) return;
 
         html +=
           `<div class="sale-wrapper" id="sale-${index}">
@@ -200,7 +215,6 @@
       }
 
       const originalContent = document.body.innerHTML;
-
       let printContent = `<div class="container">`;
 
       selectedIndices.forEach(i => {
@@ -243,16 +257,14 @@
       });
 
       printContent += `</div>`;
-
       document.body.innerHTML = printContent;
       window.print();
       document.body.innerHTML = originalContent;
       renderSales();
     }
 
-    document.getElementById("filterDate").addEventListener("change", function () {
-      renderSales();
-    });
+    document.getElementById("startDate").addEventListener("change", renderSales);
+    document.getElementById("endDate").addEventListener("change", renderSales);
 
     renderSales();
   </script>
