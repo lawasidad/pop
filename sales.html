@@ -44,12 +44,12 @@
       font-size: 1.1em;
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
     .sale-time {
-      text-align: right;
-      margin-top: 5px;
-      font-size: 0.95em;
+      font-size: 0.9em;
       color: #555;
+      margin-right: 10px;
     }
   </style>
 </head>
@@ -87,6 +87,7 @@
         html += 
           `<div class="customer-row">
             <span>کریار: ${sale.customer}</span>
+            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
           </div>
           <table>
             <thead>
@@ -116,7 +117,6 @@
               </tr>
             </tfoot>
           </table>
-          <div class="sale-time">کاتەکە: ${formatDateTime(sale.timestamp)}</div>
           <br/>`;
       });
 
