@@ -76,11 +76,37 @@
     .checkbox-cell {
       width: 30px;
     }
+    /* Filter area styling */
+    .filter-area {
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: flex-start;
+      gap: 10px;
+      align-items: center;
+    }
+    .filter-area label {
+      font-weight: bold;
+    }
+    .filter-area input[type="date"] {
+      padding: 5px;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+
+    <!-- Filter Inputs -->
+    <div class="filter-area no-print">
+      <label for="startDate">بەرواری دەستپێکردن:</label>
+      <input type="date" id="startDate" />
+      <label for="endDate">بەرواری کۆتایی:</label>
+      <input type="date" id="endDate" />
+      <button onclick="applyDateFilter()" style="padding:5px 10px; cursor:pointer;">فلتەر بکە</button>
+      <button onclick="clearDateFilter()" style="padding:5px 10px; cursor:pointer;">ڕەشەبکەرەوە</button>
+    </div>
+
     <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
       <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
       <span>هەموو وەسلەکان هەڵبژێرە</span>
@@ -91,6 +117,7 @@
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+    let filteredSales = [...allSales];
     const saleDataDiv = document.getElementById("saleData");
 
     function formatDateTime(dateString) {
@@ -116,13 +143,13 @@
     }
 
     function renderSales() {
-      if (allSales.length === 0) {
+      if (filteredSales.length === 0) {
         saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
         return;
       }
 
       let html = "";
-      allSales.forEach((sale, index) => {
+      filteredSales.forEach((sale, index) => {
         html +=
           `<div class="sale-wrapper" id="sale-${index}">
             <label class="customer-row">
@@ -164,6 +191,7 @@
       saleDataDiv.innerHTML = html;
 
       const selectAllCheckbox = document.getElementById('selectAll');
+      selectAllCheckbox.checked = false;
       selectAllCheckbox.addEventListener('change', () => {
         const checkboxes = document.querySelectorAll('.sale-checkbox');
         checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
@@ -195,7 +223,7 @@
       let printContent = `<div class="container">`;
 
       selectedIndices.forEach(i => {
-        const sale = allSales[i];
+        const sale = filteredSales[i];
         printContent +=
           `<div class="sale-wrapper">
             <div class="customer-row" style="display: flex; justify-content: space-between; align-items: center;">
@@ -238,6 +266,40 @@
       document.body.innerHTML = printContent;
       window.print();
       document.body.innerHTML = originalContent;
+      renderSales();
+    }
+
+    function applyDateFilter() {
+      const startDateInput = document.getElementById("startDate").value;
+      const endDateInput = document.getElementById("endDate").value;
+
+      filteredSales = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        let isAfterStart = true;
+        let isBeforeEnd = true;
+
+        if (startDateInput) {
+          const startDate = new Date(startDateInput);
+          startDate.setHours(0,0,0,0);
+          isAfterStart = saleDate >= startDate;
+        }
+
+        if (endDateInput) {
+          const endDate = new Date(endDateInput);
+          endDate.setHours(23,59,59,999);
+          isBeforeEnd = saleDate <= endDate;
+        }
+
+        return isAfterStart && isBeforeEnd;
+      });
+
+      renderSales();
+    }
+
+    function clearDateFilter() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      filteredSales = [...allSales];
       renderSales();
     }
 
