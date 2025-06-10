@@ -81,6 +81,10 @@
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+    <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
+      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
+      <span>هەموو وەسلەکان هەڵبژێرە</span>
+    </label>
     <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">پرێنتی وەسلە هەڵبژێردراوەکان</button>
     <div id="saleData"></div>
   </div>
@@ -147,6 +151,22 @@
       });
 
       saleDataDiv.innerHTML = html;
+
+      // add event listener for selectAll checkbox
+      const selectAllCheckbox = document.getElementById('selectAll');
+      selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.sale-checkbox');
+        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      });
+
+      // sync selectAll with individual checkboxes
+      const saleCheckboxes = document.querySelectorAll('.sale-checkbox');
+      saleCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          const allChecked = Array.from(saleCheckboxes).every(chk => chk.checked);
+          selectAllCheckbox.checked = allChecked;
+        });
+      });
     }
 
     function printSelected() {
@@ -161,10 +181,8 @@
         return;
       }
 
-      // Backup current content
       const originalContent = document.body.innerHTML;
 
-      // Build print content only with selected sales
       let printContent = `<div class="container">`;
 
       selectedIndices.forEach(i => {
@@ -211,7 +229,7 @@
       document.body.innerHTML = printContent;
       window.print();
       document.body.innerHTML = originalContent;
-      renderSales(); // دوبارە نیشاندانی وەسڵەکان بۆ ڕاستکردنەوەی DOM
+      renderSales();
     }
 
     renderSales();
