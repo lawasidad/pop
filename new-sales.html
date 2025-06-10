@@ -234,15 +234,13 @@
         items: selectedItems,
         total,
         totalQty: qty,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString().split('T')[0] // 👈 بەرواری خاو لە ڕووی ڕۆژ
       };
 
-      // **کۆدی زیادکراو** - وەرگرتن و نوسینی داتای قبلی بۆ زۆرکردنی داتاکان
       let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
       allSales.push(saleData);
       localStorage.setItem("allSales", JSON.stringify(allSales));
 
-      // Reset everything
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
