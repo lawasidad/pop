@@ -51,7 +51,6 @@
       color: #555;
       margin-right: 10px;
     }
-    /* Style for print - each sale on separate A4 page */
     @media print {
       body {
         background: white;
@@ -72,7 +71,6 @@
         display: none !important;
       }
     }
-    /* Checkbox style */
     .checkbox-cell {
       width: 30px;
     }
@@ -81,6 +79,12 @@
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+    
+    <div class="no-print" style="display: flex; justify-content: flex-start; align-items: center; margin-bottom: 15px; gap: 10px;">
+      <label style="font-size: 0.9em;">Filter by Date:</label>
+      <input type="date" id="filterDate" style="padding: 5px; font-size: 0.9em;" />
+    </div>
+
     <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
       <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
       <span>Select All Receipts</span>
@@ -101,8 +105,7 @@
       const hours = String(date.getHours()).padStart(2, '0');
       const minutes = String(date.getMinutes()).padStart(2, '0');
       const seconds = String(date.getSeconds()).padStart(2, '0');
-      
-      // Add today date label
+
       const today = new Date();
       const todayDay = String(today.getDate()).padStart(2, '0');
       const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
@@ -116,6 +119,7 @@
     }
 
     function renderSales() {
+      const selectedDate = document.getElementById("filterDate").value;
       if (allSales.length === 0) {
         saleDataDiv.innerHTML = "<p>No sales data found.</p>";
         return;
@@ -123,6 +127,11 @@
 
       let html = "";
       allSales.forEach((sale, index) => {
+        if (selectedDate) {
+          const saleDate = new Date(sale.timestamp).toISOString().split("T")[0];
+          if (saleDate !== selectedDate) return;
+        }
+
         html +=
           `<div class="sale-wrapper" id="sale-${index}">
             <label class="customer-row">
@@ -240,6 +249,10 @@
       document.body.innerHTML = originalContent;
       renderSales();
     }
+
+    document.getElementById("filterDate").addEventListener("change", function () {
+      renderSales();
+    });
 
     renderSales();
   </script>
