@@ -51,44 +51,47 @@
       color: #555;
       margin-right: 10px;
     }
-    .filter-container {
-      margin-bottom: 20px;
-      text-align: center;
+    /* Style for print - each sale on separate A4 page */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .container {
+        box-shadow: none;
+        margin: 0;
+        padding: 0;
+        max-width: none;
+      }
+      .sale-wrapper {
+        page-break-after: always;
+        margin-bottom: 0;
+        padding: 10mm;
+      }
+      .no-print {
+        display: none !important;
+      }
     }
-    select {
-      padding: 7px 12px;
-      font-size: 1em;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-      direction: ltr;
+    /* Checkbox style */
+    .checkbox-cell {
+      width: 30px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
-    <div class="filter-container">
-      <label for="dateFilter">فلتەر بەروار: </label>
-      <select id="dateFilter">
-        <option value="all">هەموو</option>
-        <option value="today">ئەمڕۆ</option>
-        <option value="yesterday">دوایین ڕۆژ</option>
-        <option value="thisWeek">ئەم هەفتە</option>
-        <option value="lastWeek">هەفتەی دوایین</option>
-        <option value="thisMonth">ئەم مانگ</option>
-        <option value="lastMonth">مانگی دوایین</option>
-        <option value="thisYear">ئەم ساڵ</option>
-        <option value="lastYear">ساڵی دوایین</option>
-      </select>
-    </div>
+    <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
+      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
+      <span>هەموو وەسلەکان هەڵبژێرە</span>
+    </label>
+    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">پرێنتی وەسلە هەڵبژێردراوەکان</button>
     <div id="saleData"></div>
   </div>
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-
     const saleDataDiv = document.getElementById("saleData");
-    const dateFilter = document.getElementById("dateFilter");
 
     function formatDateTime(dateString) {
       const date = new Date(dateString);
@@ -98,126 +101,147 @@
       const hours = String(date.getHours()).padStart(2, '0');
       const minutes = String(date.getMinutes()).padStart(2, '0');
       const seconds = String(date.getSeconds()).padStart(2, '0');
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      
+      // زیادکردنی بەرواری ڕۆژێکی ڕاستەقینە
+      const today = new Date();
+      const todayDay = String(today.getDate()).padStart(2, '0');
+      const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
+      const todayYear = today.getFullYear();
+
+      if(day === todayDay && month === todayMonth && year === todayYear) {
+        return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
+      } else {
+        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      }
     }
 
-    function isSameDay(d1, d2) {
-      return d1.getFullYear() === d2.getFullYear() &&
-             d1.getMonth() === d2.getMonth() &&
-             d1.getDate() === d2.getDate();
-    }
-
-    function getWeekNumber(d) {
-      const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-      const dayNum = date.getUTCDay() || 7;
-      date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-      const yearStart = new Date(Date.UTC(date.getUTCFullYear(),0,1));
-      return Math.ceil((((date - yearStart) / 86400000) + 1)/7);
-    }
-
-    function filterSales(sales, filter) {
-      const now = new Date();
-      return sales.filter(sale => {
-        const saleDate = new Date(sale.timestamp);
-        switch(filter) {
-          case 'today':
-            return isSameDay(saleDate, now);
-          case 'yesterday': {
-            const yesterday = new Date(now);
-            yesterday.setDate(now.getDate() -1);
-            return isSameDay(saleDate, yesterday);
-          }
-          case 'thisWeek':
-            return getWeekNumber(saleDate) === getWeekNumber(now) && saleDate.getFullYear() === now.getFullYear();
-          case 'lastWeek': {
-            const lastWeekDate = new Date(now);
-            lastWeekDate.setDate(now.getDate() -7);
-            return getWeekNumber(saleDate) === getWeekNumber(lastWeekDate) && saleDate.getFullYear() === lastWeekDate.getFullYear();
-          }
-          case 'thisMonth':
-            return saleDate.getMonth() === now.getMonth() && saleDate.getFullYear() === now.getFullYear();
-          case 'lastMonth': {
-            const lastMonthDate = new Date(now);
-            lastMonthDate.setMonth(now.getMonth() -1);
-            return saleDate.getMonth() === lastMonthDate.getMonth() && saleDate.getFullYear() === lastMonthDate.getFullYear();
-          }
-          case 'thisYear':
-            return saleDate.getFullYear() === now.getFullYear();
-          case 'lastYear': {
-            const lastYearDate = new Date(now);
-            lastYearDate.setFullYear(now.getFullYear() -1);
-            return saleDate.getFullYear() === lastYearDate.getFullYear();
-          }
-          default:
-            return true;
-        }
-      });
-    }
-
-    function renderSales(filteredSales) {
-      if (filteredSales.length === 0) {
+    function renderSales() {
+      if (allSales.length === 0) {
         saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
         return;
       }
 
-      let grandTotalAllSales = 0;
       let html = "";
-
-      filteredSales.forEach((sale) => {
-        grandTotalAllSales += sale.total;
-
-        html += 
-          `<div class="customer-row">
-            <span>کریار: ${sale.customer}</span>
-            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => 
-                `<tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
-                </tr>`
-              ).join("")}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-          <br/>`;
+      allSales.forEach((sale, index) => {
+        html +=
+          `<div class="sale-wrapper" id="sale-${index}">
+            <label class="customer-row">
+              <input type="checkbox" class="sale-checkbox" data-index="${index}" />
+              <span style="flex-grow:1;">کریار: ${sale.customer}</span>
+              <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
+            </label>
+            <table>
+              <thead>
+                <tr>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sale.items.map(item =>
+                  `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toLocaleString()} IQD</td>
+                    <td>${item.discount}</td>
+                    <td>${item.total.toLocaleString()} IQD</td>
+                  </tr>`
+                ).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td>${sale.total.toLocaleString()} IQD</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>`;
       });
 
-      html += 
-        `<h3 style="text-align:right; margin-top:20px;">
-          کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
-        </h3>`;
-
       saleDataDiv.innerHTML = html;
+
+      const selectAllCheckbox = document.getElementById('selectAll');
+      selectAllCheckbox.addEventListener('change', () => {
+        const checkboxes = document.querySelectorAll('.sale-checkbox');
+        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+      });
+
+      const saleCheckboxes = document.querySelectorAll('.sale-checkbox');
+      saleCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+          const allChecked = Array.from(saleCheckboxes).every(chk => chk.checked);
+          selectAllCheckbox.checked = allChecked;
+        });
+      });
     }
 
-    // بەردەوام بەرزکردنەوە لە گۆڕانکاری فلتەر
-    dateFilter.addEventListener("change", () => {
-      const filtered = filterSales(allSales, dateFilter.value);
-      renderSales(filtered);
-    });
+    function printSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndices = [];
+      checkboxes.forEach(cb => {
+        if (cb.checked) selectedIndices.push(parseInt(cb.getAttribute("data-index")));
+      });
 
-    // لە یەکەم جار نیشاندانی هەموو داتاکان
-    renderSales(allSales);
+      if (selectedIndices.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
+        return;
+      }
+
+      const originalContent = document.body.innerHTML;
+
+      let printContent = `<div class="container">`;
+
+      selectedIndices.forEach(i => {
+        const sale = allSales[i];
+        printContent +=
+          `<div class="sale-wrapper">
+            <div class="customer-row" style="display: flex; justify-content: space-between; align-items: center;">
+              <span>کریار: ${sale.customer}</span>
+              <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
+            </div>
+            <table>
+              <thead>
+                <tr>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${sale.items.map(item =>
+                  `<tr>
+                    <td>${item.name}</td>
+                    <td>${item.quantity}</td>
+                    <td>${item.unitPrice.toLocaleString()} IQD</td>
+                    <td>${item.discount}</td>
+                    <td>${item.total.toLocaleString()} IQD</td>
+                  </tr>`
+                ).join("")}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td>${sale.total.toLocaleString()} IQD</td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>`;
+      });
+
+      printContent += `</div>`;
+
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      renderSales();
+    }
+
+    renderSales();
   </script>
 </body>
 </html>
