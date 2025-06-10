@@ -45,25 +45,11 @@
       justify-content: space-between;
       align-items: center;
       font-size: 1.1em;
-      gap: 10px;
     }
     .sale-time {
       font-size: 0.9em;
       color: #666;
       margin-left: 15px;
-    }
-    button {
-      cursor: pointer;
-      padding: 5px 12px;
-      background: #ef4444;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 0.9em;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #b91c1c;
     }
     /* چاپ */
     @media print {
@@ -102,18 +88,18 @@
       padding: 5px;
       font-size: 1em;
     }
-    .delete-btn {
-      background: #ef4444;
-      padding: 4px 10px;
-      font-size: 0.9em;
-      border-radius: 5px;
+    button {
       cursor: pointer;
-      border: none;
+      padding: 7px 15px;
+      background: #3b82f6;
       color: white;
-      transition: background-color 0.3s ease;
+      border: none;
+      border-radius: 4px;
+      font-size: 1em;
+      transition: background 0.3s ease;
     }
-    .delete-btn:hover {
-      background-color: #b91c1c;
+    button:hover {
+      background: #2563eb;
     }
   </style>
 </head>
@@ -142,7 +128,7 @@
 
   <script>
     // وەرگرتنی داتاکان لە localStorage
-    let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+    const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     let filteredSales = [...allSales];
 
     const salesContainer = document.getElementById("salesContainer");
@@ -163,6 +149,7 @@
         date.getMonth() === today.getMonth() &&
         date.getFullYear() === today.getFullYear()
       ) {
+        // ئەگەر بەروار ئەمڕۆیە، تەنها کات و چرکە بنووسە
         return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
       } else {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
@@ -184,7 +171,6 @@
             <input type="checkbox" class="sale-checkbox" data-idx="${idx}" />
             <span>کریار: ${sale.customer}</span>
             <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-            <button class="delete-btn" onclick="deleteSale(${idx})" title="سڕینەوەی وەسل">سڕینەوە</button>
           </label>
           <table>
             <thead>
@@ -241,18 +227,6 @@
           selectAll.checked = allChecked;
         })
       );
-    }
-
-    // سڕینەوەی وەسلەکە لە داتاکان
-    function deleteSale(idx) {
-      if (!confirm("دڵنیایت لە سڕینەوەی ئەم وەسلە؟")) return;
-      // سڕینەوە لە allSales
-      allSales.splice(idx, 1);
-      // نوێکردنەوەی localStorage
-      localStorage.setItem("allSales", JSON.stringify(allSales));
-      // نوێکردنەوەی filteredSales بەرەوە نوێ
-      filteredSales = [...allSales];
-      renderSales();
     }
 
     // پرینتی وەسلە هەڵبژێردراوەکان
@@ -338,4 +312,26 @@
           afterStart = saleDate >= startDate;
         }
         if (endDateInput) {
-          const endDate
+          const endDate = new Date(endDateInput);
+          endDate.setHours(23, 59, 59, 999);
+          beforeEnd = saleDate <= endDate;
+        }
+        return afterStart && beforeEnd;
+      });
+
+      renderSales();
+    }
+
+    // پاککردن فلتەرەکان
+    function clearDateFilter() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      filteredSales = [...allSales];
+      renderSales();
+    }
+
+    // یەکەمجار چالاککردنی فۆرمەکە
+    renderSales();
+  </script>
+</body>
+</html>
