@@ -82,7 +82,7 @@
       text-align: center;
       font-size: 1.2em;
     }
-    /* فلتەر و چەکبوکس */
+    /* فلتەر و چەکبوکس کۆن */
     .filters {
       margin-bottom: 20px;
       display: flex;
@@ -117,6 +117,16 @@
         <input type="checkbox" id="filterRecent" />
         <label for="filterRecent">فقط وەسلەکانی دوایین ٧ ڕۆژ</label>
       </div>
+
+      <!-- فلتەر و چەکبوکس کۆن زیادکراون -->
+      <div class="filter-group">
+        <label for="filterProduct">فلتەر بە ناوی بەرهەم:</label>
+        <input type="text" id="filterProduct" placeholder="ناوی بەرهەم بنووسە" />
+      </div>
+      <div class="filter-group">
+        <input type="checkbox" id="filterDiscounted" />
+        <label for="filterDiscounted">فقط فرۆشتنی داشکاندن هەیە</label>
+      </div>
     </div>
 
     <div id="salesContainer">
@@ -131,6 +141,8 @@
     const totalSalesSummary = document.getElementById("totalSalesSummary");
     const filterCustomer = document.getElementById("filterCustomer");
     const filterRecent = document.getElementById("filterRecent");
+    const filterProduct = document.getElementById("filterProduct");
+    const filterDiscounted = document.getElementById("filterDiscounted");
 
     function updateTotalSalesSummary(sales) {
       const total = sales.reduce((sum, sale) => sum + sale.total, 0);
@@ -203,11 +215,28 @@
         filteredSales = filteredSales.filter(sale => new Date(sale.timestamp) >= sevenDaysAgo);
       }
 
+      // فلتەر بە ناوی بەرهەم (کۆن زیادکراو)
+      const productFilterValue = filterProduct.value.trim().toLowerCase();
+      if (productFilterValue) {
+        filteredSales = filteredSales.filter(sale =>
+          sale.items.some(item => item.name.toLowerCase().includes(productFilterValue))
+        );
+      }
+
+      // فلتەر فرۆشتنی داشکاندن هەیە (کۆن زیادکراو)
+      if (filterDiscounted.checked) {
+        filteredSales = filteredSales.filter(sale =>
+          sale.items.some(item => item.discount > 0)
+        );
+      }
+
       renderSales(filteredSales);
     }
 
     filterCustomer.addEventListener("input", applyFilters);
     filterRecent.addEventListener("change", applyFilters);
+    filterProduct.addEventListener("input", applyFilters);
+    filterDiscounted.addEventListener("change", applyFilters);
 
     renderSales(allSales);
   </script>
