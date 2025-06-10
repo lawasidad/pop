@@ -99,19 +99,19 @@
 
     <!-- Filter Inputs -->
     <div class="filter-area no-print">
-      <label for="startDate">بەرواری دەستپێکردن:</label>
+      <label for="startDate">Start Date:</label>
       <input type="date" id="startDate" />
-      <label for="endDate">بەرواری کۆتایی:</label>
+      <label for="endDate">End Date:</label>
       <input type="date" id="endDate" />
-      <button onclick="applyDateFilter()" style="padding:5px 10px; cursor:pointer;">فلتەر بکە</button>
-      <button onclick="clearDateFilter()" style="padding:5px 10px; cursor:pointer;">ڕەشەبکەرەوە</button>
+      <button onclick="applyDateFilter()" style="padding:5px 10px; cursor:pointer;">Apply Filter</button>
+      <button onclick="clearDateFilter()" style="padding:5px 10px; cursor:pointer;">Clear Filter</button>
     </div>
 
     <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
       <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>هەموو وەسلەکان هەڵبژێرە</span>
+      <span>Select All Receipts</span>
     </label>
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">پرێنتی وەسلە هەڵبژێردراوەکان</button>
+    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">Print Selected Receipts</button>
     <div id="saleData"></div>
   </div>
 
@@ -129,14 +129,14 @@
       const minutes = String(date.getMinutes()).padStart(2, '0');
       const seconds = String(date.getSeconds()).padStart(2, '0');
       
-      // زیادکردنی بەرواری ڕۆژێکی ڕاستەقینە
+      // Add correct current date label
       const today = new Date();
       const todayDay = String(today.getDate()).padStart(2, '0');
       const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
       const todayYear = today.getFullYear();
 
       if(day === todayDay && month === todayMonth && year === todayYear) {
-        return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
+        return `Today ${hours}:${minutes}:${seconds}`;
       } else {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
       }
@@ -144,7 +144,7 @@
 
     function renderSales() {
       if (filteredSales.length === 0) {
-        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
+        saleDataDiv.innerHTML = "<p>No sales data found.</p>";
         return;
       }
 
@@ -154,17 +154,17 @@
           `<div class="sale-wrapper" id="sale-${index}">
             <label class="customer-row">
               <input type="checkbox" class="sale-checkbox" data-index="${index}" />
-              <span style="flex-grow:1;">کریار: ${sale.customer}</span>
+              <span style="flex-grow:1;">Customer: ${sale.customer}</span>
               <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
             </label>
             <table>
               <thead>
                 <tr>
-                  <th>ناوی بەرهەم</th>
-                  <th>ژمارە</th>
-                  <th>نرخی یەکە</th>
-                  <th>داشکاندن (%)</th>
-                  <th>کۆی گشتی</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Discount (%)</th>
+                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -180,7 +180,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td colspan="4" style="text-align:right;">Total Sale</td>
                   <td>${sale.total.toLocaleString()} IQD</td>
                 </tr>
               </tfoot>
@@ -214,7 +214,7 @@
       });
 
       if (selectedIndices.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
+        alert("Please select one or more receipts to print.");
         return;
       }
 
@@ -227,17 +227,17 @@
         printContent +=
           `<div class="sale-wrapper">
             <div class="customer-row" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>کریار: ${sale.customer}</span>
+              <span>Customer: ${sale.customer}</span>
               <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>ناوی بەرهەم</th>
-                  <th>ژمارە</th>
-                  <th>نرخی یەکە</th>
-                  <th>داشکاندن (%)</th>
-                  <th>کۆی گشتی</th>
+                  <th>Product Name</th>
+                  <th>Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Discount (%)</th>
+                  <th>Total</th>
                 </tr>
               </thead>
               <tbody>
@@ -253,7 +253,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                  <td colspan="4" style="text-align:right;">Total Sale</td>
                   <td>${sale.total.toLocaleString()} IQD</td>
                 </tr>
               </tfoot>
