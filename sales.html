@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <title>کۆتایی وەسلەکان</title>
+  <title>All Receipts Summary</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -32,7 +32,7 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 20px;
-      direction: rtl;
+      direction: ltr;
     }
     th, td {
       border: 1px solid #ccc;
@@ -111,25 +111,25 @@
 </head>
 <body>
   <div class="container">
-    <h2>کۆتایی هەموو وەسلەکان</h2>
-    <p id="totalSum">کۆی گشتی فرۆشتنەکان: 0 IQD</p>
+    <h2>Summary of All Receipts</h2>
+    <p id="totalSum">Total Sales Amount: 0 IQD</p>
 
     <div class="filter-area no-print">
-      <label for="startDate">بەرواری دەستپێکردن:</label>
+      <label for="startDate">Start Date:</label>
       <input type="date" id="startDate" />
-      <label for="endDate">بەرواری کۆتایی:</label>
+      <label for="endDate">End Date:</label>
       <input type="date" id="endDate" />
-      <button onclick="applyDateFilter()">فلتەر بکە</button>
-      <button onclick="clearDateFilter()">ڕەشەبکەرەوە</button>
+      <button onclick="applyDateFilter()">Apply Filter</button>
+      <button onclick="clearDateFilter()">Clear Filter</button>
     </div>
 
     <label class="no-print" style="display:flex; align-items:center; margin-bottom: 10px;">
       <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>هەموو وەسلەکان هەڵبژێرە</span>
+      <span>Select All Receipts</span>
     </label>
 
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
-    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">سڕینەوەی وەسلە هەڵبژێردراوەکان</button>
+    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">Print Selected Receipts</button>
+    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">Delete Selected Receipts</button>
 
     <div id="salesContainer"></div>
   </div>
@@ -154,8 +154,8 @@
 
     function renderSales() {
       if (filteredSales.length === 0) {
-        salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
-        document.getElementById("totalSum").textContent = "کۆی گشتی فرۆشتنەکان: 0 IQD";
+        salesContainer.innerHTML = "<p>No sales data found.</p>";
+        document.getElementById("totalSum").textContent = "Total Sales Amount: 0 IQD";
         return;
       }
 
@@ -165,17 +165,17 @@
         <div class="sale-block" id="sale-${idx}">
           <label class="customer-header">
             <input type="checkbox" class="sale-checkbox" data-idx="${idx}" />
-            <span>کریار: ${sale.customer}</span>
+            <span>Customer: ${sale.customer}</span>
             <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
           </label>
           <table>
             <thead>
               <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Discount (%)</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -191,7 +191,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td colspan="4" style="text-align:right;">Total Sales</td>
                 <td>${sale.total.toLocaleString()} IQD</td>
               </tr>
             </tfoot>
@@ -202,7 +202,7 @@
       salesContainer.innerHTML = html;
 
       const totalAmount = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
-      document.getElementById("totalSum").textContent = `کۆی گشتی فرۆشتنەکان: ${totalAmount.toLocaleString()} IQD`;
+      document.getElementById("totalSum").textContent = `Total Sales Amount: ${totalAmount.toLocaleString()} IQD`;
 
       const selectAll = document.getElementById("selectAll");
       selectAll.checked = false;
@@ -228,7 +228,7 @@
       });
 
       if (selectedIndexes.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
+        alert("Please select one or more receipts to print.");
         return;
       }
 
@@ -240,17 +240,17 @@
         printContent += `
         <div class="sale-block">
           <div class="customer-header" style="justify-content: space-between;">
-            <span>کریار: ${sale.customer}</span>
+            <span>Customer: ${sale.customer}</span>
             <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
           </div>
           <table>
             <thead>
               <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+                <th>Unit Price</th>
+                <th>Discount (%)</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
@@ -266,7 +266,7 @@
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td colspan="4" style="text-align:right;">Total Sales</td>
                 <td>${sale.total.toLocaleString()} IQD</td>
               </tr>
             </tfoot>
@@ -291,11 +291,11 @@
       });
 
       if (selectedIndexes.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
+        alert("Please select one or more receipts to delete.");
         return;
       }
 
-      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
+      if (!confirm("Are you sure you want to delete the selected receipts?")) {
         return;
       }
 
