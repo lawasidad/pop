@@ -82,24 +82,6 @@
       text-align: center;
       font-size: 1.2em;
     }
-    /* فلتەر و چەکبوکس کۆن */
-    .filters {
-      margin-bottom: 20px;
-      display: flex;
-      justify-content: flex-start;
-      gap: 15px;
-      flex-wrap: wrap;
-      direction: rtl;
-    }
-    .filter-group {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-    }
-    .filter-group label {
-      font-weight: bold;
-      cursor: pointer;
-    }
   </style>
 </head>
 <body>
@@ -108,56 +90,32 @@
 
     <div class="total-sales-summary" id="totalSalesSummary">کۆی گشتی فرۆشتن: 0 IQD</div>
 
-    <div class="filters">
-      <div class="filter-group">
-        <label for="filterCustomer">فلتەر بە ناوی کریار:</label>
-        <input type="text" id="filterCustomer" placeholder="ناوی کریار بنووسە" />
-      </div>
-      <div class="filter-group">
-        <input type="checkbox" id="filterRecent" />
-        <label for="filterRecent">فقط وەسلەکانی دوایین ٧ ڕۆژ</label>
-      </div>
-
-      <!-- فلتەر و چەکبوکس کۆن زیادکراون -->
-      <div class="filter-group">
-        <label for="filterProduct">فلتەر بە ناوی بەرهەم:</label>
-        <input type="text" id="filterProduct" placeholder="ناوی بەرهەم بنووسە" />
-      </div>
-      <div class="filter-group">
-        <input type="checkbox" id="filterDiscounted" />
-        <label for="filterDiscounted">فقط فرۆشتنی داشکاندن هەیە</label>
-      </div>
-    </div>
-
     <div id="salesContainer">
       <p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>
     </div>
   </div>
 
   <script>
+    // ئەم کۆدە بۆ نمایش کۆی گشتی فرۆشتنە وەکو ئەوەی پێویستە، ئەمجار هیچ داتای فرۆشتن نیە
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
 
     const salesContainer = document.getElementById("salesContainer");
     const totalSalesSummary = document.getElementById("totalSalesSummary");
-    const filterCustomer = document.getElementById("filterCustomer");
-    const filterRecent = document.getElementById("filterRecent");
-    const filterProduct = document.getElementById("filterProduct");
-    const filterDiscounted = document.getElementById("filterDiscounted");
 
-    function updateTotalSalesSummary(sales) {
-      const total = sales.reduce((sum, sale) => sum + sale.total, 0);
+    function updateTotalSalesSummary() {
+      const total = allSales.reduce((sum, sale) => sum + sale.total, 0);
       totalSalesSummary.textContent = `کۆی گشتی فرۆشتن: ${total.toLocaleString()} IQD`;
     }
 
-    function renderSales(sales) {
-      if (sales.length === 0) {
+    function renderSales() {
+      if (allSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
-        updateTotalSalesSummary([]);
+        updateTotalSalesSummary();
         return;
       }
 
       let html = "";
-      sales.forEach((sale, idx) => {
+      allSales.forEach((sale, idx) => {
         html += `
         <div class="sale-block" id="sale-${idx}">
           <div class="customer-header">
@@ -196,49 +154,10 @@
       });
 
       salesContainer.innerHTML = html;
-      updateTotalSalesSummary(sales);
+      updateTotalSalesSummary();
     }
 
-    function applyFilters() {
-      let filteredSales = allSales;
-
-      const customerFilterValue = filterCustomer.value.trim().toLowerCase();
-      if (customerFilterValue) {
-        filteredSales = filteredSales.filter(sale =>
-          sale.customer.toLowerCase().includes(customerFilterValue)
-        );
-      }
-
-      if (filterRecent.checked) {
-        const now = new Date();
-        const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-        filteredSales = filteredSales.filter(sale => new Date(sale.timestamp) >= sevenDaysAgo);
-      }
-
-      // فلتەر بە ناوی بەرهەم (کۆن زیادکراو)
-      const productFilterValue = filterProduct.value.trim().toLowerCase();
-      if (productFilterValue) {
-        filteredSales = filteredSales.filter(sale =>
-          sale.items.some(item => item.name.toLowerCase().includes(productFilterValue))
-        );
-      }
-
-      // فلتەر فرۆشتنی داشکاندن هەیە (کۆن زیادکراو)
-      if (filterDiscounted.checked) {
-        filteredSales = filteredSales.filter(sale =>
-          sale.items.some(item => item.discount > 0)
-        );
-      }
-
-      renderSales(filteredSales);
-    }
-
-    filterCustomer.addEventListener("input", applyFilters);
-    filterRecent.addEventListener("change", applyFilters);
-    filterProduct.addEventListener("input", applyFilters);
-    filterDiscounted.addEventListener("change", applyFilters);
-
-    renderSales(allSales);
+    renderSales();
   </script>
 </body>
 </html>
