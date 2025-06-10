@@ -19,7 +19,14 @@
     }
     h2 {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
+    }
+    #totalSum {
+      text-align: left;
+      font-weight: bold;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+      color: #2563eb;
     }
     table {
       width: 100%;
@@ -105,6 +112,7 @@
 <body>
   <div class="container">
     <h2>کۆتایی هەموو وەسلەکان</h2>
+    <p id="totalSum">کۆی گشتی فرۆشتنەکان: 0 IQD</p>
 
     <div class="filter-area no-print">
       <label for="startDate">بەرواری دەستپێکردن:</label>
@@ -147,6 +155,7 @@
     function renderSales() {
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
+        document.getElementById("totalSum").textContent = "کۆی گشتی فرۆشتنەکان: 0 IQD";
         return;
       }
 
@@ -170,9 +179,7 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items
-                .map(
-                  (item) => `
+              ${sale.items.map(item => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
@@ -180,9 +187,7 @@
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              `
-                )
-                .join("")}
+              `).join("")}
             </tbody>
             <tfoot>
               <tr>
@@ -196,6 +201,9 @@
 
       salesContainer.innerHTML = html;
 
+      const totalAmount = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
+      document.getElementById("totalSum").textContent = `کۆی گشتی فرۆشتنەکان: ${totalAmount.toLocaleString()} IQD`;
+
       const selectAll = document.getElementById("selectAll");
       selectAll.checked = false;
       selectAll.addEventListener("change", () => {
@@ -206,9 +214,7 @@
       const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
       saleCheckboxes.forEach((cb) =>
         cb.addEventListener("change", () => {
-          const allChecked = Array.from(saleCheckboxes).every(
-            (chk) => chk.checked
-          );
+          const allChecked = Array.from(saleCheckboxes).every((chk) => chk.checked);
           selectAll.checked = allChecked;
         })
       );
@@ -248,9 +254,7 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items
-                .map(
-                  (item) => `
+              ${sale.items.map(item => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
@@ -258,9 +262,7 @@
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              `
-                )
-                .join("")}
+              `).join("")}
             </tbody>
             <tfoot>
               <tr>
