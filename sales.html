@@ -122,6 +122,7 @@
     </label>
 
     <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
+    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">سڕینەوەی وەسلە هەڵبژێردراوەکان</button>
 
     <div id="salesContainer"></div>
   </div>
@@ -293,6 +294,37 @@
       document.body.innerHTML = printContent;
       window.print();
       document.body.innerHTML = originalBody;
+      renderSales();
+    }
+
+    // دگمەی سڕینەوەی وەسلە هەڵبژێردراوەکان
+    function deleteSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndexes = [];
+
+      checkboxes.forEach((cb) => {
+        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
+      });
+
+      if (selectedIndexes.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
+        return;
+      }
+
+      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
+        return;
+      }
+
+      // لە زنجیرەکانی سڕینەوە ئەنجام بدە (لە گەڕانەوەی reverse بۆ سڕینەوەی درست)
+      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
+        // لە دوو لیستەکان سڕەوە
+        allSales.splice(idx, 1);
+        filteredSales.splice(idx, 1);
+      });
+
+      // نوسینی نوێی بۆ localStorage
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+
       renderSales();
     }
 
