@@ -106,13 +106,25 @@
   <div class="container">
     <h2>کۆتایی هەموو وەسلەکان</h2>
 
-    <!-- 👇 زیادکراوی کۆی گشتی فرۆشتنەکان 👇 -->
-    <div style="text-align: left; margin-bottom: 15px; font-weight: bold;">
-      کۆی گشتی فرۆشتنەکان: <span id="totalSalesAmount">0</span> IQD
+    <div class="filter-area no-print">
+      <label for="startDate">بەرواری دەستپێکردن:</label>
+      <input type="date" id="startDate" />
+      <label for="endDate">بەرواری کۆتایی:</label>
+      <input type="date" id="endDate" />
+      <button onclick="applyDateFilter()">فلتەر بکە</button>
+      <button onclick="clearDateFilter()">ڕەشەبکەرەوە</button>
     </div>
-    <!-- 👆 -->
 
-    <!-- بقیەی کۆدەکەت وەکو خۆیە ... -->
+    <label class="no-print" style="display:flex; align-items:center; margin-bottom: 10px;">
+      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
+      <span>هەموو وەسلەکان هەڵبژێرە</span>
+    </label>
+
+    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
+    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">سڕینەوەی وەسلە هەڵبژێردراوەکان</button>
+
+    <div id="salesContainer"></div>
+  </div>
 
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
@@ -135,7 +147,6 @@
     function renderSales() {
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
-        calculateTotalSales();
         return;
       }
 
@@ -184,15 +195,148 @@
       });
 
       salesContainer.innerHTML = html;
-      calculateTotalSales();
+
+      const selectAll = document.getElementById("selectAll");
+      selectAll.checked = false;
+      selectAll.addEventListener("change", () => {
+        const checkboxes = document.querySelectorAll(".sale-checkbox");
+        checkboxes.forEach((cb) => (cb.checked = selectAll.checked));
+      });
+
+      const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
+      saleCheckboxes.forEach((cb) =>
+        cb.addEventListener("change", () => {
+          const allChecked = Array.from(saleCheckboxes).every(
+            (chk) => chk.checked
+          );
+          selectAll.checked = allChecked;
+        })
+      );
     }
 
-    function calculateTotalSales() {
-      let total = 0;
-      filteredSales.forEach(sale => {
-        total += sale.total;
+    function printSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndexes = [];
+      checkboxes.forEach((cb) => {
+        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
       });
-      document.getElementById("totalSalesAmount").textContent = total.toLocaleString();
+
+      if (selectedIndexes.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
+        return;
+      }
+
+      const originalBody = document.body.innerHTML;
+      let printContent = `<div class="container">`;
+
+      selectedIndexes.forEach((i) => {
+        const sale = filteredSales[i];
+        printContent += `
+        <div class="sale-block">
+          <div class="customer-header" style="justify-content: space-between;">
+            <span>کریار: ${sale.customer}</span>
+            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sale.items
+                .map(
+                  (item) => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>`;
+      });
+
+      printContent += `</div>`;
+
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalBody;
+      renderSales();
+    }
+
+    function deleteSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndexes = [];
+
+      checkboxes.forEach((cb) => {
+        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
+      });
+
+      if (selectedIndexes.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
+        return;
+      }
+
+      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
+        return;
+      }
+
+      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
+        allSales.splice(idx, 1);
+        filteredSales.splice(idx, 1);
+      });
+
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+
+      renderSales();
+    }
+
+    function applyDateFilter() {
+      const startDateInput = document.getElementById("startDate").value;
+      const endDateInput = document.getElementById("endDate").value;
+
+      filteredSales = allSales.filter((sale) => {
+        const saleDate = new Date(sale.timestamp);
+        let afterStart = true;
+        let beforeEnd = true;
+
+        if (startDateInput) {
+          const startDate = new Date(startDateInput);
+          startDate.setHours(0, 0, 0, 0);
+          afterStart = saleDate >= startDate;
+        }
+        if (endDateInput) {
+          const endDate = new Date(endDateInput);
+          endDate.setHours(23, 59, 59, 999);
+          beforeEnd = saleDate <= endDate;
+        }
+        return afterStart && beforeEnd;
+      });
+
+      renderSales();
+    }
+
+    function clearDateFilter() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      filteredSales = [...allSales];
+      renderSales();
     }
 
     renderSales();
