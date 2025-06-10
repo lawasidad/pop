@@ -51,6 +51,17 @@
       color: #555;
       margin-right: 10px;
     }
+    .filters {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 10px;
+    }
+    .filters input {
+      padding: 5px;
+      font-size: 1em;
+    }
     @media print {
       body {
         background: white;
@@ -71,19 +82,16 @@
         display: none !important;
       }
     }
-    .checkbox-cell {
-      width: 30px;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
-    <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
-      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>Select All Receipts</span>
-    </label>
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">Print Selected Receipts</button>
+    <div class="filters no-print">
+      <label>Start: <input type="date" id="startDate"></label>
+      <label>End: <input type="date" id="endDate"></label>
+      <button onclick="filterSales()">Filter</button>
+    </div>
     <div id="saleData"></div>
   </div>
 
@@ -94,106 +102,23 @@
     function formatDateTime(dateString) {
       const date = new Date(dateString);
       const today = new Date();
-
-      const isToday =
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear();
-
-      const formattedDate = date.toLocaleDateString('en-GB'); // dd/mm/yyyy
-      const formattedTime = date.toLocaleTimeString('en-GB'); // hh:mm:ss
-
-      if (isToday) {
-        return `Today ${formattedTime}`;
-      } else {
-        return `${formattedDate} ${formattedTime}`;
-      }
+      const isToday = date.toDateString() === today.toDateString();
+      const formattedDate = date.toLocaleDateString('en-GB');
+      const formattedTime = date.toLocaleTimeString('en-GB');
+      return isToday ? `Today ${formattedTime}` : `${formattedDate} ${formattedTime}`;
     }
 
-    function renderSales() {
-      if (allSales.length === 0) {
+    function renderSales(filteredSales) {
+      if (filteredSales.length === 0) {
         saleDataDiv.innerHTML = "<p>No sales data found.</p>";
         return;
       }
 
       let html = "";
-      allSales.forEach((sale, index) => {
-        html +=
-          `<div class="sale-wrapper" id="sale-${index}">
-            <label class="customer-row">
-              <input type="checkbox" class="sale-checkbox" data-index="${index}" />
-              <span style="flex-grow:1;">Customer: ${sale.customer}</span>
-              <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-            </label>
-            <table>
-              <thead>
-                <tr>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Discount (%)</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${sale.items.map(item =>
-                  `<tr>
-                    <td>${item.name}</td>
-                    <td>${item.quantity}</td>
-                    <td>${item.unitPrice.toLocaleString()} IQD</td>
-                    <td>${item.discount}</td>
-                    <td>${item.total.toLocaleString()} IQD</td>
-                  </tr>`
-                ).join("")}
-              </tbody>
-              <tfoot>
-                <tr>
-                  <td colspan="4" style="text-align:right;">Total Sale</td>
-                  <td>${sale.total.toLocaleString()} IQD</td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>`;
-      });
-
-      saleDataDiv.innerHTML = html;
-
-      const selectAllCheckbox = document.getElementById('selectAll');
-      selectAllCheckbox.addEventListener('change', () => {
-        const checkboxes = document.querySelectorAll('.sale-checkbox');
-        checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
-      });
-
-      const saleCheckboxes = document.querySelectorAll('.sale-checkbox');
-      saleCheckboxes.forEach(cb => {
-        cb.addEventListener('change', () => {
-          const allChecked = Array.from(saleCheckboxes).every(chk => chk.checked);
-          selectAllCheckbox.checked = allChecked;
-        });
-      });
-    }
-
-    function printSelected() {
-      const checkboxes = document.querySelectorAll(".sale-checkbox");
-      const selectedIndices = [];
-      checkboxes.forEach(cb => {
-        if (cb.checked) selectedIndices.push(parseInt(cb.getAttribute("data-index")));
-      });
-
-      if (selectedIndices.length === 0) {
-        alert("Please select one or more receipts to print.");
-        return;
-      }
-
-      const originalContent = document.body.innerHTML;
-
-      let printContent = `<div class="container">`;
-
-      selectedIndices.forEach(i => {
-        const sale = allSales[i];
-        printContent +=
-          `<div class="sale-wrapper">
-            <div class="customer-row" style="display: flex; justify-content: space-between; align-items: center;">
+      filteredSales.forEach((sale) => {
+        html += `
+          <div class="sale-wrapper">
+            <div class="customer-row">
               <span>Customer: ${sale.customer}</span>
               <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
             </div>
@@ -208,15 +133,15 @@
                 </tr>
               </thead>
               <tbody>
-                ${sale.items.map(item =>
-                  `<tr>
+                ${sale.items.map(item => `
+                  <tr>
                     <td>${item.name}</td>
                     <td>${item.quantity}</td>
                     <td>${item.unitPrice.toLocaleString()} IQD</td>
                     <td>${item.discount}</td>
                     <td>${item.total.toLocaleString()} IQD</td>
-                  </tr>`
-                ).join("")}
+                  </tr>
+                `).join("")}
               </tbody>
               <tfoot>
                 <tr>
@@ -225,18 +150,34 @@
                 </tr>
               </tfoot>
             </table>
-          </div>`;
+          </div>
+        `;
       });
 
-      printContent += `</div>`;
-
-      document.body.innerHTML = printContent;
-      window.print();
-      document.body.innerHTML = originalContent;
-      renderSales();
+      saleDataDiv.innerHTML = html;
     }
 
-    renderSales();
+    function filterSales() {
+      const start = document.getElementById("startDate").value;
+      const end = document.getElementById("endDate").value;
+      if (!start || !end) {
+        renderSales(allSales);
+        return;
+      }
+
+      const startDate = new Date(start);
+      const endDate = new Date(end);
+      endDate.setHours(23, 59, 59, 999);
+
+      const filtered = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        return saleDate >= startDate && saleDate <= endDate;
+      });
+
+      renderSales(filtered);
+    }
+
+    renderSales(allSales);
   </script>
 </body>
 </html>
