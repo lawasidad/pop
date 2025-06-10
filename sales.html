@@ -79,11 +79,23 @@
 <body>
   <div class="container">
     <h2>Summary of All Sales</h2>
+
+    <div style="display: flex; justify-content: flex-start; gap: 15px; margin-bottom: 10px;" class="no-print">
+      <label>
+        From: <input type="date" id="filterFrom" />
+      </label>
+      <label>
+        To: <input type="date" id="filterTo" />
+      </label>
+      <button onclick="applyDateFilter()" style="padding: 5px 10px; cursor: pointer;">Apply Date Filter</button>
+      <button onclick="clearDateFilter()" style="padding: 5px 10px; cursor: pointer;">Clear Filter</button>
+    </div>
+
     <label style="display:flex; align-items:center; margin-bottom: 10px;" class="no-print">
       <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>Select All Receipts</span>
+      <span>هەموو وەسلەکان هەڵبژێرە</span>
     </label>
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">Print Selected Receipts</button>
+    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px; padding: 10px 20px; font-size: 1em; cursor: pointer;">پرێنتی وەسلە هەڵبژێردراوەکان</button>
     <div id="saleData"></div>
   </div>
 
@@ -93,51 +105,75 @@
 
     function formatDateTime(dateString) {
       const date = new Date(dateString);
-      const localDate = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
-
-      const day = String(localDate.getDate()).padStart(2, '0');
-      const month = String(localDate.getMonth() + 1).padStart(2, '0');
-      const year = localDate.getFullYear();
-      const hours = String(localDate.getHours()).padStart(2, '0');
-      const minutes = String(localDate.getMinutes()).padStart(2, '0');
-      const seconds = String(localDate.getSeconds()).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const year = date.getFullYear();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      const seconds = String(date.getSeconds()).padStart(2, '0');
 
       const today = new Date();
-      const todayLocal = new Date(today.getTime() - today.getTimezoneOffset() * 60000);
-      const todayDay = String(todayLocal.getDate()).padStart(2, '0');
-      const todayMonth = String(todayLocal.getMonth() + 1).padStart(2, '0');
-      const todayYear = todayLocal.getFullYear();
+      const todayDay = String(today.getDate()).padStart(2, '0');
+      const todayMonth = String(today.getMonth() + 1).padStart(2, '0');
+      const todayYear = today.getFullYear();
 
-      if (day === todayDay && month === todayMonth && year === todayYear) {
-        return `Today ${hours}:${minutes}:${seconds}`;
+      if(day === todayDay && month === todayMonth && year === todayYear) {
+        return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
       } else {
         return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
       }
     }
 
-    function renderSales() {
-      if (allSales.length === 0) {
-        saleDataDiv.innerHTML = "<p>No sales data found.</p>";
+    function applyDateFilter() {
+      const fromDateValue = document.getElementById("filterFrom").value;
+      const toDateValue = document.getElementById("filterTo").value;
+
+      if (!fromDateValue || !toDateValue) {
+        alert("Please select both 'From' and 'To' dates.");
+        return;
+      }
+
+      const fromDate = new Date(fromDateValue);
+      const toDate = new Date(toDateValue);
+      toDate.setHours(23, 59, 59, 999);
+
+      const filteredSales = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        return saleDate >= fromDate && saleDate <= toDate;
+      });
+
+      renderSales(filteredSales);
+    }
+
+    function clearDateFilter() {
+      document.getElementById("filterFrom").value = "";
+      document.getElementById("filterTo").value = "";
+      renderSales(allSales);
+    }
+
+    function renderSales(salesToRender = allSales) {
+      if (salesToRender.length === 0) {
+        saleDataDiv.innerHTML = "<p>هیچ داتای فرۆشتنێک نەدۆزرایەوە.</p>";
         return;
       }
 
       let html = "";
-      allSales.forEach((sale, index) => {
+      salesToRender.forEach((sale, index) => {
         html +=
           `<div class="sale-wrapper" id="sale-${index}">
             <label class="customer-row">
               <input type="checkbox" class="sale-checkbox" data-index="${index}" />
-              <span style="flex-grow:1;">Customer: ${sale.customer}</span>
+              <span style="flex-grow:1;">کریار: ${sale.customer}</span>
               <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
             </label>
             <table>
               <thead>
                 <tr>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Discount (%)</th>
-                  <th>Total</th>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
                 </tr>
               </thead>
               <tbody>
@@ -153,7 +189,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" style="text-align:right;">Total Sale</td>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
                   <td>${sale.total.toLocaleString()} IQD</td>
                 </tr>
               </tfoot>
@@ -186,11 +222,12 @@
       });
 
       if (selectedIndices.length === 0) {
-        alert("Please select one or more receipts to print.");
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
         return;
       }
 
       const originalContent = document.body.innerHTML;
+
       let printContent = `<div class="container">`;
 
       selectedIndices.forEach(i => {
@@ -198,17 +235,17 @@
         printContent +=
           `<div class="sale-wrapper">
             <div class="customer-row" style="display: flex; justify-content: space-between; align-items: center;">
-              <span>Customer: ${sale.customer}</span>
+              <span>کریار: ${sale.customer}</span>
               <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
             </div>
             <table>
               <thead>
                 <tr>
-                  <th>Product Name</th>
-                  <th>Quantity</th>
-                  <th>Unit Price</th>
-                  <th>Discount (%)</th>
-                  <th>Total</th>
+                  <th>ناوی بەرهەم</th>
+                  <th>ژمارە</th>
+                  <th>نرخی یەکە</th>
+                  <th>داشکاندن (%)</th>
+                  <th>کۆی گشتی</th>
                 </tr>
               </thead>
               <tbody>
@@ -224,7 +261,7 @@
               </tbody>
               <tfoot>
                 <tr>
-                  <td colspan="4" style="text-align:right;">Total Sale</td>
+                  <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
                   <td>${sale.total.toLocaleString()} IQD</td>
                 </tr>
               </tfoot>
@@ -233,6 +270,7 @@
       });
 
       printContent += `</div>`;
+
       document.body.innerHTML = printContent;
       window.print();
       document.body.innerHTML = originalContent;
