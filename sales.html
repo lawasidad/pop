@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <title>کۆتایی وەسلەکان</title>
   <style>
+    /* ... (هەمان ستایلەکانی خۆت) ... */
     body {
       font-family: Tahoma, sans-serif;
       background: #f9f9f9;
@@ -121,6 +122,7 @@
       <input type="date" id="endDate" />
       <button onclick="applyDateFilter()">فلتەر بکە</button>
       <button onclick="clearDateFilter()">ڕەشەبکەرەوە</button>
+      <button onclick="filterToday()" style="margin-left: 10px;">فلتەرکردنی ئەمرۆ</button>
     </div>
 
     <label class="no-print" style="display:flex; align-items:center; margin-bottom: 10px;">
@@ -135,13 +137,11 @@
   </div>
 
   <script>
-    // وەرگرتنی هەموو فرۆشتنەکان لە localStorage
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     let filteredSales = [...allSales];
 
     const salesContainer = document.getElementById("salesContainer");
 
-    // فۆرماتکردنی کات و ڕۆژ
     function formatDateTime(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, "0");
@@ -153,7 +153,6 @@
       return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
-    // نیشاندانی وەسلەکان لە وێبگەڕ
     function renderSales() {
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
@@ -206,25 +205,22 @@
       const totalAmount = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
       document.getElementById("totalSum").textContent = `کۆی گشتی فرۆشتنەکان: ${totalAmount.toLocaleString()} IQD`;
 
-      // هەڵبژاردنی هەموو وەسلەکان لەسەر کڵیک کردنی selectAll
       const selectAll = document.getElementById("selectAll");
       selectAll.checked = false;
       selectAll.addEventListener("change", () => {
         const checkboxes = document.querySelectorAll(".sale-checkbox");
-        checkboxes.forEach((cb) => (cb.checked = selectAll.checked));
+        checkboxes.forEach(cb => (cb.checked = selectAll.checked));
       });
 
-      // گۆڕینی کڵاوی هەڵبژاردنەکان بۆ دانانی هەڵبژاردنی گشتی
       const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
-      saleCheckboxes.forEach((cb) =>
+      saleCheckboxes.forEach(cb =>
         cb.addEventListener("change", () => {
-          const allChecked = Array.from(saleCheckboxes).every((chk) => chk.checked);
+          const allChecked = Array.from(saleCheckboxes).every(chk => chk.checked);
           selectAll.checked = allChecked;
         })
       );
     }
 
-    // فلتەرکردنی بەروار
     function applyDateFilter() {
       const start = document.getElementById("startDate").value;
       const end = document.getElementById("endDate").value;
@@ -257,11 +253,24 @@
       renderSales();
     }
 
-    // پرینتی وەسلە هەڵبژێردراوەکان
+    // زیادکردنی ئەم فانکشنیە بۆ فلتەرکردنی داتای ئەمرۆ
+    function filterToday() {
+      const today = new Date();
+      const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+      const todayEnd = todayStart + 86400000 - 1; // کۆتایی ڕۆژی ئەمرۆ
+
+      filteredSales = allSales.filter(sale => {
+        const saleTime = new Date(sale.timestamp).getTime();
+        return saleTime >= todayStart && saleTime <= todayEnd;
+      });
+
+      renderSales();
+    }
+
     function printSelected() {
       const checkboxes = document.querySelectorAll(".sale-checkbox");
       const selectedIndexes = [];
-      checkboxes.forEach((cb) => {
+      checkboxes.forEach(cb => {
         if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
       });
 
@@ -273,7 +282,7 @@
       const originalBody = document.body.innerHTML;
       let printContent = `<div class="container">`;
 
-      selectedIndexes.forEach((i) => {
+      selectedIndexes.forEach(i => {
         const sale = filteredSales[i];
         printContent += `
         <div class="sale-block">
@@ -308,50 +317,4 @@
                 <td>${sale.total.toLocaleString()} IQD</td>
               </tr>
             </tfoot>
-          </table>
-        </div>`;
-      });
-
-      printContent += `</div>`;
-
-      document.body.innerHTML = printContent;
-      window.print();
-      document.body.innerHTML = originalBody;
-      renderSales();
-    }
-
-    // سڕینەوەی وەسلە هەڵبژێردراوەکان
-    function deleteSelected() {
-      const checkboxes = document.querySelectorAll(".sale-checkbox");
-      const selectedIndexes = [];
-
-      checkboxes.forEach((cb) => {
-        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
-      });
-
-      if (selectedIndexes.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
-        return;
-      }
-
-      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
-        return;
-      }
-
-      // سڕینەوە لە کۆی داتاکان
-      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
-        allSales.splice(idx, 1);
-        filteredSales.splice(idx, 1);
-      });
-
-      // نوێکردنەوەی localStorage
-      localStorage.setItem("allSales", JSON.stringify(allSales));
-
-      renderSales();
-    }
-
-    // لە بارکردنەوەی هەماهنگکردنی وەسلەکان
-    renderSales();
-  </script>
-</body>
-</html>
+         
