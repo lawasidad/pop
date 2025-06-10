@@ -2,7 +2,7 @@
 <html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Sales Summary</title>
+  <title>Summary of Sales</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -42,6 +42,8 @@
       text-align: right;
       padding: 10px;
       font-size: 1.1em;
+      display: flex;
+      justify-content: space-between;
     }
   </style>
 </head>
@@ -74,7 +76,10 @@
         grandTotalAllSales += sale.total;
 
         html += `
-          <div class="customer-row">کریار: ${sale.customer}</div>
+          <div class="customer-row">
+            <span>کریار: ${sale.customer}</span>
+            <span>بەروار: ${formatDateOnly(sale.date)}</span>
+          </div>
           <table>
             <thead>
               <tr>
@@ -83,7 +88,6 @@
                 <th>نرخی یەکە</th>
                 <th>داشکاندن (%)</th>
                 <th>کۆی گشتی</th>
-                <th>بەروار</th>
               </tr>
             </thead>
             <tbody>
@@ -94,13 +98,12 @@
                   <td>${item.unitPrice.toLocaleString()} IQD</td>
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
-                  <td>${formatDateOnly(sale.date)}</td>
                 </tr>
               `).join("")}
             </tbody>
             <tfoot>
               <tr>
-                <td colspan="5" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
                 <td>${sale.total.toLocaleString()} IQD</td>
               </tr>
             </tfoot>
