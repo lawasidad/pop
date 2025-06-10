@@ -101,24 +101,11 @@
     button:hover {
       background: #2563eb;
     }
-    /* زیادکردنی کۆی گشتی فرۆشتن بە سەرەوە و بە رەنگی سەوز */
-    .total-sales-summary {
-      background-color: #d4edda;
-      color: #155724;
-      font-weight: bold;
-      padding: 10px 15px;
-      border-radius: 6px;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 1.2em;
-    }
   </style>
 </head>
 <body>
   <div class="container">
     <h2>کۆتایی هەموو وەسلەکان</h2>
-
-    <div class="total-sales-summary" id="totalSalesSummary">کۆی گشتی فرۆشتن: 0 IQD</div>
 
     <div class="filter-area no-print">
       <label for="startDate">بەرواری دەستپێکردن:</label>
@@ -135,6 +122,7 @@
     </label>
 
     <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
+    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">سڕینەوەی وەسلە هەڵبژێردراوەکان</button>
 
     <div id="salesContainer"></div>
   </div>
@@ -169,18 +157,10 @@
       }
     }
 
-    // نیشاندانی کۆی گشتی فرۆشتن لە سەرەوە
-    function updateTotalSalesSummary() {
-      const total = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
-      const totalSalesSummary = document.getElementById("totalSalesSummary");
-      totalSalesSummary.textContent = `کۆی گشتی فرۆشتن: ${total.toLocaleString()} IQD`;
-    }
-
     // دەرخستنی وەسلەکان لە پەڕەکە
     function renderSales() {
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
-        updateTotalSalesSummary();
         return;
       }
 
@@ -248,8 +228,142 @@
           selectAll.checked = allChecked;
         })
       );
-
-      updateTotalSalesSummary();
     }
 
-    // پرینتی وەسلە هەڵبژێردراو
+    // پرینتی وەسلە هەڵبژێردراوەکان
+    function printSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndexes = [];
+      checkboxes.forEach((cb) => {
+        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
+      });
+
+      if (selectedIndexes.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
+        return;
+      }
+
+      const originalBody = document.body.innerHTML;
+      let printContent = `<div class="container">`;
+
+      selectedIndexes.forEach((i) => {
+        const sale = filteredSales[i];
+        printContent += `
+        <div class="sale-block">
+          <div class="customer-header" style="justify-content: space-between;">
+            <span>کریار: ${sale.customer}</span>
+            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th>ناوی بەرهەم</th>
+                <th>ژمارە</th>
+                <th>نرخی یەکە</th>
+                <th>داشکاندن (%)</th>
+                <th>کۆی گشتی</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${sale.items
+                .map(
+                  (item) => `
+                <tr>
+                  <td>${item.name}</td>
+                  <td>${item.quantity}</td>
+                  <td>${item.unitPrice.toLocaleString()} IQD</td>
+                  <td>${item.discount}</td>
+                  <td>${item.total.toLocaleString()} IQD</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+            <tfoot>
+              <tr>
+                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
+                <td>${sale.total.toLocaleString()} IQD</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>`;
+      });
+
+      printContent += `</div>`;
+
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalBody;
+      renderSales();
+    }
+
+    // دگمەی سڕینەوەی وەسلە هەڵبژێردراوەکان
+    function deleteSelected() {
+      const checkboxes = document.querySelectorAll(".sale-checkbox");
+      const selectedIndexes = [];
+
+      checkboxes.forEach((cb) => {
+        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
+      });
+
+      if (selectedIndexes.length === 0) {
+        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
+        return;
+      }
+
+      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
+        return;
+      }
+
+      // لە زنجیرەکانی سڕینەوە ئەنجام بدە (لە گەڕانەوەی reverse بۆ سڕینەوەی درست)
+      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
+        // لە دوو لیستەکان سڕەوە
+        allSales.splice(idx, 1);
+        filteredSales.splice(idx, 1);
+      });
+
+      // نوسینی نوێی بۆ localStorage
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+
+      renderSales();
+    }
+
+    // فلتەرکردنی بەرواری فرۆشتن
+    function applyDateFilter() {
+      const startDateInput = document.getElementById("startDate").value;
+      const endDateInput = document.getElementById("endDate").value;
+
+      filteredSales = allSales.filter((sale) => {
+        const saleDate = new Date(sale.timestamp);
+        let afterStart = true;
+        let beforeEnd = true;
+
+        if (startDateInput) {
+          const startDate = new Date(startDateInput);
+          startDate.setHours(0, 0, 0, 0);
+          afterStart = saleDate >= startDate;
+        }
+        if (endDateInput) {
+          const endDate = new Date(endDateInput);
+          endDate.setHours(23, 59, 59, 999);
+          beforeEnd = saleDate <= endDate;
+        }
+        return afterStart && beforeEnd;
+      });
+
+      renderSales();
+    }
+
+    // پاککردن فلتەرەکان
+    function clearDateFilter() {
+      document.getElementById("startDate").value = "";
+      document.getElementById("endDate").value = "";
+      filteredSales = [...allSales];
+      renderSales();
+    }
+
+    // یەکەمجار چالاککردنی فۆرمەکە
+    renderSales();
+  </script>
+</body>
+</html>
