@@ -2,7 +2,7 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>کۆتایی وەسلەکان</title>
+  <title>فلتەرکردنی وەسلەکان بەپێی بەروار</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -58,37 +58,17 @@
       color: #666;
       margin-left: 15px;
     }
-    @media print {
-      body {
-        background: #fff;
-        padding: 0;
-      }
-      .container {
-        box-shadow: none;
-        margin: 0;
-        padding: 0;
-        max-width: none;
-      }
-      .sale-block {
-        page-break-after: always;
-        padding: 15mm;
-      }
-      .no-print {
-        display: none !important;
-      }
-    }
-    .checkbox-cell {
-      width: 30px;
-    }
     .filter-area {
       margin-bottom: 15px;
       display: flex;
       gap: 10px;
       align-items: center;
       justify-content: flex-start;
+      flex-wrap: wrap;
     }
     .filter-area label {
       font-weight: bold;
+      margin-right: 5px;
     }
     .filter-area input[type="date"] {
       padding: 5px;
@@ -111,49 +91,41 @@
 </head>
 <body>
   <div class="container">
-    <h2>کۆتایی هەموو وەسلەکان</h2>
+    <h2>فلتەرکردنی وەسلەکان بەپێی بەروار</h2>
     <p id="totalSum">کۆی گشتی فرۆشتنەکان: 0 IQD</p>
 
-    <div class="filter-area no-print">
+    <div class="filter-area">
+      <button onclick="filterByToday()">فلتەر تەنها ئەمرۆ</button>
+      <button onclick="filterByMorning()">فلتەر تەنها بەیانی</button>
+      <button onclick="filterByAfternoon()">فلتەر تەنها دوو بەیانی</button>
       <label for="startDate">بەرواری دەستپێکردن:</label>
       <input type="date" id="startDate" />
       <label for="endDate">بەرواری کۆتایی:</label>
       <input type="date" id="endDate" />
-      <button onclick="applyDateFilter()">فلتەر بکە</button>
-      <button onclick="clearDateFilter()">ڕەشەبکەرەوە</button>
+      <button onclick="filterByDateRange()">فلتەر بە بەروار</button>
+      <button onclick="clearFilter()">ڕەشەبکەرەوە</button>
     </div>
-
-    <label class="no-print" style="display:flex; align-items:center; margin-bottom: 10px;">
-      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>هەموو وەسلەکان هەڵبژێرە</span>
-    </label>
-
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
-    <button onclick="deleteSelected()" class="no-print" style="margin-bottom: 15px; background: #ef4444;">سڕینەوەی وەسلە هەڵبژێردراوەکان</button>
 
     <div id="salesContainer"></div>
   </div>
 
   <script>
-    // وەرگرتنی هەموو فرۆشتنەکان لە localStorage
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     let filteredSales = [...allSales];
 
     const salesContainer = document.getElementById("salesContainer");
 
-    // فۆرماتکردنی کات و ڕۆژ
     function formatDateTime(dateString) {
       const date = new Date(dateString);
       const day = String(date.getDate()).padStart(2, "0");
       const month = String(date.getMonth() + 1).padStart(2, "0");
       const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
+      const hours = date.getHours();
       const minutes = String(date.getMinutes()).padStart(2, "0");
       const seconds = String(date.getSeconds()).padStart(2, "0");
-      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+      return `${day}/${month}/${year} ${hours.toString().padStart(2,"0")}:${minutes}:${seconds}`;
     }
 
-    // نیشاندانی وەسلەکان لە وێبگەڕ
     function renderSales() {
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
@@ -165,11 +137,10 @@
       filteredSales.forEach((sale, idx) => {
         html += `
         <div class="sale-block" id="sale-${idx}">
-          <label class="customer-header">
-            <input type="checkbox" class="sale-checkbox" data-idx="${idx}" />
+          <div class="customer-header">
             <span>کریار: ${sale.customer}</span>
             <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-          </label>
+          </div>
           <table>
             <thead>
               <tr>
@@ -205,37 +176,64 @@
 
       const totalAmount = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
       document.getElementById("totalSum").textContent = `کۆی گشتی فرۆشتنەکان: ${totalAmount.toLocaleString()} IQD`;
-
-      // هەڵبژاردنی هەموو وەسلەکان لەسەر کڵیک کردنی selectAll
-      const selectAll = document.getElementById("selectAll");
-      selectAll.checked = false;
-      selectAll.addEventListener("change", () => {
-        const checkboxes = document.querySelectorAll(".sale-checkbox");
-        checkboxes.forEach((cb) => (cb.checked = selectAll.checked));
-      });
-
-      // گۆڕینی کڵاوی هەڵبژاردنەکان بۆ دانانی هەڵبژاردنی گشتی
-      const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
-      saleCheckboxes.forEach((cb) =>
-        cb.addEventListener("change", () => {
-          const allChecked = Array.from(saleCheckboxes).every((chk) => chk.checked);
-          selectAll.checked = allChecked;
-        })
-      );
     }
 
-    // فلتەرکردنی بەروار
-    function applyDateFilter() {
-      const start = document.getElementById("startDate").value;
-      const end = document.getElementById("endDate").value;
+    function isSameDate(d1, d2) {
+      return d1.getFullYear() === d2.getFullYear() &&
+             d1.getMonth() === d2.getMonth() &&
+             d1.getDate() === d2.getDate();
+    }
 
-      if (!start && !end) {
+    // فلتەر ئەمرۆ: ڕۆژ و ماوەی کات لە 00:00 بۆ 23:59
+    function filterByToday() {
+      const now = new Date();
+      filteredSales = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        return isSameDate(now, saleDate);
+      });
+      renderSales();
+    }
+
+    // فلتەر بەیانی (09:00 - 11:59 ئەمرۆ)
+    function filterByMorning() {
+      const now = new Date();
+      filteredSales = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        if (!isSameDate(now, saleDate)) return false;
+        const h = saleDate.getHours();
+        return h >= 9 && h < 12;
+      });
+      renderSales();
+    }
+
+    // فلتەر دوو بەیانی (12:00 - 14:59 ئەمرۆ)
+    function filterByAfternoon() {
+      const now = new Date();
+      filteredSales = allSales.filter(sale => {
+        const saleDate = new Date(sale.timestamp);
+        if (!isSameDate(now, saleDate)) return false;
+        const h = saleDate.getHours();
+        return h >= 12 && h < 15;
+      });
+      renderSales();
+    }
+
+    // فلتەر بە بەروار دیاری کراو
+    function filterByDateRange() {
+      const startVal = document.getElementById("startDate").value;
+      const endVal = document.getElementById("endDate").value;
+
+      if (!startVal && !endVal) {
         filteredSales = [...allSales];
       } else {
         filteredSales = allSales.filter(sale => {
-          const saleDate = new Date(sale.timestamp).setHours(0,0,0,0);
-          const startDate = start ? new Date(start).setHours(0,0,0,0) : null;
-          const endDate = end ? new Date(end).setHours(0,0,0,0) : null;
+          const saleDate = new Date(sale.timestamp);
+          saleDate.setHours(0,0,0,0);
+          const startDate = startVal ? new Date(startVal) : null;
+          const endDate = endVal ? new Date(endVal) : null;
+
+          if (startDate) startDate.setHours(0,0,0,0);
+          if (endDate) endDate.setHours(0,0,0,0);
 
           if (startDate && endDate) {
             return saleDate >= startDate && saleDate <= endDate;
@@ -250,107 +248,14 @@
       renderSales();
     }
 
-    function clearDateFilter() {
+    function clearFilter() {
+      filteredSales = [...allSales];
       document.getElementById("startDate").value = "";
       document.getElementById("endDate").value = "";
-      filteredSales = [...allSales];
       renderSales();
     }
 
-    // پرینتی وەسلە هەڵبژێردراوەکان
-    function printSelected() {
-      const checkboxes = document.querySelectorAll(".sale-checkbox");
-      const selectedIndexes = [];
-      checkboxes.forEach((cb) => {
-        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
-      });
-
-      if (selectedIndexes.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ پرینت.");
-        return;
-      }
-
-      const originalBody = document.body.innerHTML;
-      let printContent = `<div class="container">`;
-
-      selectedIndexes.forEach((i) => {
-        const sale = filteredSales[i];
-        printContent += `
-        <div class="sale-block">
-          <div class="customer-header" style="justify-content: space-between;">
-            <span>کریار: ${sale.customer}</span>
-            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-          </div>
-          <table>
-            <thead>
-              <tr>
-                <th>ناوی بەرهەم</th>
-                <th>ژمارە</th>
-                <th>نرخی یەکە</th>
-                <th>داشکاندن (%)</th>
-                <th>کۆی گشتی</th>
-              </tr>
-            </thead>
-            <tbody>
-              ${sale.items.map(item => `
-                <tr>
-                  <td>${item.name}</td>
-                  <td>${item.quantity}</td>
-                  <td>${item.unitPrice.toLocaleString()} IQD</td>
-                  <td>${item.discount}</td>
-                  <td>${item.total.toLocaleString()} IQD</td>
-                </tr>
-              `).join("")}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td colspan="4" style="text-align:right;">کۆی گشتی فرۆشتن</td>
-                <td>${sale.total.toLocaleString()} IQD</td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>`;
-      });
-
-      printContent += `</div>`;
-
-      document.body.innerHTML = printContent;
-      window.print();
-      document.body.innerHTML = originalBody;
-      renderSales();
-    }
-
-    // سڕینەوەی وەسلە هەڵبژێردراوەکان
-    function deleteSelected() {
-      const checkboxes = document.querySelectorAll(".sale-checkbox");
-      const selectedIndexes = [];
-
-      checkboxes.forEach((cb) => {
-        if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
-      });
-
-      if (selectedIndexes.length === 0) {
-        alert("تکایە یەکێک یان زیاتر وەسڵ هەڵبژێرە بۆ سڕینەوە.");
-        return;
-      }
-
-      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
-        return;
-      }
-
-      // سڕینەوە لە کۆی داتاکان
-      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
-        allSales.splice(idx, 1);
-        filteredSales.splice(idx, 1);
-      });
-
-      // نوێکردنەوەی localStorage
-      localStorage.setItem("allSales", JSON.stringify(allSales));
-
-      renderSales();
-    }
-
-    // لە بارکردنەوەی هەماهنگکردنی وەسلەکان
+    // بارکردنی سەرەتا
     renderSales();
   </script>
 </body>
