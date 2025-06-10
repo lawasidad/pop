@@ -21,13 +21,6 @@
       text-align: center;
       margin-bottom: 20px;
     }
-    .total-summary {
-      text-align: left;
-      font-weight: bold;
-      margin-bottom: 10px;
-      font-size: 1.1em;
-      color: #1f2937;
-    }
     table {
       width: 100%;
       border-collapse: collapse;
@@ -113,8 +106,6 @@
   <div class="container">
     <h2>کۆتایی هەموو وەسلەکان</h2>
 
-    <div id="totalSummary" class="total-summary"></div>
-
     <div class="filter-area no-print">
       <label for="startDate">بەرواری دەستپێکردن:</label>
       <input type="date" id="startDate" />
@@ -138,8 +129,8 @@
   <script>
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
     let filteredSales = [...allSales];
+
     const salesContainer = document.getElementById("salesContainer");
-    const totalSummary = document.getElementById("totalSummary");
 
     function formatDateTime(dateString) {
       const date = new Date(dateString);
@@ -150,26 +141,10 @@
       const minutes = String(date.getMinutes()).padStart(2, "0");
       const seconds = String(date.getSeconds()).padStart(2, "0");
 
-      const today = new Date();
-      if (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      ) {
-        return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
-      } else {
-        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-      }
-    }
-
-    function renderTotal() {
-      const total = filteredSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-      totalSummary.textContent = `کۆی گشتی هەموو فرۆشتنەکان: ${total.toLocaleString()} IQD`;
+      return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
     }
 
     function renderSales() {
-      renderTotal();
-
       if (filteredSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
         return;
@@ -195,7 +170,9 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items.map(item => `
+              ${sale.items
+                .map(
+                  (item) => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
@@ -203,7 +180,9 @@
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              `).join("")}
+              `
+                )
+                .join("")}
             </tbody>
             <tfoot>
               <tr>
@@ -221,13 +200,15 @@
       selectAll.checked = false;
       selectAll.addEventListener("change", () => {
         const checkboxes = document.querySelectorAll(".sale-checkbox");
-        checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        checkboxes.forEach((cb) => (cb.checked = selectAll.checked));
       });
 
       const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
-      saleCheckboxes.forEach(cb =>
+      saleCheckboxes.forEach((cb) =>
         cb.addEventListener("change", () => {
-          const allChecked = Array.from(saleCheckboxes).every(chk => chk.checked);
+          const allChecked = Array.from(saleCheckboxes).every(
+            (chk) => chk.checked
+          );
           selectAll.checked = allChecked;
         })
       );
@@ -236,7 +217,7 @@
     function printSelected() {
       const checkboxes = document.querySelectorAll(".sale-checkbox");
       const selectedIndexes = [];
-      checkboxes.forEach(cb => {
+      checkboxes.forEach((cb) => {
         if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
       });
 
@@ -248,7 +229,7 @@
       const originalBody = document.body.innerHTML;
       let printContent = `<div class="container">`;
 
-      selectedIndexes.forEach(i => {
+      selectedIndexes.forEach((i) => {
         const sale = filteredSales[i];
         printContent += `
         <div class="sale-block">
@@ -267,14 +248,19 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items.map(item => `
+              ${sale.items
+                .map(
+                  (item) => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
                   <td>${item.unitPrice.toLocaleString()} IQD</td>
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
-                </tr>`).join("")}
+                </tr>
+              `
+                )
+                .join("")}
             </tbody>
             <tfoot>
               <tr>
@@ -298,7 +284,7 @@
       const checkboxes = document.querySelectorAll(".sale-checkbox");
       const selectedIndexes = [];
 
-      checkboxes.forEach(cb => {
+      checkboxes.forEach((cb) => {
         if (cb.checked) selectedIndexes.push(parseInt(cb.getAttribute("data-idx")));
       });
 
@@ -307,14 +293,17 @@
         return;
       }
 
-      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) return;
+      if (!confirm("دڵنیایت لە سڕینەوەی وەسلە هەڵبژێردراوەکان؟")) {
+        return;
+      }
 
-      selectedIndexes.sort((a, b) => b - a).forEach(idx => {
+      selectedIndexes.sort((a, b) => b - a).forEach((idx) => {
         allSales.splice(idx, 1);
         filteredSales.splice(idx, 1);
       });
 
       localStorage.setItem("allSales", JSON.stringify(allSales));
+
       renderSales();
     }
 
@@ -322,7 +311,7 @@
       const startDateInput = document.getElementById("startDate").value;
       const endDateInput = document.getElementById("endDate").value;
 
-      filteredSales = allSales.filter(sale => {
+      filteredSales = allSales.filter((sale) => {
         const saleDate = new Date(sale.timestamp);
         let afterStart = true;
         let beforeEnd = true;
