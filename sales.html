@@ -306,42 +306,4 @@
 
       localStorage.setItem("allSales", JSON.stringify(allSales));
 
-      renderSales();
-    }
-
-    function applyDateFilter() {
-      const startDateInput = document.getElementById("startDate").value;
-      const endDateInput = document.getElementById("endDate").value;
-
-      filteredSales = allSales.filter((sale) => {
-        const saleDate = new Date(sale.timestamp);
-        let afterStart = true;
-        let beforeEnd = true;
-
-        if (startDateInput) {
-          const startDate = new Date(startDateInput);
-          startDate.setHours(0, 0, 0, 0);
-          afterStart = saleDate >= startDate;
-        }
-        if (endDateInput) {
-          const endDate = new Date(endDateInput);
-          endDate.setHours(23, 59, 59, 999);
-          beforeEnd = saleDate <= endDate;
-        }
-        return afterStart && beforeEnd;
-      });
-
-      renderSales();
-    }
-
-    function clearDateFilter() {
-      document.getElementById("startDate").value = "";
-      document.getElementById("endDate").value = "";
-      filteredSales = [...allSales];
-      renderSales();
-    }
-
-    renderSales();
-  </script>
-</body>
-</html>
+      render
