@@ -2,22 +2,23 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
+    /* کۆدی ستایلی تۆ هەمانە */
     body {
-      font-family: Tahoma, sans-serif;
-      background: #eef;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #eef6fb;
       margin: 0;
       padding: 10px;
     }
     .container {
       background: white;
-      padding: 20px;
-      border-radius: 10px;
+      padding: 20px 25px;
+      border-radius: 12px;
       max-width: 900px;
       margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
     }
     .top-bar {
       display: flex;
@@ -25,61 +26,102 @@
       justify-content: space-between;
       gap: 10px;
       margin-bottom: 20px;
+      align-items: center;
     }
     .summary {
-      font-size: 1.2em;
-      font-weight: bold;
-      padding: 10px 15px;
-      border-radius: 8px;
+      font-size: 1.3em;
+      font-weight: 700;
+      padding: 12px 20px;
+      border-radius: 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      user-select: none;
     }
     .total-qty {
-      background: #cce5ff;
-      color: #004085;
+      background: #d0e8ff;
+      color: #003366;
+      min-width: 90px;
+      text-align: center;
     }
     .total-amount {
-      background: #d4edda;
-      color: #155724;
+      background: #d7f0dc;
+      color: #1a4d1a;
+      min-width: 130px;
+      text-align: center;
+    }
+    button.submit-btn {
+      background-color: #28a745;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-weight: 700;
+      font-size: 1.1em;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.25s ease;
+      box-shadow: 0 3px 8px rgba(40,167,69,0.5);
+      white-space: nowrap;
+    }
+    button.submit-btn:hover {
+      background-color: #218838;
+    }
+    input[type="text"] {
+      padding: 12px 15px;
+      font-size: 1em;
+      margin-top: 5px;
+      border-radius: 12px;
+      border: 1.8px solid #bbb;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      transition: border-color 0.3s ease;
+    }
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #28a745;
+      box-shadow: 0 0 6px #8ddf8d;
     }
     .product-list {
-      margin-top: 20px;
+      margin-top: 25px;
     }
     .product-item {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       align-items: center;
-      border: 1px solid #ccc;
-      padding: 10px;
-      border-radius: 8px;
-      background: #f9f9f9;
-      margin-bottom: 10px;
+      border: 1.2px solid #ddd;
+      padding: 15px 20px;
+      border-radius: 14px;
+      background: #f9fbff;
+      margin-bottom: 14px;
+      box-shadow: 0 2px 7px rgba(0,0,0,0.04);
+      transition: background-color 0.3s ease;
     }
-    .controls button {
-      margin: 0 5px;
-      padding: 6px 12px;
-      font-size: 1em;
+    .product-item:hover {
+      background-color: #e8f2ff;
     }
     .product-name {
-      font-weight: bold;
+      font-weight: 700;
+      font-size: 1.1em;
+      color: #003366;
     }
     .details {
-      font-size: 0.9em;
-      color: #555;
-    }
-    input, button {
-      padding: 10px;
-      font-size: 1em;
-      margin-top: 5px;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
+      font-size: 0.95em;
+      color: #444;
+      margin-top: 6px;
+      user-select: none;
     }
     @media (min-width: 600px) {
       input[type="text"] {
-        max-width: 300px;
+        max-width: 320px;
       }
       button.submit-btn {
         width: auto;
+      }
+      .product-item {
+        flex-wrap: nowrap;
+      }
+      .details {
+        margin-top: 0;
       }
     }
   </style>
@@ -92,8 +134,8 @@
       <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
     </div>
 
-    <input type="text" id="customer" placeholder="Customer name" />
-    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." />
+    <input type="text" id="customer" placeholder="Customer name" autocomplete="off" />
+    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
 
     <div class="product-list" id="productList"></div>
   </div>
@@ -120,13 +162,20 @@
             <div>
               <div class="product-name">${item.name}</div>
               <div class="details">
-                Price: ${item.unitPrice} IQD | Discount: ${item.discount}%<br>
-                Qty: ${item.quantity} | Total: ${total.toLocaleString()} IQD
+                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
+                Qty: 
+                <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="${item.stock}" 
+                  value="${item.quantity}" 
+                  onchange="changeQtyDirect(${index}, this.value)" 
+                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
+                />
+                <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
+                | Total: ${total.toLocaleString()} IQD
               </div>
-            </div>
-            <div class="controls">
-              <button onclick="changeQty(${index}, 1)">+</button>
-              <button onclick="changeQty(${index}, -1)">-</button>
             </div>
           </div>
         `;
@@ -138,6 +187,15 @@
     function changeQty(index, delta) {
       items[index].quantity += delta;
       if (items[index].quantity < 0) items[index].quantity = 0;
+      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
+      renderProducts();
+    }
+
+    function changeQtyDirect(index, value) {
+      let val = parseInt(value);
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > items[index].stock) val = items[index].stock;
+      items[index].quantity = val;
       renderProducts();
     }
 
@@ -179,7 +237,10 @@
         timestamp: new Date().toISOString()
       };
 
-      localStorage.setItem("lastSale", JSON.stringify(saleData));
+      // **کۆدی زیادکراو** - وەرگرتن و نوسینی داتای قبلی بۆ زۆرکردنی داتاکان
+      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      allSales.push(saleData);
+      localStorage.setItem("allSales", JSON.stringify(allSales));
 
       // Reset everything
       document.getElementById("customer").value = "";
