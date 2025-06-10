@@ -60,7 +60,6 @@
 
     function formatDateTime(dateString) {
       const date = new Date(dateString);
-      if (isNaN(date)) return "کات نادروستە";
       const day = String(date.getDate()).padStart(2, '0');
       const month = String(date.getMonth() + 1).padStart(2, '0');
       const year = date.getFullYear();
@@ -76,11 +75,11 @@
       let grandTotalAllSales = 0;
       let html = "";
 
-      allSales.forEach((sale) => {
+      allSales.forEach((sale, index) => {
         grandTotalAllSales += sale.total;
 
-        html += `
-          <div class="customer-row">
+        html += 
+          `<div class="customer-row">
             <span>کریار: ${sale.customer}</span>
             <span>بەروار: ${formatDateTime(sale.timestamp)}</span>
           </div>
@@ -95,15 +94,15 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items.map(item => `
-                <tr>
+              ${sale.items.map(item => 
+                `<tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
                   <td>${item.unitPrice.toLocaleString()} IQD</td>
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
-                </tr>
-              `).join('')}
+                </tr>`
+              ).join("")}
             </tbody>
             <tfoot>
               <tr>
@@ -112,15 +111,13 @@
               </tr>
             </tfoot>
           </table>
-          <br/>
-        `;
+          <br/>`;
       });
 
-      html += `
-        <h3 style="text-align:right; margin-top:20px;">
+      html += 
+        `<h3 style="text-align:right; margin-top:20px;">
           کۆی گشتی هەموو فرۆشتنەکان: ${grandTotalAllSales.toLocaleString()} IQD
-        </h3>
-      `;
+        </h3>`;
 
       saleDataDiv.innerHTML = html;
     }
