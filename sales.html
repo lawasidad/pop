@@ -71,36 +71,6 @@
         display: none !important;
       }
     }
-    .checkbox-cell {
-      width: 30px;
-    }
-    .filter-area {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      justify-content: flex-start;
-    }
-    .filter-area label {
-      font-weight: bold;
-    }
-    .filter-area input[type="date"] {
-      padding: 5px;
-      font-size: 1em;
-    }
-    button {
-      cursor: pointer;
-      padding: 7px 15px;
-      background: #3b82f6;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      font-size: 1em;
-      transition: background 0.3s ease;
-    }
-    button:hover {
-      background: #2563eb;
-    }
     /* زیادکردنی کۆی گشتی فرۆشتن بە سەرەوە و بە رەنگی سەوز */
     .total-sales-summary {
       background-color: #d4edda;
@@ -120,79 +90,38 @@
 
     <div class="total-sales-summary" id="totalSalesSummary">کۆی گشتی فرۆشتن: 0 IQD</div>
 
-    <div class="filter-area no-print">
-      <label for="startDate">بەرواری دەستپێکردن:</label>
-      <input type="date" id="startDate" />
-      <label for="endDate">بەرواری کۆتایی:</label>
-      <input type="date" id="endDate" />
-      <button onclick="applyDateFilter()">فلتەر بکە</button>
-      <button onclick="clearDateFilter()">ڕەشەبکەرەوە</button>
+    <div id="salesContainer">
+      <p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>
     </div>
-
-    <label class="no-print" style="display:flex; align-items:center; margin-bottom: 10px;">
-      <input type="checkbox" id="selectAll" style="margin-left: 10px;" />
-      <span>هەموو وەسلەکان هەڵبژێرە</span>
-    </label>
-
-    <button onclick="printSelected()" class="no-print" style="margin-bottom: 15px;">پرینتی وەسلە هەڵبژێردراوەکان</button>
-
-    <div id="salesContainer"></div>
   </div>
 
   <script>
-    // وەرگرتنی داتاکان لە localStorage
+    // ئەم کۆدە بۆ نمایش کۆی گشتی فرۆشتنە وەکو ئەوەی پێویستە، ئەمجار هیچ داتای فرۆشتن نیە
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-    let filteredSales = [...allSales];
 
     const salesContainer = document.getElementById("salesContainer");
+    const totalSalesSummary = document.getElementById("totalSalesSummary");
 
-    // فانکشنی فرۆشکردنی بەروار و کات
-    function formatDateTime(dateString) {
-      const date = new Date(dateString);
-      const day = String(date.getDate()).padStart(2, "0");
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const year = date.getFullYear();
-      const hours = String(date.getHours()).padStart(2, "0");
-      const minutes = String(date.getMinutes()).padStart(2, "0");
-      const seconds = String(date.getSeconds()).padStart(2, "0");
-
-      const today = new Date();
-      if (
-        date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-      ) {
-        // ئەگەر بەروار ئەمڕۆیە، تەنها کات و چرکە بنووسە
-        return `ئەمڕۆ ${hours}:${minutes}:${seconds}`;
-      } else {
-        return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
-      }
-    }
-
-    // نیشاندانی کۆی گشتی فرۆشتن لە سەرەوە
     function updateTotalSalesSummary() {
-      const total = filteredSales.reduce((sum, sale) => sum + sale.total, 0);
-      const totalSalesSummary = document.getElementById("totalSalesSummary");
+      const total = allSales.reduce((sum, sale) => sum + sale.total, 0);
       totalSalesSummary.textContent = `کۆی گشتی فرۆشتن: ${total.toLocaleString()} IQD`;
     }
 
-    // دەرخستنی وەسلەکان لە پەڕەکە
     function renderSales() {
-      if (filteredSales.length === 0) {
+      if (allSales.length === 0) {
         salesContainer.innerHTML = "<p>هیچ داتای فرۆشتن نەدۆزرایەوە.</p>";
         updateTotalSalesSummary();
         return;
       }
 
       let html = "";
-      filteredSales.forEach((sale, idx) => {
+      allSales.forEach((sale, idx) => {
         html += `
         <div class="sale-block" id="sale-${idx}">
-          <label class="customer-header">
-            <input type="checkbox" class="sale-checkbox" data-idx="${idx}" />
+          <div class="customer-header">
             <span>کریار: ${sale.customer}</span>
-            <span class="sale-time">${formatDateTime(sale.timestamp)}</span>
-          </label>
+            <span class="sale-time">${new Date(sale.timestamp).toLocaleString("ku-IQ")}</span>
+          </div>
           <table>
             <thead>
               <tr>
@@ -204,9 +133,7 @@
               </tr>
             </thead>
             <tbody>
-              ${sale.items
-                .map(
-                  (item) => `
+              ${sale.items.map(item => `
                 <tr>
                   <td>${item.name}</td>
                   <td>${item.quantity}</td>
@@ -214,9 +141,7 @@
                   <td>${item.discount}</td>
                   <td>${item.total.toLocaleString()} IQD</td>
                 </tr>
-              `
-                )
-                .join("")}
+              `).join("")}
             </tbody>
             <tfoot>
               <tr>
@@ -229,27 +154,10 @@
       });
 
       salesContainer.innerHTML = html;
-
-      // هەڵبژاردنی هەموو
-      const selectAll = document.getElementById("selectAll");
-      selectAll.checked = false;
-      selectAll.addEventListener("change", () => {
-        const checkboxes = document.querySelectorAll(".sale-checkbox");
-        checkboxes.forEach((cb) => (cb.checked = selectAll.checked));
-      });
-
-      // ئاگرگرتنی هەڵبژاردنی چەکبووکسەکان
-      const saleCheckboxes = document.querySelectorAll(".sale-checkbox");
-      saleCheckboxes.forEach((cb) =>
-        cb.addEventListener("change", () => {
-          const allChecked = Array.from(saleCheckboxes).every(
-            (chk) => chk.checked
-          );
-          selectAll.checked = allChecked;
-        })
-      );
-
       updateTotalSalesSummary();
     }
 
-    // پرینتی وەسلە هەڵبژێردراو
+    renderSales();
+  </script>
+</body>
+</html>
