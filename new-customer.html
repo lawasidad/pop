@@ -1,263 +1,244 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sale</title>
+  <title>Add New Customer</title>
   <style>
-    /* کۆدی ستایلی تۆ هەمانە */
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #eef6fb;
-      margin: 0;
-      padding: 10px;
-    }
-    .container {
-      background: white;
-      padding: 20px 25px;
-      border-radius: 12px;
-      max-width: 900px;
+      background: #f4f6f9;
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      max-width: 500px;
       margin: auto;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      direction: rtl;
     }
-    .top-bar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
-      align-items: center;
-    }
-    .summary {
-      font-size: 1.3em;
-      font-weight: 700;
-      padding: 12px 20px;
+    .form-box {
+      background: white;
+      padding: 20px;
       border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
-      user-select: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     }
-    .total-qty {
-      background: #d0e8ff;
-      color: #003366;
-      min-width: 90px;
+    h2 {
       text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      direction: ltr;
     }
-    .total-amount {
-      background: #d7f0dc;
-      color: #1a4d1a;
-      min-width: 130px;
-      text-align: center;
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+      direction: ltr;
+      text-align: right;
     }
-    button.submit-btn {
-      background-color: #28a745;
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 16px;
+      direction: ltr;
+      text-align: left;
+    }
+    .gps-group {
+      display: flex;
+      align-items: center;
+      direction: ltr;
+    }
+    .gps-group input {
+      flex: 1;
+    }
+    .gps-btn {
+      margin-left: 10px;
+      background: #007bff;
       color: white;
       border: none;
-      padding: 12px 30px;
-      font-weight: 700;
-      font-size: 1.1em;
-      border-radius: 12px;
+      padding: 10px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.25s ease;
-      box-shadow: 0 3px 8px rgba(40,167,69,0.5);
-      white-space: nowrap;
-    }
-    button.submit-btn:hover {
-      background-color: #218838;
-    }
-    input[type="text"], select {
-      padding: 12px 15px;
-      font-size: 1em;
-      margin-top: 5px;
-      border-radius: 12px;
-      border: 1.8px solid #bbb;
-      width: 100%;
-      max-width: 100%;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
-    }
-    input[type="text"]:focus, select:focus {
-      outline: none;
-      border-color: #28a745;
-      box-shadow: 0 0 6px #8ddf8d;
-    }
-    .product-list {
-      margin-top: 25px;
-    }
-    .product-item {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      border: 1.2px solid #ddd;
-      padding: 15px 20px;
-      border-radius: 14px;
-      background: #f9fbff;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.04);
+      user-select: none;
       transition: background-color 0.3s ease;
     }
-    .product-item:hover {
-      background-color: #e8f2ff;
+    .gps-btn:hover {
+      background-color: #0056b3;
     }
-    .product-name {
-      font-weight: 700;
-      font-size: 1.1em;
-      color: #003366;
-    }
-    .details {
-      font-size: 0.95em;
-      color: #444;
-      margin-top: 6px;
+    .submit-btn {
+      width: 100%;
+      background: #28a745;
+      color: white;
+      border: none;
+      padding: 12px;
+      font-size: 16px;
+      border-radius: 6px;
+      cursor: pointer;
       user-select: none;
+      transition: background-color 0.3s ease;
     }
-    @media (min-width: 600px) {
-      input[type="text"], select {
-        max-width: 320px;
-      }
-      button.submit-btn {
-        width: auto;
-      }
-      .product-item {
-        flex-wrap: nowrap;
-      }
-      .details {
-        margin-top: 0;
-      }
+    .submit-btn:hover {
+      background: #218838;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="top-bar">
-      <div class="summary total-qty" id="totalQty">Qty: 0</div>
-      <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
-      <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
-    </div>
 
-    <!-- گۆڕدرا بۆ select -->
-    <select id="customer">
-      <option value="">-- Select Customer --</option>
-      <option value="Ahmed">Ahmed</option>
-      <option value="Sara">Sara</option>
-      <option value="Kawa">Kawa</option>
-      <option value="Hemn">Hemn</option>
-    </select>
+<div class="form-box" dir="ltr">
+  <h2>Add New Customer</h2>
 
-    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
+  <label for="code">Customer Code <span style="color:red">*</span></label>
+  <input type="text" id="code" placeholder="Enter customer code" required autocomplete="off" />
 
-    <div class="product-list" id="productList"></div>
+  <label for="name">Full Name <span style="color:red">*</span></label>
+  <input type="text" id="name" placeholder="Enter full name" required autocomplete="off" />
+
+  <label for="mobile">Mobile Number <span style="color:red">*</span></label>
+  <input type="tel" id="mobile" placeholder="Enter mobile number" required autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="Please enter a valid mobile number" />
+
+  <label for="balance">Balance</label>
+  <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
+
+  <label for="route">Country</label>
+  <select id="route">
+    <option value="" selected disabled>Select country</option>
+  </select>
+
+  <label for="city">City</label>
+  <select id="city">
+    <option value="" selected disabled>Select city</option>
+  </select>
+
+  <label for="area">Area</label>
+  <select id="area">
+    <option value="" selected disabled>Select area</option>
+  </select>
+
+  <label for="location">Location (GPS)</label>
+  <div class="gps-group">
+    <input type="text" id="location" placeholder="Click to get GPS location" readonly />
+    <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
   </div>
 
-  <script>
-    const products = [
-      { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
-      { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
-      { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
-    ];
+  <button class="submit-btn" type="button" onclick="saveCustomer()">Save Customer</button>
+</div>
 
-    const items = products.map(p => ({ ...p, quantity: 0 }));
-
-    function renderProducts() {
-      const list = document.getElementById("productList");
-      const search = document.getElementById("searchBox").value.trim().toLowerCase();
-      list.innerHTML = "";
-
-      items.forEach((item, index) => {
-        if (search && !item.name.toLowerCase().includes(search)) return;
-        const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
-        list.innerHTML += `
-          <div class="product-item">
-            <div>
-              <div class="product-name">${item.name}</div>
-              <div class="details">
-                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                Qty: 
-                <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
-                <input 
-                  type="number" 
-                  min="0" 
-                  max="${item.stock}" 
-                  value="${item.quantity}" 
-                  onchange="changeQtyDirect(${index}, this.value)" 
-                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
-                />
-                <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
-                | Total: ${total.toLocaleString()} IQD
-              </div>
-            </div>
-          </div>
-        `;
+<script>
+  function getLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude.toFixed(5);
+        const lon = position.coords.longitude.toFixed(5);
+        document.getElementById("location").value = lat + ", " + lon;
+        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
+      }, function(error) {
+        alert("Error fetching location: " + error.message);
       });
+    } else {
+      alert("Geolocation is not supported by this browser.");
+    }
+  }
 
-      updateSummary();
+  function loadRouteData() {
+    const routeSelect = document.getElementById("route");
+    const citySelect = document.getElementById("city");
+    const areaSelect = document.getElementById("area");
+
+    const routes = JSON.parse(localStorage.getItem("routes") || "[]");
+    const countries = [...new Set(routes.map(r => r.country))];
+
+    countries.forEach(c => {
+      const option = document.createElement("option");
+      option.value = c;
+      option.textContent = c;
+      routeSelect.appendChild(option);
+    });
+
+    routeSelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const cities = [...new Set(routes.filter(r => r.country === selectedCountry).map(r => r.city))];
+      citySelect.innerHTML = `<option value="" selected disabled>Select city</option>`;
+      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
+      cities.forEach(city => {
+        const option = document.createElement("option");
+        option.value = city;
+        option.textContent = city;
+        citySelect.appendChild(option);
+      });
+    });
+
+    citySelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const selectedCity = citySelect.value;
+      const areas = routes.filter(r => r.country === selectedCountry && r.city === selectedCity).map(r => r.area);
+      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
+      areas.forEach(area => {
+        const option = document.createElement("option");
+        option.value = area;
+        option.textContent = area;
+        areaSelect.appendChild(option);
+      });
+    });
+  }
+
+  function saveCustomer() {
+    const code = document.getElementById("code").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const balance = parseFloat(document.getElementById("balance").value.trim() || "0");
+    const route = document.getElementById("route").value;
+    const city = document.getElementById("city").value;
+    const area = document.getElementById("area").value;
+    const location = document.getElementById("location").value.trim();
+
+    if (!code || !name || !mobile) {
+      alert("Please fill in all required fields (marked with *).");
+      return;
     }
 
-    function changeQty(index, delta) {
-      items[index].quantity += delta;
-      if (items[index].quantity < 0) items[index].quantity = 0;
-      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
-      renderProducts();
+    const mobilePattern = /^[0-9+\-\s]{7,15}$/;
+    if (!mobilePattern.test(mobile)) {
+      alert("Please enter a valid mobile number.");
+      return;
     }
 
-    function changeQtyDirect(index, value) {
-      let val = parseInt(value);
-      if (isNaN(val) || val < 0) val = 0;
-      if (val > items[index].stock) val = items[index].stock;
-      items[index].quantity = val;
-      renderProducts();
-    }
-
-    function updateSummary() {
-      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
-      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
-      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
-      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
-    }
-
-    function submitSale() {
-      const customer = document.getElementById("customer").value.trim();
-      if (!customer) {
-        alert("Please select a customer.");
-        return;
+    let customers = [];
+    const stored = localStorage.getItem("customers");
+    if (stored) {
+      try {
+        customers = JSON.parse(stored);
+      } catch {
+        customers = [];
       }
-
-      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
-        name: i.name,
-        quantity: i.quantity,
-        unitPrice: i.unitPrice,
-        discount: i.discount,
-        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
-      }));
-
-      if (selectedItems.length === 0) {
-        alert("No products selected.");
-        return;
-      }
-
-      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
-      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
-
-      const saleData = {
-        customer,
-        items: selectedItems,
-        total,
-        totalQty: qty,
-        timestamp: new Date().toISOString()
-      };
-
-      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-      allSales.push(saleData);
-      localStorage.setItem("allSales", JSON.stringify(allSales));
-
-      document.getElementById("customer").value = "";
-      document.getElementById("searchBox").value = "";
-      items.forEach(i => i.quantity = 0);
-      renderProducts();
-
-      alert("Sale submitted! View it on sales.html.");
     }
 
-    renderProducts();
-  </script>
+    const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
+    if (duplicate) {
+      alert("This customer code is already used.");
+      return;
+    }
+
+    const newCustomer = { code, name, mobile, balance, route, city, area, location };
+    customers.push(newCustomer);
+    localStorage.setItem("customers", JSON.stringify(customers));
+
+    // پەیوەندی کراوە بە فۆرمی new_sales.html بۆ نوێکردنەوەی ناوەکانی select
+    localStorage.setItem("lastCustomerAdded", name); // ئەمە trigger دەکات لە فۆرمی تر
+
+    alert("Customer saved successfully!");
+
+    document.getElementById("code").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("balance").value = 0;
+    document.getElementById("route").value = "";
+    document.getElementById("city").value = "";
+    document.getElementById("area").value = "";
+    document.getElementById("location").value = "";
+    document.getElementById("code").focus();
+  }
+
+  loadRouteData();
+</script>
+
 </body>
 </html>
