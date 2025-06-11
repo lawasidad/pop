@@ -1,246 +1,104 @@
 <!DOCTYPE html>
 <html lang="ku" dir="rtl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Form - Add Customer</title>
-<style>
-  body {
-    background: #f4f6f9;
-    font-family: Arial, sans-serif;
-    padding: 20px;
-    max-width: 480px;
-    margin: auto;
-    direction: rtl;
-  }
-  .form-box {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-  }
-  h2 {
-    text-align: center;
-    margin-bottom: 20px;
-    font-size: 22px;
-    direction: ltr;
-  }
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    direction: ltr;
-    text-align: right;
-  }
-  input, select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 15px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 16px;
-    direction: ltr;
-    text-align: left;
-  }
-  .gps-group {
-    display: flex;
-    align-items: center;
-    direction: ltr;
-  }
-  .gps-group input {
-    flex: 1;
-  }
-  .gps-btn {
-    margin-left: 10px;
-    background: #007bff;
-    color: white;
-    border: none;
-    padding: 10px;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .gps-btn:hover {
-    background-color: #0056b3;
-  }
-  .submit-btn {
-    width: 100%;
-    background: #28a745;
-    color: white;
-    border: none;
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    user-select: none;
-  }
-  .submit-btn:hover {
-    background: #218838;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <title>زیادکردنی کڕیار</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 30px auto;
+      padding: 15px;
+      background: #f9f9f9;
+      direction: rtl;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    input, select {
+      width: 100%;
+      padding: 8px;
+      margin-top: 5px;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    button {
+      margin-top: 20px;
+      background-color: #28a745;
+      color: white;
+      padding: 12px;
+      border: none;
+      width: 100%;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 5px;
+    }
+    button:hover {
+      background-color: #218838;
+    }
+  </style>
 </head>
 <body>
 
-<div class="form-box" dir="ltr">
-  <h2>کڕیارێکی نوێ زیاد بکە</h2>
+<h2>زیادکردنی کڕیار نوێ</h2>
 
-  <label for="code">کۆدی کڕیار <span style="color:red">*</span></label>
-  <input type="text" id="code" placeholder="کۆدی کڕیار بنوسە" required autocomplete="off" />
+<label for="code">کۆدی کڕیار *</label>
+<input type="text" id="code" placeholder="کۆدی کڕیار بنوسە" autocomplete="off" />
 
-  <label for="name">ناوی تەواو <span style="color:red">*</span></label>
-  <input type="text" id="name" placeholder="ناوی تەواو بنوسە" required autocomplete="off" />
+<label for="name">ناوی تەواو *</label>
+<input type="text" id="name" placeholder="ناوی تەواو بنوسە" autocomplete="off" />
 
-  <label for="mobile">ژمارەی موبایل <span style="color:red">*</span></label>
-  <input type="tel" id="mobile" placeholder="ژمارەی موبایل بنوسە" required autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="ژمارەی موبایلەکە ڕاست بنوسە" />
+<label for="mobile">ژمارەی موبایل *</label>
+<input type="tel" id="mobile" placeholder="ژمارەی موبایل بنوسە" autocomplete="off" />
 
-  <label for="balance">قەرز/بەلانس</label>
-  <input type="number" id="balance" placeholder="٠" value="0" min="0" step="0.01" />
-
-  <label for="route">وڵات</label>
-  <select id="route">
-    <option value="" selected disabled>وڵات هەڵبژێرە</option>
-  </select>
-
-  <label for="city">شار</label>
-  <select id="city">
-    <option value="" selected disabled>شار هەڵبژێرە</option>
-  </select>
-
-  <label for="area">ناوچە</label>
-  <select id="area">
-    <option value="" selected disabled>ناوچە هەڵبژێرە</option>
-  </select>
-
-  <label for="location">شوێن (GPS)</label>
-  <div class="gps-group">
-    <input type="text" id="location" placeholder="کلیل بکە بۆ گرتنی شوێن" readonly />
-    <button class="gps-btn" type="button" onclick="getLocation()">📍</button>
-  </div>
-
-  <button class="submit-btn" type="button" onclick="saveCustomer()">سەیڤ</button>
-</div>
+<button id="saveBtn">سەیڤ</button>
 
 <script>
-  // بەکارهێنانی localStorage بۆ هاوبەشی ناوەکان لە new_sales.html
-  function getLocation() {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(function(position) {
-        const lat = position.coords.latitude.toFixed(5);
-        const lon = position.coords.longitude.toFixed(5);
-        document.getElementById("location").value = lat + ", " + lon;
-        window.open(`https://maps.google.com/?q=${lat},${lon}`, "_blank");
-      }, function(error) {
-        alert("کێشە لە گرتنی شوێن: " + error.message);
-      });
-    } else {
-      alert("گەلەکە ناتوانێت شوێنەکان بەدەست بهێنێت.");
-    }
-  }
+  const saveBtn = document.getElementById('saveBtn');
 
-  function loadRouteData() {
-    // ئەم نموونەیە بۆ پرکردنی ناوەکان و هەروەها وڵات، شار، ناوچە
-    const routes = [
-      { country: "کوردستان", city: "سلێمانی", area: "ناوچەیەک" },
-      { country: "کوردستان", city: "هەولێر", area: "ناوچەی دووەم" },
-      { country: "عێراق", city: "بەغدا", area: "ناوچەی سێیەم" }
-    ];
-
-    const routeSelect = document.getElementById("route");
-    const citySelect = document.getElementById("city");
-    const areaSelect = document.getElementById("area");
-
-    const countries = [...new Set(routes.map(r => r.country))];
-    countries.forEach(c => {
-      const option = document.createElement("option");
-      option.value = c;
-      option.textContent = c;
-      routeSelect.appendChild(option);
-    });
-
-    routeSelect.addEventListener("change", () => {
-      const selectedCountry = routeSelect.value;
-      const cities = [...new Set(routes.filter(r => r.country === selectedCountry).map(r => r.city))];
-      citySelect.innerHTML = '<option value="" selected disabled>شار هەڵبژێرە</option>';
-      areaSelect.innerHTML = '<option value="" selected disabled>ناوچە هەڵبژێرە</option>';
-      cities.forEach(city => {
-        const option = document.createElement("option");
-        option.value = city;
-        option.textContent = city;
-        citySelect.appendChild(option);
-      });
-    });
-
-    citySelect.addEventListener("change", () => {
-      const selectedCountry = routeSelect.value;
-      const selectedCity = citySelect.value;
-      const areas = routes.filter(r => r.country === selectedCountry && r.city === selectedCity).map(r => r.area);
-      areaSelect.innerHTML = '<option value="" selected disabled>ناوچە هەڵبژێرە</option>';
-      areas.forEach(area => {
-        const option = document.createElement("option");
-        option.value = area;
-        option.textContent = area;
-        areaSelect.appendChild(option);
-      });
-    });
-  }
-
-  function saveCustomer() {
-    const code = document.getElementById("code").value.trim();
-    const name = document.getElementById("name").value.trim();
-    const mobile = document.getElementById("mobile").value.trim();
-    const balance = parseFloat(document.getElementById("balance").value.trim() || "0");
-    const route = document.getElementById("route").value;
-    const city = document.getElementById("city").value;
-    const area = document.getElementById("area").value;
-    const location = document.getElementById("location").value.trim();
+  saveBtn.addEventListener('click', () => {
+    const code = document.getElementById('code').value.trim();
+    const name = document.getElementById('name').value.trim();
+    const mobile = document.getElementById('mobile').value.trim();
 
     if (!code || !name || !mobile) {
-      alert("تکایە خانەکانی هەریەک لە سەرەکییەکان پڕ بکەوە.");
+      alert('تکایە هەموو خانە سەرەکییەکان پر بکەوە.');
       return;
     }
 
-    const mobilePattern = /^[0-9+\-\s]{7,15}$/;
-    if (!mobilePattern.test(mobile)) {
-      alert("تکایە ژمارەی موبایلەکە ڕاست بنوسە.");
-      return;
-    }
-
+    // بارکردنی کڕیارەکان لە localStorage
     let customers = [];
-    const stored = localStorage.getItem("customers");
-    if (stored) {
-      try {
-        customers = JSON.parse(stored);
-      } catch {
-        customers = [];
-      }
+    try {
+      customers = JSON.parse(localStorage.getItem('customers')) || [];
+    } catch {
+      customers = [];
     }
 
-    const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
-    if (duplicate) {
-      alert("ئەم کۆدی کڕیارە پێشتر بەکاردەهێنرایە.");
+    // پشتڕاستکردنی کۆدی کڕیار کە دووبارە نەبێت
+    if (customers.some(c => c.code.toLowerCase() === code.toLowerCase())) {
+      alert('ئەم کۆدی کڕیارە پێشتر تۆمار کراوە.');
       return;
     }
 
-    const newCustomer = { code, name, mobile, balance, route, city, area, location };
-    customers.push(newCustomer);
-    localStorage.setItem("customers", JSON.stringify(customers));
-    localStorage.setItem("lastCustomerAdded", Date.now().toString());
+    // زیادکردنی کڕیار نوێ
+    customers.push({ code, name, mobile });
 
-    alert("کڕیار بە سەرکەوتووی تۆمار کرا!");
+    // ناردنی داتاکان بۆ localStorage
+    localStorage.setItem('customers', JSON.stringify(customers));
 
-    // پاککردن فۆرم
-    document.getElementById("code").value = "";
-    document.getElementById("name").value = "";
-    document.getElementById("mobile").value = "";
-    document.getElementById("balance").value = 0;
-    document.getElementById("route").value = "";
-    document.getElementById("city").innerHTML = '<option value="" selected disabled>شار هەڵبژێرە</option>';
-    document.getElementById("area").innerHTML = '<option value="" selected disabled>ناوچە هەڵبژێرە</option>';
-    document.getElementById("location").value = "";
-    document.getElementById("code").focus();
-  }
+    alert('کڕیار بە سەرکەوتوویی تۆمار کرا.');
 
-  loadRouteData();
+    // پاککردنی فۆرم
+    document.getElementById('code').value = '';
+    document.getElementById('name').value = '';
+    document.getElementById('mobile').value = '';
+    document.getElementById('code').focus();
+
+    // هەڵبژاردنی ئەو کاتای کڕیار نوێ زیاد کرا بۆ event storage
+    localStorage.setItem('lastCustomerAdded', Date.now());
+  });
 </script>
 
 </body>
