@@ -6,112 +6,124 @@
   <title>زیادکردنی کڕیار</title>
   <style>
     body {
+      background: #f4f6f9;
       font-family: Arial, sans-serif;
-      max-width: 500px;
-      margin: 40px auto;
-      background: #f8f9fa;
-      direction: rtl;
       padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px #ccc;
+      max-width: 500px;
+      margin: auto;
+      direction: rtl;
+    }
+    .form-box {
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+      direction: ltr;
     }
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: bold;
+      direction: ltr;
+      text-align: right;
     }
     input, select {
       width: 100%;
       padding: 10px;
-      margin-bottom: 18px;
+      margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 16px;
       direction: ltr;
       text-align: left;
     }
-    button {
-      background-color: #28a745;
+    .submit-btn {
+      width: 100%;
+      background: #28a745;
       color: white;
       border: none;
       padding: 12px;
-      font-size: 18px;
+      font-size: 16px;
       border-radius: 6px;
       cursor: pointer;
-      width: 100%;
+      user-select: none;
+      transition: background-color 0.3s ease;
     }
-    button:hover {
-      background-color: #218838;
+    .submit-btn:hover {
+      background: #218838;
     }
   </style>
 </head>
 <body>
 
-  <h2 style="text-align:center;">زیادکردنی کڕیار نوێ</h2>
+<div class="form-box" dir="ltr">
+  <h2>زیادکردنی کڕیار</h2>
 
-  <label for="code">کۆدی کڕیار (کۆدی یەکتا) *</label>
-  <input id="code" type="text" placeholder="کۆدی کڕیار" autocomplete="off" />
+  <label for="code">کۆدی کڕیار <span style="color:red">*</span></label>
+  <input type="text" id="code" placeholder="کۆدی کڕیار بنوسە" autocomplete="off" />
 
-  <label for="name">ناوی تەواو *</label>
-  <input id="name" type="text" placeholder="ناوی تەواو" autocomplete="off" />
+  <label for="name">ناوی تەواو <span style="color:red">*</span></label>
+  <input type="text" id="name" placeholder="ناوی تەواو بنوسە" autocomplete="off" />
 
-  <label for="mobile">ژمارەی مۆبایل *</label>
-  <input id="mobile" type="tel" placeholder="ژمارەی مۆبایل" autocomplete="off" />
+  <label for="mobile">ژمارەی مۆبایل <span style="color:red">*</span></label>
+  <input type="tel" id="mobile" placeholder="ژمارەی مۆبایل بنوسە" autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="ژمارەی مۆبایل دروست بنوسە" />
 
-  <label for="balance">بەرامبەر (بەدیهی)</label>
-  <input id="balance" type="number" value="0" min="0" step="0.01" />
+  <label for="balance">بەرامبەر</label>
+  <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
 
-  <button onclick="saveCustomer()">نوێکردنەوە</button>
+  <button class="submit-btn" type="button" onclick="saveCustomer()">نوێکردنەوە</button>
+</div>
 
-  <script>
-    function saveCustomer() {
-      const code = document.getElementById('code').value.trim();
-      const name = document.getElementById('name').value.trim();
-      const mobile = document.getElementById('mobile').value.trim();
-      const balance = parseFloat(document.getElementById('balance').value.trim() || '0');
+<script>
+  function saveCustomer() {
+    const code = document.getElementById("code").value.trim();
+    const name = document.getElementById("name").value.trim();
+    const mobile = document.getElementById("mobile").value.trim();
+    const balance = parseFloat(document.getElementById("balance").value.trim() || "0");
 
-      if (!code || !name || !mobile) {
-        alert('تکایە خانەکانى پێویست پر بکەوە');
-        return;
-      }
-
-      // بارودۆخی ژمارەی مۆبایل راستکردنەوە (بە شێوەی سادە)
-      const mobilePattern = /^[0-9+\-\s]{7,15}$/;
-      if (!mobilePattern.test(mobile)) {
-        alert('ژمارەی مۆبایل نادروستە');
-        return;
-      }
-
-      // وەرگرتنی لیستی کڕیارەکان لە localStorage
-      let customers = JSON.parse(localStorage.getItem('customers') || '[]');
-
-      // دڵنیابوون لە کۆدی کڕیار یەکتایی
-      const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
-      if (duplicate) {
-        alert('کۆدی کڕیار پێشتر بەکار هاتووە');
-        return;
-      }
-
-      // زیادکردنی کڕیارە نوێکان بۆ لیست
-      customers.push({ code, name, mobile, balance });
-
-      // هەڵگرتنی لیست بۆ localStorage
-      localStorage.setItem('customers', JSON.stringify(customers));
-
-      // هەڵگرتنی کاتی زیادکردن بۆ notify لە پەڕەی تر
-      localStorage.setItem('lastCustomerAdded', Date.now().toString());
-
-      alert('کڕیار بەسەرکەوتوویی تۆمار کرا');
-
-      // پاککردنی خانەکان بۆ زیادکردنی کڕیارەکی تر
-      document.getElementById('code').value = '';
-      document.getElementById('name').value = '';
-      document.getElementById('mobile').value = '';
-      document.getElementById('balance').value = 0;
-
-      document.getElementById('code').focus();
+    if (!code || !name || !mobile) {
+      alert("تکایە خانەکانى پێویست پر بکەوە");
+      return;
     }
-  </script>
+
+    const mobilePattern = /^[0-9+\-\s]{7,15}$/;
+    if (!mobilePattern.test(mobile)) {
+      alert("ژمارەی مۆبایل نادروستە");
+      return;
+    }
+
+    let customers = JSON.parse(localStorage.getItem("customers") || "[]");
+
+    const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
+    if (duplicate) {
+      alert("کۆدی کڕیار پێشتر بەکار هاتووە");
+      return;
+    }
+
+    const newCustomer = { code, name, mobile, balance };
+    customers.push(newCustomer);
+
+    localStorage.setItem("customers", JSON.stringify(customers));
+
+    // تۆمارکردنی کاتی زیادکردن بۆ notify کردن لە پەڕەی تر
+    localStorage.setItem("lastCustomerAdded", Date.now().toString());
+
+    alert("کڕیار بەسەرکەوتوویی زیادکرا");
+
+    // پاککردنی خانەکان بۆ زیادکردنی کڕیار نوێ
+    document.getElementById("code").value = "";
+    document.getElementById("name").value = "";
+    document.getElementById("mobile").value = "";
+    document.getElementById("balance").value = 0;
+
+    document.getElementById("code").focus();
+  }
+</script>
 
 </body>
 </html>
