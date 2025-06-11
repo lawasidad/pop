@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
-    /* کۆدی ستایلی تۆ هەمانە */
+    /* هەموو style ـەکان وەک خۆیان */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #eef6fb;
@@ -134,12 +134,8 @@
       <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
     </div>
 
-    <!-- گۆڕینی input بۆ select -->
     <select id="customer">
       <option value="">-- Select Customer --</option>
-      <option value="Customer A">Customer A</option>
-      <option value="Customer B">Customer B</option>
-      <option value="Customer C">Customer C</option>
     </select>
 
     <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
@@ -256,7 +252,23 @@
       alert("Sale submitted! View it on sales.html.");
     }
 
-    renderProducts();
+    function loadCustomers() {
+      const select = document.getElementById("customer");
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+
+      select.innerHTML = `<option value="">-- Select Customer --</option>`;
+      customers.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    window.onload = function () {
+      loadCustomers();
+      renderProducts();
+    };
   </script>
 </body>
 </html>
