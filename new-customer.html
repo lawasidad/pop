@@ -221,6 +221,9 @@
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
 
+    // پەیوەندی کراوە بە فۆرمی new_sales.html بۆ نوێکردنەوەی ناوەکانی select
+    localStorage.setItem("lastCustomerAdded", name); // ئەمە trigger دەکات لە فۆرمی تر
+
     alert("Customer saved successfully!");
 
     document.getElementById("code").value = "";
@@ -234,7 +237,6 @@
     document.getElementById("code").focus();
   }
 
-  // Call on load
   loadRouteData();
 </script>
 
