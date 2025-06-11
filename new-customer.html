@@ -202,13 +202,10 @@
     }
 
     let customers = [];
-    const stored = localStorage.getItem("customers");
-    if (stored) {
-      try {
-        customers = JSON.parse(stored);
-      } catch {
-        customers = [];
-      }
+    try {
+      customers = JSON.parse(localStorage.getItem("customers") || "[]");
+    } catch {
+      customers = [];
     }
 
     const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
@@ -220,8 +217,7 @@
     const newCustomer = { code, name, mobile, balance, route, city, area, location };
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
-
-    localStorage.setItem("lastCustomerAdded", name); // trigger update in new_sales.html
+    localStorage.setItem("lastCustomerAdded", name);
 
     alert("Customer saved successfully!");
 
