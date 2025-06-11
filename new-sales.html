@@ -64,7 +64,7 @@
     button.submit-btn:hover {
       background-color: #218838;
     }
-    input[type="text"] {
+    input[type="text"], select {
       padding: 12px 15px;
       font-size: 1em;
       margin-top: 5px;
@@ -75,7 +75,7 @@
       box-sizing: border-box;
       transition: border-color 0.3s ease;
     }
-    input[type="text"]:focus {
+    input[type="text"]:focus, select:focus {
       outline: none;
       border-color: #28a745;
       box-shadow: 0 0 6px #8ddf8d;
@@ -111,7 +111,7 @@
       user-select: none;
     }
     @media (min-width: 600px) {
-      input[type="text"] {
+      input[type="text"], select {
         max-width: 320px;
       }
       button.submit-btn {
@@ -134,7 +134,14 @@
       <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
     </div>
 
-    <input type="text" id="customer" placeholder="Customer name" autocomplete="off" />
+    <!-- گۆڕینی input بۆ select -->
+    <select id="customer">
+      <option value="">-- Select Customer --</option>
+      <option value="Customer A">Customer A</option>
+      <option value="Customer B">Customer B</option>
+      <option value="Customer C">Customer C</option>
+    </select>
+
     <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
 
     <div class="product-list" id="productList"></div>
@@ -209,7 +216,7 @@
     function submitSale() {
       const customer = document.getElementById("customer").value.trim();
       if (!customer) {
-        alert("Please enter a customer name.");
+        alert("Please select a customer.");
         return;
       }
 
