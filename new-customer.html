@@ -59,10 +59,6 @@
       border-radius: 6px;
       cursor: pointer;
       user-select: none;
-      transition: background-color 0.3s ease;
-    }
-    .gps-btn:hover {
-      background-color: #0056b3;
     }
     .submit-btn {
       width: 100%;
@@ -74,10 +70,6 @@
       border-radius: 6px;
       cursor: pointer;
       user-select: none;
-      transition: background-color 0.3s ease;
-    }
-    .submit-btn:hover {
-      background: #218838;
     }
   </style>
 </head>
@@ -93,7 +85,7 @@
   <input type="text" id="name" placeholder="Enter full name" required autocomplete="off" />
 
   <label for="mobile">Mobile Number <span style="color:red">*</span></label>
-  <input type="tel" id="mobile" placeholder="Enter mobile number" required autocomplete="off" pattern="[0-9+\-\s]{7,15}" title="Please enter a valid mobile number" />
+  <input type="tel" id="mobile" placeholder="Enter mobile number" required autocomplete="off" />
 
   <label for="balance">Balance</label>
   <input type="number" id="balance" placeholder="0" value="0" min="0" step="0.01" />
@@ -191,40 +183,28 @@
     const location = document.getElementById("location").value.trim();
 
     if (!code || !name || !mobile) {
-      alert("Please fill in all required fields (marked with *).");
+      alert("Please fill in all required fields.");
       return;
     }
 
-    const mobilePattern = /^[0-9+\-\s]{7,15}$/;
-    if (!mobilePattern.test(mobile)) {
-      alert("Please enter a valid mobile number.");
-      return;
-    }
-
-    let customers = [];
-    try {
-      customers = JSON.parse(localStorage.getItem("customers") || "[]");
-    } catch {
-      customers = [];
-    }
+    let customers = JSON.parse(localStorage.getItem("customers") || "[]");
 
     const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
     if (duplicate) {
-      alert("This customer code is already used.");
+      alert("Customer code already exists.");
       return;
     }
 
     const newCustomer = { code, name, mobile, balance, route, city, area, location };
     customers.push(newCustomer);
     localStorage.setItem("customers", JSON.stringify(customers));
-    localStorage.setItem("lastCustomerAdded", name);
 
-    alert("Customer saved successfully!");
+    alert("Customer saved!");
 
     document.getElementById("code").value = "";
     document.getElementById("name").value = "";
     document.getElementById("mobile").value = "";
-    document.getElementById("balance").value = 0;
+    document.getElementById("balance").value = "0";
     document.getElementById("route").value = "";
     document.getElementById("city").value = "";
     document.getElementById("area").value = "";
