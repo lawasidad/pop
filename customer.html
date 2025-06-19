@@ -1,242 +1,105 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Customer Dashboard</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
-    body {
-      background: #f4f6f9;
-      padding: 20px;
-      font-family: sans-serif;
-    }
-    .dashboard {
-      background: #fff;
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-    }
-    h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .top-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      margin-bottom: 20px;
-    }
-    .total-customers {
-      font-weight: bold;
-      font-size: 16px;
-      color: #333;
-    }
-    .btn {
-      padding: 10px 18px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      font-size: 14px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      margin-left: 10px;
-    }
-    .btn:hover {
-      background-color: #0056b3;
-    }
-    .customer-table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    .customer-table th, .customer-table td {
-      border: 1px solid #ccc;
-      padding: 10px;
-      text-align: left;
-    }
-    .seo-status {
-      color: green;
-      font-weight: bold;
-    }
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0,0,0,0.5);
-      z-index: 9999;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal.show {
-      display: flex !important;
-    }
-    .modal .modal-content {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      max-width: 90%;
-      width: 700px;
-      position: relative;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-    }
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #333;
-    }
-    .close-btn:hover {
-      color: #007bff;
-    }
-    #map {
-      height: 500px;
-      border-radius: 8px;
-    }
+    body { font-family: sans-serif; background: #f4f6f9; margin: 0; padding: 20px; }
+    .dashboard { max-width: 1000px; margin: auto; background: #fff; border-radius: 10px; padding: 20px; box-shadow: 0 4px 8px rgba(0,0,0,0.05); }
+    .top-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .btn { padding: 10px 16px; border: none; border-radius: 6px; color: white; background-color: #007bff; cursor: pointer; }
+    .btn:hover { background-color: #0056b3; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+    #mapModal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); justify-content: center; align-items: center; z-index: 1000; }
+    #mapContent { background: #fff; padding: 10px; border-radius: 8px; width: 90%; height: 80%; position: relative; }
+    #map { width: 100%; height: 100%; border-radius: 8px; }
+    .close-btn { position: absolute; top: 5px; right: 10px; font-size: 20px; cursor: pointer; color: #333; }
   </style>
 </head>
 <body>
-  <div class="dashboard">
-    <h1>
-      Customer Management
-      <button class="btn" onclick="showAllCustomersOnMap()">Show All on Map</button>
-    </h1>
-    <div class="top-bar">
-      <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
-      <button class="btn" onclick="addNewCustomer()">Add Customer</button>
-    </div>
-    <table class="customer-table">
-      <thead>
-        <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Balance</th>
-          <th>GPS Location</th>
-          <th>Route</th>
-          <th>City</th>
-          <th>Area</th>
-          <th>User</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-  <div id="customerModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeModal()">&times;</span>
-      <iframe src="new-customer.html" style="width:100%; height:500px; border:none;"></iframe>
+
+<div class="dashboard">
+  <div class="top-bar">
+    <div><strong>Total Customers:</strong> <span id="totalCustomers">0</span></div>
+    <div>
+      <button class="btn" onclick="showAllOnMap()">Show All on Map</button>
     </div>
   </div>
-  <div id="mapModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" onclick="closeMap()">&times;</span>
-      <div id="map"></div>
-    </div>
+
+  <table>
+    <thead>
+      <tr><th>Code</th><th>Name</th><th>Mobile</th><th>Location</th></tr>
+    </thead>
+    <tbody id="customerTable"></tbody>
+  </table>
+</div>
+
+<!-- MAP MODAL -->
+<div id="mapModal">
+  <div id="mapContent">
+    <span class="close-btn" onclick="closeMap()">&times;</span>
+    <div id="map"></div>
   </div>
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    function addNewCustomer() {
-      document.getElementById('customerModal').classList.add('show');
-    }
-    function closeModal() {
-      document.getElementById('customerModal').classList.remove('show');
-    }
-    function closeMap() {
-      document.getElementById('mapModal').classList.remove('show');
-      if (window.map) {
-        window.map.remove();
-        window.map = null;
-      }
-    }
-    function showAllCustomersOnMap() {
-      const stored = localStorage.getItem("customers");
-      const customers = stored ? JSON.parse(stored) : [];
-      const valid = customers.filter(c => c.location && c.location.includes(','));
-      if (!valid.length) return alert("No valid customer locations found.");
-      document.getElementById('mapModal').classList.add('show');
-      if (window.map) window.map.remove();
-      const avgLat = valid.reduce((sum, c) => sum + parseFloat(c.location.split(',')[0]), 0) / valid.length;
-      const avgLng = valid.reduce((sum, c) => sum + parseFloat(c.location.split(',')[1]), 0) / valid.length;
-      const map = L.map('map').setView([avgLat, avgLng], 10);
-      window.map = map;
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom: 18,
-        attribution: '&copy; OpenStreetMap contributors'
-      }).addTo(map);
-      setTimeout(() => map.invalidateSize(), 300);
-      valid.forEach(c => {
-        const [lat, lng] = c.location.split(',').map(Number);
-        const marker = L.marker([lat, lng]).addTo(map);
-        marker.bindPopup(`<b>${c.name}</b><br>${c.mobile}`);
-      });
-    }
-    function loadCustomerList() {
-      const stored = localStorage.getItem("customers");
-      const data = stored ? JSON.parse(stored) : [];
-      const tbody = document.querySelector(".customer-table tbody");
-      tbody.innerHTML = "";
-      document.getElementById('totalCustomers').textContent = data.length;
-      data.forEach((c, index) => {
-        const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td>${c.code}</td>
-          <td>${c.name}</td>
-          <td>${c.mobile}</td>
-          <td>IQD ${c.balance}</td>
-          <td>${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍</a>` : '❌'}</td>
-          <td>${c.route || ''}</td>
-          <td>${c.city || ''}</td>
-          <td>${c.area || ''}</td>
-          <td>${c.user || ''}</td>
-          <td><button onclick="editCustomer(${index})">Edit</button><button onclick="deleteCustomer(${index})">Delete</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    function editCustomer(index) {
-      const stored = localStorage.getItem("customers");
-      if (!stored) return;
-      const data = JSON.parse(stored);
-      const c = data[index];
-      const newName = prompt("Enter new name:", c.name);
-      if (newName === null) return;
-      const newMobile = prompt("Enter new mobile:", c.mobile);
-      if (newMobile === null) return;
-      const newBalance = prompt("Enter new balance:", c.balance);
-      if (newBalance === null) return;
-      const newLocation = prompt("Enter GPS (lat,lng):", c.location || "");
-      if (newLocation === null) return;
-      data[index] = { ...c, name: newName.trim(), mobile: newMobile.trim(), balance: parseFloat(newBalance) || 0, location: newLocation.trim() };
-      localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
-    }
-    function deleteCustomer(index) {
-      const stored = localStorage.getItem("customers");
-      if (!stored) return;
-      const data = JSON.parse(stored);
-      data.splice(index, 1);
-      localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
-    }
-    window.onload = loadCustomerList;
-    window.addEventListener("message", function(e) {
-      if (e.data === "customer-added") {
-        closeModal();
-        loadCustomerList();
-      }
+</div>
+
+<script>
+  function loadCustomerList() {
+    const data = JSON.parse(localStorage.getItem("customers") || "[]");
+    const tbody = document.getElementById("customerTable");
+    tbody.innerHTML = "";
+    document.getElementById("totalCustomers").textContent = data.length;
+    data.forEach(c => {
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${c.code || ""}</td>
+        <td>${c.name || ""}</td>
+        <td>${c.mobile || ""}</td>
+        <td>${c.location || "❌"}</td>
+      `;
+      tbody.appendChild(tr);
     });
-  </script>
+  }
+
+  function showAllOnMap() {
+    const data = JSON.parse(localStorage.getItem("customers") || "[]");
+    const mapContainer = document.getElementById("map");
+    const modal = document.getElementById("mapModal");
+
+    mapContainer.innerHTML = ""; // clear old map
+    modal.style.display = "flex";
+
+    const locations = data
+      .filter(c => c.location && c.location.includes(","))
+      .map(c => ({ ...c, coords: c.location.split(',').map(Number) }));
+
+    if (locations.length === 0) return alert("No valid customer locations");
+
+    const avgLat = locations.reduce((s, c) => s + c.coords[0], 0) / locations.length;
+    const avgLng = locations.reduce((s, c) => s + c.coords[1], 0) / locations.length;
+
+    const map = L.map("map").setView([avgLat, avgLng], 10);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution: "&copy; OpenStreetMap"
+    }).addTo(map);
+
+    locations.forEach(c => {
+      const marker = L.marker(c.coords).addTo(map);
+      marker.bindPopup(`<strong>${c.name}</strong><br>${c.mobile}`);
+    });
+
+    setTimeout(() => map.invalidateSize(), 200);
+  }
+
+  function closeMap() {
+    document.getElementById("mapModal").style.display = "none";
+  }
+
+  loadCustomerList();
+</script>
+
 </body>
 </html>
