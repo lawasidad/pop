@@ -205,7 +205,7 @@
         <div class="stat-value">0 Units</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title" id="dynamic-date">03/06/2025 - 03/06/2021</div>
+        <div class="stat-title" id="dynamic-date">Loading...</div>
         <div class="stat-value">0 Visits</div>
       </div>
     </section>
@@ -276,12 +276,15 @@
 
     updatePartyCount();
 
-    // ✅ زیادکردنی بەرواری ئەمڕۆ داینامیک
+    // ✅ زیادکردنی بەرواری هەفتەی رابردوو
     const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    const pastWeek = new Date();
+    pastWeek.setDate(today.getDate() - 7);
+
+    const format = d => d.toLocaleDateString('en-GB'); // dd/mm/yyyy
     const dateEl = document.getElementById("dynamic-date");
     if (dateEl) {
-      dateEl.textContent = `${formattedDate} - ${formattedDate}`;
+      dateEl.textContent = `${format(pastWeek)} - ${format(today)}`;
     }
   </script>
 </body>
