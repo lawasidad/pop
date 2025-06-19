@@ -167,7 +167,7 @@
       font-size: 14px;
     }
 
-    /* فلتەرەکە */
+    /* Date filter styles */
     .date-filter {
       margin-top: 15px;
       text-align: right;
@@ -228,13 +228,13 @@
 
     <div class="divider"></div>
 
-    <!-- فلتەری بەروار -->
+    <!-- Date filter -->
     <div class="date-filter">
       <label for="date-from">From:</label>
       <input type="date" id="date-from" />
       <label for="date-to">To:</label>
       <input type="date" id="date-to" />
-      <button onclick="applyDateFilter()">فلتەرکردن</button>
+      <button onclick="applyDateFilter()">Filter</button>
     </div>
 
     <div class="divider"></div>
@@ -290,7 +290,7 @@
 
     <footer class="footer">
       <h2>lawaSales</h2>
-      <div>hellp ? </div>
+      <div>hello?</div>
       <div>
         <a href="https://wa.me/9647502020061" target="_blank" style="font-size: 20px; color: #fff; text-decoration: none;">💬🟢</a>
       </div>
@@ -322,7 +322,7 @@
 
     updatePartyCount();
 
-    // زیادکردنی بەرواری ئەمڕۆ بۆ ناوی stat-date
+    // Show today's date initially
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
     const dateEl = document.getElementById("dynamic-date");
@@ -330,7 +330,7 @@
       dateEl.textContent = `${formattedDate} - ${formattedDate}`;
     }
 
-    // فەلترکردنی بەروار
+    // Date filter function
     function applyDateFilter() {
       const fromInput = document.getElementById("date-from");
       const toInput = document.getElementById("date-to");
@@ -339,7 +339,7 @@
       const toDate = toInput.value ? new Date(toInput.value) : null;
 
       if (fromDate && toDate && fromDate > toDate) {
-        alert("بەروارێکی دابنێ لە خانەی From کەمتر یان یەکسان بێت بە To.");
+        alert("Please make sure the 'From' date is earlier than or equal to the 'To' date.");
         return;
       }
 
@@ -351,7 +351,7 @@
         dateEl.textContent = `${fromStr} - ${toStr}`;
       }
 
-      // لێرە دەتوانی کۆدی فلتەرکردن بۆ داتاکان زیاد بکەیت
+      // Add your data filtering logic here based on fromDate and toDate
     }
   </script>
 </body>
