@@ -2,91 +2,90 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Customer Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
   <style>
     body {
-      background: #f4f6f9;
+      background: linear-gradient(to right, #e0f7fa, #e8f5e9);
       padding: 20px;
-      font-family: sans-serif;
+      font-family: 'Poppins', sans-serif;
     }
     .dashboard {
-      background: #fff;
-      max-width: 1000px;
+      background: white;
+      max-width: 1100px;
       margin: auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
     h1 {
-      font-size: 24px;
-      margin-bottom: 10px;
-      border-bottom: 2px solid #eee;
-      padding-bottom: 10px;
+      font-size: 26px;
+      margin-bottom: 20px;
+      color: #2e7d32;
+      text-align: center;
     }
     .top-bar {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 10px;
+      margin-bottom: 20px;
     }
     .total-customers {
-      font-weight: bold;
       font-size: 16px;
-      color: #333;
+      font-weight: 600;
+      color: #444;
     }
     .new-customer-btn {
-      padding: 10px 18px;
-      background-color: #007bff;
+      padding: 10px 20px;
+      background-color: #43a047;
       color: white;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-size: 14px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
+      transition: 0.3s;
     }
     .new-customer-btn:hover {
-      background-color: #0056b3;
+      background-color: #2e7d32;
     }
     .export-buttons {
       text-align: right;
-      margin: 10px 0;
+      margin-bottom: 10px;
     }
     .export-buttons button {
       padding: 8px 14px;
       margin-left: 10px;
       border: none;
-      border-radius: 5px;
+      border-radius: 6px;
       font-size: 13px;
       color: white;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
-    .pdf-btn {
-      background-color: #28a745;
-    }
-    .excel-btn {
-      background-color: #17a2b8;
-    }
-    .customer-table {
+    .pdf-btn { background-color: #00796b; }
+    .pdf-btn:hover { background-color: #004d40; }
+    .excel-btn { background-color: #1e88e5; }
+    .excel-btn:hover { background-color: #1565c0; }
+    table {
       width: 100%;
       border-collapse: collapse;
+      margin-top: 10px;
     }
-    .customer-table th, .customer-table td {
-      border: 1px solid #ccc;
+    th, td {
+      border: 1px solid #ddd;
       padding: 10px;
       text-align: left;
     }
-    .customer-table input[type="text"] {
+    thead {
+      background-color: #f1f8e9;
+    }
+    th input {
       width: 100%;
       padding: 5px;
-      font-size: 13px;
-      box-sizing: border-box;
       border: 1px solid #ccc;
-      border-radius: 4px;
-    }
-    .seo-status {
-      color: green;
-      font-weight: bold;
+      border-radius: 5px;
+      font-size: 12px;
     }
     #customerModal {
       display: none;
@@ -97,14 +96,13 @@
       justify-content: center;
       align-items: center;
     }
-    #customerModal .modal-content {
+    .modal-content {
       background: white;
       padding: 20px;
       border-radius: 10px;
       max-width: 600px;
       width: 90%;
       position: relative;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
     }
     .close-btn {
       position: absolute;
@@ -112,38 +110,11 @@
       right: 15px;
       font-size: 24px;
       cursor: pointer;
-      color: #333;
-    }
-    .close-btn:hover {
-      color: #007bff;
     }
     iframe {
       width: 100%;
       height: 500px;
       border: none;
-      border-radius: 8px;
-    }
-    button.action-btn {
-      padding: 6px 10px;
-      font-size: 13px;
-      border-radius: 5px;
-      border: none;
-      cursor: pointer;
-      margin-right: 5px;
-    }
-    button.edit-btn {
-      background-color: #ffc107;
-      color: #212529;
-    }
-    button.edit-btn:hover {
-      background-color: #e0a800;
-    }
-    button.delete-btn {
-      background-color: #dc3545;
-      color: white;
-    }
-    button.delete-btn:hover {
-      background-color: #bb2d3b;
     }
   </style>
 </head>
@@ -154,13 +125,10 @@
       <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
     </div>
-
-    <!-- Export Buttons -->
     <div class="export-buttons">
       <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
       <button class="excel-btn" onclick="exportToExcel()">Export Excel</button>
     </div>
-
     <table class="customer-table">
       <thead>
         <tr>
@@ -179,29 +147,24 @@
       <tbody></tbody>
     </table>
   </div>
-
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <iframe src="new-customer.html"></iframe>
     </div>
   </div>
-
   <script>
     function addNewCustomer() {
       document.getElementById('customerModal').style.display = 'flex';
     }
-
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
     }
-
     function loadCustomerList() {
       const stored = localStorage.getItem("customers");
       const data = stored ? JSON.parse(stored) : [];
       const tbody = document.querySelector(".customer-table tbody");
       tbody.innerHTML = "";
-
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -215,69 +178,19 @@
           <td>${c.area || ''}</td>
           <td>${c.user || ''}</td>
           <td>
-            <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
-            <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
+            <button onclick="editCustomer(${index})">✏️</button>
+            <button onclick="deleteCustomer(${index})">🗑️</button>
           </td>
         `;
         tbody.appendChild(tr);
       });
-
       updateCustomerCount();
     }
-
-    function editCustomer(index) {
-      const stored = localStorage.getItem("customers");
-      const data = JSON.parse(stored);
-      const c = data[index];
-
-      const newName = prompt("Enter new name:", c.name);
-      if (newName === null) return;
-      const newMobile = prompt("Enter new mobile:", c.mobile);
-      if (newMobile === null) return;
-      const newBalance = prompt("Enter new balance (IQD):", c.balance);
-      if (newBalance === null) return;
-      const newLocation = prompt("Enter new GPS location (latitude,longitude):", c.location || "");
-      if (newLocation === null) return;
-      const newRoute = prompt("Enter route:", c.route || "");
-      if (newRoute === null) return;
-      const newCity = prompt("Enter city:", c.city || "");
-      if (newCity === null) return;
-      const newArea = prompt("Enter area:", c.area || "");
-      if (newArea === null) return;
-      const newUser = prompt("Enter user:", c.user || "");
-      if (newUser === null) return;
-
-      data[index] = {
-        ...c,
-        name: newName.trim(),
-        mobile: newMobile.trim(),
-        balance: parseFloat(newBalance) || 0,
-        location: newLocation.trim(),
-        route: newRoute.trim(),
-        city: newCity.trim(),
-        area: newArea.trim(),
-        user: newUser.trim()
-      };
-
-      localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
-    }
-
-    function deleteCustomer(index) {
-      if (!confirm("Are you sure you want to delete this customer?")) return;
-      const stored = localStorage.getItem("customers");
-      const data = JSON.parse(stored);
-      data.splice(index, 1);
-      localStorage.setItem("customers", JSON.stringify(data));
-      loadCustomerList();
-    }
-
     function filterTable(colIndex, value) {
       const tbody = document.querySelector(".customer-table tbody");
       const rows = tbody.querySelectorAll("tr");
       let visibleCount = 0;
       value = value.toLowerCase();
-
       rows.forEach(row => {
         const cell = row.cells[colIndex];
         if (cell && cell.textContent.toLowerCase().includes(value)) {
@@ -287,16 +200,16 @@
           row.style.display = "none";
         }
       });
-
       document.getElementById('totalCustomers').textContent = visibleCount;
     }
-
     function updateCustomerCount() {
-      const tbody = document.querySelector(".customer-table tbody");
-      const visibleRows = [...tbody.querySelectorAll('tr')].filter(row => row.style.display !== "none");
-      document.getElementById('totalCustomers').textContent = visibleRows.length;
+      const rows = document.querySelectorAll(".customer-table tbody tr");
+      let visibleCount = 0;
+      rows.forEach(row => {
+        if (row.style.display !== "none") visibleCount++;
+      });
+      document.getElementById('totalCustomers').textContent = visibleCount;
     }
-
     function exportToPDF() {
       const table = document.querySelector(".customer-table");
       const win = window.open('', '', 'height=700,width=1000');
@@ -309,7 +222,6 @@
       win.document.close();
       win.print();
     }
-
     function exportToExcel() {
       const table = document.querySelector(".customer-table");
       const html = table.outerHTML.replace(/ /g, '%20');
@@ -320,9 +232,7 @@
       a.download = filename;
       a.click();
     }
-
     window.onload = loadCustomerList;
-
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
