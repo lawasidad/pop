@@ -292,20 +292,30 @@
 
     updatePartyCount();
 
-    const today = new Date();
-    const pastWeek = new Date();
-    pastWeek.setDate(today.getDate() - 7);
+    // Auto-update date range every time the page loads (today and past 7 days)
+    (function autoUpdateDateRange() {
+      const today = new Date();
+      const pastWeek = new Date();
+      pastWeek.setDate(today.getDate() - 7);
 
-    const formatDate = d => d.toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric'
-    });
+      const formatDate = d => d.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+      });
 
-    const dateEl = document.getElementById("dynamic-date");
-    if (dateEl) {
-      dateEl.textContent = `${formatDate(pastWeek)} - ${formatDate(today)}`;
-    }
+      const dateEl = document.getElementById("dynamic-date");
+      if (dateEl) {
+        dateEl.textContent = `${formatDate(pastWeek)} - ${formatDate(today)}`;
+      }
+
+      const inputFrom = document.getElementById("from-date");
+      const inputTo = document.getElementById("to-date");
+      if (inputFrom && inputTo) {
+        inputFrom.value = pastWeek.toISOString().split('T')[0];
+        inputTo.value = today.toISOString().split('T')[0];
+      }
+    })();
 
     function applyDateFilter() {
       const from = document.getElementById("from-date").value;
@@ -314,6 +324,11 @@
       if (from && to) {
         const fromDate = new Date(from);
         const toDate = new Date(to);
+        const formatDate = d => d.toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'short',
+          day: 'numeric'
+        });
         document.getElementById("dynamic-date").textContent = `${formatDate(fromDate)} - ${formatDate(toDate)}`;
       } else {
         document.getElementById("dynamic-date").textContent = "Date not selected";
