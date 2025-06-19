@@ -11,10 +11,12 @@
       box-sizing: border-box;
       font-family: Tahoma, sans-serif;
     }
+
     body {
       background-color: #f0f2f5;
       padding: 15px;
     }
+
     .dashboard {
       max-width: 1000px;
       margin: auto;
@@ -24,16 +26,19 @@
       padding: 20px;
       color: #fff;
     }
+
     h1, h2 {
       text-align: right;
       margin-bottom: 10px;
       color: #fff;
     }
+
     h1 {
       font-size: 24px;
       border-bottom: 1px solid #eee;
       padding-bottom: 10px;
     }
+
     .menu {
       display: flex;
       flex-wrap: wrap;
@@ -41,6 +46,7 @@
       gap: 10px;
       margin: 15px 0;
     }
+
     .menu-item {
       background-color: #eee;
       color: #000;
@@ -51,9 +57,11 @@
       transition: background-color 0.3s ease;
       user-select: none;
     }
+
     .menu-item:hover {
       background-color: #ddd;
     }
+
     .new-customer-btn {
       background-color: #28a745;
       color: #fff;
@@ -64,19 +72,23 @@
       font-weight: bold;
       user-select: none;
     }
+
     .new-customer-btn:hover {
       background-color: #218838;
     }
+
     .divider {
       height: 1px;
       background-color: #e0e0e0;
       margin: 20px 0;
     }
+
     .stats-container {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 15px;
     }
+
     .stat-box {
       background-color: #ffffff;
       color: #000;
@@ -86,21 +98,25 @@
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
       user-select: none;
     }
+
     .stat-title {
       font-size: 14px;
       color: #333;
       margin-bottom: 6px;
     }
+
     .stat-value {
       font-size: 16px;
       font-weight: bold;
       color: #000;
     }
+
     .quick-stats-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 12px;
     }
+
     .quick-stat-item {
       background: #e8f4ff;
       color: #000;
@@ -110,11 +126,13 @@
       font-size: 14px;
       user-select: none;
     }
+
     .quick-stat-item div:last-child {
       margin-top: 5px;
       font-weight: bold;
       font-size: 15px;
     }
+
     .footer {
       text-align: center;
       margin-top: 30px;
@@ -122,6 +140,7 @@
       font-size: 14px;
       user-select: none;
     }
+
     .logout-btn {
       margin-top: 10px;
       padding: 8px 20px;
@@ -133,9 +152,11 @@
       user-select: none;
       transition: background-color 0.3s ease;
     }
+
     .logout-btn:hover {
       background-color: #c82333;
     }
+
     .search-bar {
       margin-top: 20px;
       width: 100%;
@@ -145,29 +166,7 @@
       text-align: right;
       font-size: 14px;
     }
-    .date-filter {
-      margin: 15px 0;
-      text-align: right;
-    }
-    .date-filter input {
-      padding: 6px 10px;
-      margin-left: 10px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      font-size: 14px;
-    }
-    .date-filter button {
-      padding: 6px 12px;
-      background-color: #007bff;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-    .date-filter button:hover {
-      background-color: #0056b3;
-    }
+
     @media (max-width: 600px) {
       .quick-stats-grid, .stats-container {
         grid-template-columns: 1fr;
@@ -177,10 +176,10 @@
 </head>
 <body>
 
-  <div class="dashboard">
+  <div class="dashboard" role="main" aria-label="Dashboard Main Content">
     <h1>Dashboard_lawaSales</h1>
 
-    <nav class="menu">
+    <nav class="menu" aria-label="Main navigation menu">
       <div class="menu-item" onclick="location.href='inventory.html'">Inventory</div>
       <div class="menu-item" onclick="location.href='customer.html'">Customers</div>
       <div class="menu-item" onclick="location.href='sales.html'">Sales</div>
@@ -194,14 +193,6 @@
 
     <div class="divider"></div>
 
-    <div class="date-filter">
-      <label>From:</label>
-      <input type="date" id="from-date" />
-      <label>To:</label>
-      <input type="date" id="to-date" disabled />
-      <button onclick="applyDateFilter()">Apply</button>
-    </div>
-
     <section class="stats-container">
       <div class="stat-box">
         <div class="stat-title">Requests</div>
@@ -214,7 +205,7 @@
         <div class="stat-value">0 Units</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title" id="dynamic-date">Loading...</div>
+        <div class="stat-title" id="dynamic-date">03/06/2025 - 03/06/2021</div>
         <div class="stat-value">0 Visits</div>
       </div>
     </section>
@@ -223,19 +214,37 @@
 
     <h2>Quick Stats</h2>
     <section class="quick-stats-grid">
-      <div class="quick-stat-item"><div>Debt to Receive</div><div>0</div></div>
-      <div class="quick-stat-item"><div>To Pay</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Stock Shortage</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Stock Value</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Number of Products</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Number of Customers</div><div id="party-count">0</div></div>
+      <div class="quick-stat-item">
+        <div>Debt to Receive</div>
+        <div>0</div>
+      </div>
+      <div class="quick-stat-item">
+        <div>To Pay</div>
+        <div>0</div>
+      </div>
+      <div class="quick-stat-item">
+        <div>Stock Shortage</div>
+        <div>0</div>
+      </div>
+      <div class="quick-stat-item">
+        <div>Stock Value</div>
+        <div>0</div>
+      </div>
+      <div class="quick-stat-item">
+        <div>Number of Products</div>
+        <div>0</div>
+      </div>
+      <div class="quick-stat-item">
+        <div>Number of Customers</div>
+        <div id="party-count">0</div>
+      </div>
     </section>
 
     <div class="divider"></div>
 
     <footer class="footer">
       <h2>lawaSales</h2>
-      <div>Need help?</div>
+      <div>hellp ? </div>
       <div>
         <a href="https://wa.me/9647502020061" target="_blank" style="font-size: 20px; color: #fff; text-decoration: none;">💬🟢</a>
       </div>
@@ -253,6 +262,7 @@
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (!div) return;
+
       const stored = localStorage.getItem("customers");
       const customers = stored ? JSON.parse(stored) : [];
       div.textContent = customers.length.toLocaleString();
@@ -266,47 +276,12 @@
 
     updatePartyCount();
 
-    (function autoSetDates() {
-      const today = new Date();
-      const isoToday = today.toISOString().split('T')[0];
-
-      // Set "to" date to today and disable editing
-      const inputTo = document.getElementById("to-date");
-      if (inputTo) {
-        inputTo.value = isoToday;
-        inputTo.disabled = true;
-      }
-
-      // "from" date is editable and starts as 7 days ago by default
-      const inputFrom = document.getElementById("from-date");
-      if (inputFrom) {
-        const pastWeek = new Date();
-        pastWeek.setDate(today.getDate() - 7);
-        inputFrom.value = pastWeek.toISOString().split('T')[0];
-        inputFrom.disabled = false; // ensure it's editable
-      }
-
-      updateHeaderDateRange();
-    })();
-
-    function applyDateFilter() {
-      updateHeaderDateRange();
-    }
-
-    function updateHeaderDateRange() {
-      const from = document.getElementById("from-date").value;
-      const to = document.getElementById("to-date").value;
-
-      const formatDate = d => new Date(d).toLocaleDateString('en-US', {
-        year: 'numeric',
-        month: 'short',
-        day: 'numeric'
-      });
-
-      const dateEl = document.getElementById("dynamic-date");
-      if (dateEl && from && to) {
-        dateEl.textContent = `${formatDate(from)} - ${formatDate(to)}`;
-      }
+    // ✅ زیادکردنی بەرواری ئەمڕۆ داینامیک
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    const dateEl = document.getElementById("dynamic-date");
+    if (dateEl) {
+      dateEl.textContent = `${formattedDate} - ${formattedDate}`;
     }
   </script>
 </body>
