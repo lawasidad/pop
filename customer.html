@@ -4,6 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Customer Dashboard</title>
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
       background: #f4f6f9;
@@ -96,6 +99,42 @@
       border: none;
       border-radius: 8px;
     }
+
+    /* Map Modal Styles */
+    #mapModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    #mapModal .modal-content {
+      background: white;
+      padding: 0;
+      border-radius: 12px;
+      width: 90%;
+      max-width: 700px;
+      height: 500px;
+      position: relative;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    }
+    #mapModal .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      color: #333;
+      z-index: 10;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      border-radius: 12px;
+    }
+
     @media (max-width: 768px) {
       .customer-table thead {
         display: none;
@@ -188,6 +227,17 @@
     </div>
   </div>
 
+  <!-- Map Modal -->
+  <div id="mapModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeMapModal()">&times;</span>
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
   <script>
     function addNewCustomer() {
       document.getElementById('customerModal').style.display = 'flex';
@@ -195,6 +245,48 @@
 
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
+    }
+
+    function closeMapModal() {
+      document.getElementById('mapModal').style.display = 'none';
+      if(window.map) {
+        window.map.remove();
+        window.map = null;
+      }
+    }
+
+    // نمایش ماپ بۆ شوێنی کریار
+    function showCustomerOnMap(location) {
+      if(!location) {
+        alert("No GPS location available for this customer.");
+        return;
+      }
+      document.getElementById('mapModal').style.display = 'flex';
+
+      const [latStr, lngStr] = location.split(',');
+      const lat = parseFloat(latStr);
+      const lng = parseFloat(lngStr);
+      if(isNaN(lat) || isNaN(lng)) {
+        alert("Invalid GPS location format.");
+        closeMapModal();
+        return;
+      }
+
+      if(window.map) {
+        window.map.remove();
+        window.map = null;
+      }
+
+      window.map = L.map('map').setView([lat, lng], 15);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(window.map);
+
+      L.marker([lat, lng]).addTo(window.map)
+        .bindPopup("Customer Location")
+        .openPopup();
     }
 
     function loadCustomerList() {
@@ -212,7 +304,11 @@
           <td data-label="Mobile">${c.mobile}</td>
           <td data-label="Balance">IQD ${c.balance}</td>
           <td data-label="GPS Location">
-            ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
+            ${
+              c.location
+              ? `<a href="javascript:void(0)" onclick="showCustomerOnMap('${c.location}')">📍 ${c.location}</a>`
+              : '<span class="seo-status">❌</span>'
+            }
           </td>
           <td data-label="Route">${c.route || ''}</td>
           <td data-label="City">${c.city || ''}</td>
