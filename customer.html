@@ -48,6 +48,16 @@
     .new-customer-btn:hover {
       background-color: #0056b3;
     }
+    /* فلتەر input */
+    #customerFilter {
+      width: 100%;
+      padding: 10px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      margin-bottom: 15px;
+      box-sizing: border-box;
+    }
     .customer-table {
       width: 100%;
       border-collapse: collapse;
@@ -161,6 +171,14 @@
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
     </div>
 
+    <!-- فلتەر بۆ گەڕان -->
+    <input
+      type="text"
+      id="customerFilter"
+      placeholder="Search customers..."
+      oninput="filterCustomers()"
+    />
+
     <table class="customer-table">
       <thead>
         <tr>
@@ -265,6 +283,7 @@
 
       localStorage.setItem("customers", JSON.stringify(data));
       loadCustomerList();
+      filterCustomers(); // بۆ نوێکردنەوەی فلتەر دووبارە
     }
 
     function deleteCustomer(index) {
@@ -275,6 +294,26 @@
       data.splice(index, 1);
       localStorage.setItem("customers", JSON.stringify(data));
       loadCustomerList();
+      filterCustomers(); // بۆ نوێکردنەوەی فلتەر دووبارە
+    }
+
+    function filterCustomers() {
+      const filterValue = document.getElementById('customerFilter').value.toLowerCase();
+      const tbody = document.querySelector(".customer-table tbody");
+      const rows = tbody.querySelectorAll('tr');
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        let show = false;
+
+        cells.forEach(cell => {
+          if (cell.textContent.toLowerCase().includes(filterValue)) {
+            show = true;
+          }
+        });
+
+        row.style.display = show ? '' : 'none';
+      });
     }
 
     window.onload = loadCustomerList;
@@ -283,6 +322,7 @@
       if (e.data === "customer-added") {
         closeModal();
         loadCustomerList();
+        filterCustomers();
       }
     });
   </script>
