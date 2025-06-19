@@ -176,7 +176,6 @@
       const data = stored ? JSON.parse(stored) : [];
       const tbody = document.querySelector(".customer-table tbody");
       tbody.innerHTML = "";
-      document.getElementById('totalCustomers').textContent = data.length;
 
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
@@ -197,6 +196,8 @@
         `;
         tbody.appendChild(tr);
       });
+
+      updateCustomerCount();
     }
 
     function editCustomer(index) {
@@ -252,16 +253,26 @@
     function filterTable(colIndex, value) {
       const tbody = document.querySelector(".customer-table tbody");
       const rows = tbody.querySelectorAll("tr");
+      let visibleCount = 0;
       value = value.toLowerCase();
 
       rows.forEach(row => {
         const cell = row.cells[colIndex];
         if (cell && cell.textContent.toLowerCase().includes(value)) {
           row.style.display = "";
+          visibleCount++;
         } else {
           row.style.display = "none";
         }
       });
+
+      document.getElementById('totalCustomers').textContent = visibleCount;
+    }
+
+    function updateCustomerCount() {
+      const tbody = document.querySelector(".customer-table tbody");
+      const visibleRows = [...tbody.querySelectorAll('tr')].filter(row => row.style.display !== "none");
+      document.getElementById('totalCustomers').textContent = visibleRows.length;
     }
 
     window.onload = loadCustomerList;
