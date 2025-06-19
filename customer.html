@@ -293,19 +293,24 @@
         return;
       }
 
-      const baseUrl = "https://www.google.com/maps/dir/";
-
       const locations = data
         .filter(c => c.location && c.location.trim() !== '')
-        .map(c => encodeURIComponent(c.location.trim()))
-        .join('/');
+        .map(c => c.location.trim());
 
-      if (!locations) {
+      if (locations.length === 0) {
         alert("No valid GPS locations found for customers.");
         return;
       }
 
-      const url = baseUrl + locations;
+      const destination = encodeURIComponent(locations[0]);
+      const waypoints = locations.slice(1).map(loc => encodeURIComponent(loc)).join('|');
+
+      let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
+
+      if (waypoints) {
+        url += `&waypoints=${waypoints}`;
+      }
+
       window.open(url, "_blank");
     }
 
