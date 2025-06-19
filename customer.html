@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Customer Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
   <style>
     body {
       background: linear-gradient(to right, #e0f7fa, #e8f5e9);
@@ -153,7 +153,7 @@
     <div class="top-bar">
       <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
-      <button class="new-customer-btn" onclick="showAllOnMap()" style="background-color:#0288d1;">Show All on Map</button>
+      <button class="new-customer-btn" style="background-color:#0288d1;" onclick="showAllOnMap()">Show All on Map</button>
     </div>
     <div class="export-buttons">
       <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
@@ -302,16 +302,10 @@
         return;
       }
 
-      const destination = encodeURIComponent(locations[0]);
-      const waypoints = locations.slice(1).map(loc => encodeURIComponent(loc)).join('|');
+      const query = locations.map(loc => encodeURIComponent(loc)).join('|');
+      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
 
-      let url = `https://www.google.com/maps/dir/?api=1&destination=${destination}`;
-
-      if (waypoints) {
-        url += `&waypoints=${waypoints}`;
-      }
-
-      window.open(url, "_blank");
+      window.open(url, '_blank');
     }
 
     window.onload = loadCustomerList;
