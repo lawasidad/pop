@@ -292,11 +292,8 @@
 
     updatePartyCount();
 
-    // Auto-update date range every time the page loads (today and past 7 days)
-    (function autoUpdateDateRange() {
+    (function autoUpdateDates() {
       const today = new Date();
-      const pastWeek = new Date();
-      pastWeek.setDate(today.getDate() - 7);
 
       const formatDate = d => d.toLocaleDateString('en-US', {
         year: 'numeric',
@@ -304,16 +301,19 @@
         day: 'numeric'
       });
 
+      // Show only today's date in header
       const dateEl = document.getElementById("dynamic-date");
       if (dateEl) {
-        dateEl.textContent = `${formatDate(pastWeek)} - ${formatDate(today)}`;
+        dateEl.textContent = formatDate(today);
       }
 
+      // Set both from and to inputs to today
       const inputFrom = document.getElementById("from-date");
       const inputTo = document.getElementById("to-date");
       if (inputFrom && inputTo) {
-        inputFrom.value = pastWeek.toISOString().split('T')[0];
-        inputTo.value = today.toISOString().split('T')[0];
+        const isoToday = today.toISOString().split('T')[0];
+        inputFrom.value = isoToday;
+        inputTo.value = isoToday;
       }
     })();
 
@@ -329,7 +329,7 @@
           month: 'short',
           day: 'numeric'
         });
-        document.getElementById("dynamic-date").textContent = `${formatDate(fromDate)} - ${formatDate(toDate)}`;
+        document.getElementById("dynamic-date").textContent = formatDate(toDate);
       } else {
         document.getElementById("dynamic-date").textContent = "Date not selected";
       }
