@@ -54,7 +54,6 @@
     }
     .export-buttons button {
       padding: 8px 14px;
-      margin-left: 10px;
       border: none;
       border-radius: 6px;
       font-size: 13px;
@@ -149,6 +148,148 @@
   </style>
 </head>
 <body>
-  <!-- HTML content stays unchanged -->
+  <div class="dashboard">
+    <h1>Customer Management</h1>
+    <div class="top-bar">
+      <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
+      <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
+    </div>
+    <div class="export-buttons">
+      <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
+      <button class="excel-btn" onclick="exportToExcel()">Export Excel</button>
+    </div>
+    <table class="customer-table">
+      <thead>
+        <tr>
+          <th>Code<br><input type="text" oninput="filterTable(0, this.value)" /></th>
+          <th>Name<br><input type="text" oninput="filterTable(1, this.value)" /></th>
+          <th>Mobile<br><input type="text" oninput="filterTable(2, this.value)" /></th>
+          <th>Balance<br><input type="text" oninput="filterTable(3, this.value)" /></th>
+          <th>GPS<br><input type="text" oninput="filterTable(4, this.value)" /></th>
+          <th>Route<br><input type="text" oninput="filterTable(5, this.value)" /></th>
+          <th>City<br><input type="text" oninput="filterTable(6, this.value)" /></th>
+          <th>Area<br><input type="text" oninput="filterTable(7, this.value)" /></th>
+          <th>User<br><input type="text" oninput="filterTable(8, this.value)" /></th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div id="customerModal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <iframe src="new-customer.html"></iframe>
+    </div>
+  </div>
+
+  <script>
+    function addNewCustomer() {
+      document.getElementById('customerModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('customerModal').style.display = 'none';
+    }
+
+    function loadCustomerList() {
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+      const tbody = document.querySelector(".customer-table tbody");
+      tbody.innerHTML = "";
+      data.forEach((c, index) => {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `
+          <td data-label="Code">${c.code}</td>
+          <td data-label="Name">${c.name}</td>
+          <td data-label="Mobile">${c.mobile}</td>
+          <td data-label="Balance">IQD ${c.balance}</td>
+          <td data-label="GPS">${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '❌'}</td>
+          <td data-label="Route">${c.route || ''}</td>
+          <td data-label="City">${c.city || ''}</td>
+          <td data-label="Area">${c.area || ''}</td>
+          <td data-label="User">${c.user || ''}</td>
+          <td data-label="Actions">
+            <button onclick="editCustomer(${index})">✏️</button>
+            <button onclick="deleteCustomer(${index})">🗑️</button>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+      updateCustomerCount();
+    }
+
+    function filterTable(colIndex, value) {
+      const tbody = document.querySelector(".customer-table tbody");
+      const rows = tbody.querySelectorAll("tr");
+      let visibleCount = 0;
+      value = value.toLowerCase();
+      rows.forEach(row => {
+        const cell = row.cells[colIndex];
+        if (cell && cell.textContent.toLowerCase().includes(value)) {
+          row.style.display = "";
+          visibleCount++;
+        } else {
+          row.style.display = "none";
+        }
+      });
+      document.getElementById('totalCustomers').textContent = visibleCount;
+    }
+
+    function updateCustomerCount() {
+      const rows = document.querySelectorAll(".customer-table tbody tr");
+      let visibleCount = 0;
+      rows.forEach(row => {
+        if (row.style.display !== "none") visibleCount++;
+      });
+      document.getElementById('totalCustomers').textContent = visibleCount;
+    }
+
+    function exportToPDF() {
+      const table = document.querySelector(".customer-table").outerHTML;
+      const win = window.open('', '_blank');
+      win.document.write(`
+        <html>
+        <head>
+          <title>Customer List</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 20px; }
+            h2 { text-align: center; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #aaa; padding: 8px; text-align: left; font-size: 13px; }
+            thead { background-color: #eee; }
+          </style>
+        </head>
+        <body>
+          <h2>Customer List</h2>
+          ${table}
+        </body>
+        </html>
+      `);
+      win.document.close();
+      win.focus();
+      win.print();
+    }
+
+    function exportToExcel() {
+      const table = document.querySelector(".customer-table");
+      const html = table.outerHTML.replace(/ /g, '%20');
+      const filename = 'customers.xls';
+      const dataType = 'application/vnd.ms-excel';
+      const a = document.createElement('a');
+      a.href = 'data:' + dataType + ', ' + html;
+      a.download = filename;
+      a.click();
+    }
+
+    window.onload = loadCustomerList;
+    window.addEventListener("message", function(e) {
+      if (e.data === "customer-added") {
+        closeModal();
+        loadCustomerList();
+      }
+    });
+  </script>
 </body>
 </html>
