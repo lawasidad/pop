@@ -17,7 +17,7 @@
       font-family: 'Poppins', sans-serif;
       height: 100vh;
       display: flex;
-      background: #2ecc71; /* Rolex Pistachio Green */
+      background: #14532d; /* Rolex Dark Green */
     }
 
     .left-panel {
@@ -28,12 +28,13 @@
       justify-content: center;
       align-items: center;
       padding: 40px;
+      background: transparent;
     }
 
     .left-panel h1 {
-      font-size: 42px;
+      font-size: 44px;
       font-weight: 700;
-      text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
+      text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.4);
     }
 
     .right-panel {
@@ -41,7 +42,7 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      background: #f5f7fa;
+      background: #ecf0f1;
       border-top-left-radius: 50px;
       border-bottom-left-radius: 50px;
       box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
@@ -59,7 +60,7 @@
     h2 {
       margin-bottom: 25px;
       font-weight: 600;
-      color: #27ae60;
+      color: #1e7e34;
       text-align: center;
     }
 
@@ -67,13 +68,13 @@
       width: 100%;
       padding: 14px 18px;
       margin: 12px 0 20px 0;
-      border: 2px solid #27ae60;
+      border: 2px solid #1e7e34;
       border-radius: 8px;
       font-size: 16px;
     }
 
     button {
-      background-color: #27ae60;
+      background-color: #1e7e34;
       color: white;
       border: none;
       padding: 14px 0;
@@ -82,193 +83,17 @@
       font-size: 18px;
       cursor: pointer;
       font-weight: 600;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #219150;
+      background-color: #14532d;
     }
 
     .forgot-password {
       margin-top: 15px;
       font-size: 14px;
-      color: #2ecc71;
-      cursor: pointer;
-      text-align: center;
-      display: block;
-      text-decoration: underline;
-    }
-
-    .error-message {
-      color: #e74c3c;
-      margin-bottom: 15px;
-      font-weight: 600;
-      text-align: center;
-    }
-
-    @media (max-width: 768px) {
-      body {
-        flex-direction: column;
-      }
-
-      .left-panel, .right-panel {
-        width: 100%;
-        height: auto;
-        border-radius: 0;
-      }
-    }
-  </style>
-</head>
-<body>
-
-  <div class="left-panel">
-    <h1>lawaSales</h1>
-  </div>
-
-  <div class="right-panel">
-    <div class="login-box">
-      <h2>Login to Dashboard</h2>
-      <form id="loginForm" novalidate>
-        <div id="errorMsg" class="error-message" style="display:none;"></div>
-        <input type="text" id="username" placeholder="Username" required autocomplete="off" />
-        <input type="password" id="password" placeholder="Password" required autocomplete="off" />
-        <button type="submit">Log In</button>
-      </form>
-      <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span>
-    </div>
-  </div>
-
-  <script>
-    if (!localStorage.getItem('users')) {
-      const defaultUser = [{ username: 'admin', password: '1234' }];
-      localStorage.setItem('users', JSON.stringify(defaultUser));
-    }
-
-    const loginForm = document.getElementById('loginForm');
-    const errorMsg = document.getElementById('errorMsg');
-
-    loginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      errorMsg.style.display = 'none';
-      errorMsg.textContent = '';
-
-      const username = document.getElementById('username').value.trim();
-      const password = document.getElementById('password').value.trim();
-
-      if (!username || !password) {
-        errorMsg.textContent = '❗ Please fill in both username and password.';
-        errorMsg.style.display = 'block';
-        return;
-      }
-
-      const users = JSON.parse(localStorage.getItem('users')) || [];
-      const userFound = users.find(u => u.username === username && u.password === password);
-
-      if (userFound) {
-        alert('✅ Login successful!');
-        window.location.href = 'dashboard.html';
-      } else {
-        errorMsg.textContent = '❌ Invalid username or password.';
-        errorMsg.style.display = 'block';
-      }
-    });
-  </script>
-
-</body>
-</html>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login - lawaSales</title>
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: 'Poppins', sans-serif;
-      height: 100vh;
-      display: flex;
-      background: #f0f2f5; /* Rolex Pistachio Green */
-    }
-
-    .left-panel {
-      width: 40%;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      padding: 40px;
-    }
-
-    .left-panel h1 {
-      font-size: 42px;
-      font-weight: 700;
-      text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
-    }
-
-    .right-panel {
-      width: 60%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      background: #f5f7fa;
-      border-top-left-radius: 50px;
-      border-bottom-left-radius: 50px;
-      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
-    }
-
-    .login-box {
-      background: white;
-      padding: 40px 50px;
-      border-radius: 15px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
-      width: 100%;
-      max-width: 400px;
-    }
-
-    h2 {
-      margin-bottom: 25px;
-      font-weight: 600;
-      color: #27ae60;
-      text-align: center;
-    }
-
-    input[type="text"], input[type="password"] {
-      width: 100%;
-      padding: 14px 18px;
-      margin: 12px 0 20px 0;
-      border: 2px solid #27ae60;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
-    button {
-      background-color: #27ae60;
-      color: white;
-      border: none;
-      padding: 14px 0;
-      width: 100%;
-      border-radius: 10px;
-      font-size: 18px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    button:hover {
-      background-color: #219150;
-    }
-
-    .forgot-password {
-      margin-top: 15px;
-      font-size: 14px;
-      color: #2ecc71;
+      color: #1e7e34;
       cursor: pointer;
       text-align: center;
       display: block;
