@@ -247,8 +247,8 @@
       </div>
       <div class="stat-box">
         <div class="stat-title">Receipts</div>
-        <div class="stat-value">IQD 0</div>
-        <div class="stat-value">0 Units</div>
+        <div class="stat-value" id="receipts-amount">IQD 0</div>
+        <div class="stat-value" id="receipts-units">0 Units</div>
       </div>
       <div class="stat-box">
         <div class="stat-title" id="dynamic-date">03/06/2025 - 03/06/2021</div>
@@ -353,6 +353,33 @@
 
       // Add your data filtering logic here based on fromDate and toDate
     }
+
+    // New function to update Receipts summary based on allSales in localStorage
+    function updateReceiptsSummary() {
+      const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+
+      // Calculate total sales amount
+      const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+
+      // Calculate total units sold
+      const totalUnits = allSales.reduce((sum, sale) => {
+        if (!sale.items) return sum;
+        return sum + sale.items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0);
+      }, 0);
+
+      const receiptsAmountEl = document.getElementById("receipts-amount");
+      const receiptsUnitsEl = document.getElementById("receipts-units");
+
+      if (receiptsAmountEl) {
+        receiptsAmountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
+      }
+
+      if (receiptsUnitsEl) {
+        receiptsUnitsEl.textContent = `${totalUnits.toLocaleString()} Units`;
+      }
+    }
+
+    updateReceiptsSummary();
   </script>
 </body>
 </html>
