@@ -167,6 +167,41 @@
       font-size: 14px;
     }
 
+    /* فلتەرەکە */
+    .date-filter {
+      margin-top: 15px;
+      text-align: right;
+      color: white;
+    }
+
+    .date-filter label {
+      margin-left: 5px;
+      font-weight: bold;
+    }
+
+    .date-filter input[type="date"] {
+      padding: 5px;
+      border-radius: 5px;
+      border: none;
+      margin-left: 10px;
+    }
+
+    .date-filter button {
+      margin-left: 10px;
+      padding: 6px 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
+      background-color: #256d24;
+      color: white;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
+
+    .date-filter button:hover {
+      background-color: #1b4e18;
+    }
+
     @media (max-width: 600px) {
       .quick-stats-grid, .stats-container {
         grid-template-columns: 1fr;
@@ -190,6 +225,17 @@
       <div class="menu-item" onclick="location.href='settings.html'">Settings</div>
       <button class="new-customer-btn" onclick="location.href='new-customer.html'">Add New Customer</button>
     </nav>
+
+    <div class="divider"></div>
+
+    <!-- فلتەری بەروار -->
+    <div class="date-filter">
+      <label for="date-from">From:</label>
+      <input type="date" id="date-from" />
+      <label for="date-to">To:</label>
+      <input type="date" id="date-to" />
+      <button onclick="applyDateFilter()">فلتەرکردن</button>
+    </div>
 
     <div class="divider"></div>
 
@@ -276,12 +322,36 @@
 
     updatePartyCount();
 
-    // ✅ زیادکردنی بەرواری ئەمڕۆ داینامیک
+    // زیادکردنی بەرواری ئەمڕۆ بۆ ناوی stat-date
     const today = new Date();
     const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
     const dateEl = document.getElementById("dynamic-date");
     if (dateEl) {
       dateEl.textContent = `${formattedDate} - ${formattedDate}`;
+    }
+
+    // فەلترکردنی بەروار
+    function applyDateFilter() {
+      const fromInput = document.getElementById("date-from");
+      const toInput = document.getElementById("date-to");
+
+      const fromDate = fromInput.value ? new Date(fromInput.value) : null;
+      const toDate = toInput.value ? new Date(toInput.value) : null;
+
+      if (fromDate && toDate && fromDate > toDate) {
+        alert("بەروارێکی دابنێ لە خانەی From کەمتر یان یەکسان بێت بە To.");
+        return;
+      }
+
+      const dateEl = document.getElementById("dynamic-date");
+      if (dateEl) {
+        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+        const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
+        const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
+        dateEl.textContent = `${fromStr} - ${toStr}`;
+      }
+
+      // لێرە دەتوانی کۆدی فلتەرکردن بۆ داتاکان زیاد بکەیت
     }
   </script>
 </body>
