@@ -167,6 +167,19 @@
       font-size: 14px;
     }
 
+    .date-filter {
+      margin: 10px 0;
+      text-align: right;
+    }
+
+    .date-filter input {
+      padding: 6px 10px;
+      margin-left: 10px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
     @media (max-width: 600px) {
       .quick-stats-grid, .stats-container {
         grid-template-columns: 1fr;
@@ -176,10 +189,10 @@
 </head>
 <body>
 
-  <div class="dashboard" role="main" aria-label="Dashboard Main Content">
+  <div class="dashboard">
     <h1>Dashboard_lawaSales</h1>
 
-    <nav class="menu" aria-label="Main navigation menu">
+    <nav class="menu">
       <div class="menu-item" onclick="location.href='inventory.html'">Inventory</div>
       <div class="menu-item" onclick="location.href='customer.html'">Customers</div>
       <div class="menu-item" onclick="location.href='sales.html'">Sales</div>
@@ -193,6 +206,14 @@
 
     <div class="divider"></div>
 
+    <div class="date-filter">
+      <label>لە:</label>
+      <input type="date" id="from-date" />
+      <label>تا:</label>
+      <input type="date" id="to-date" />
+      <button onclick="applyDateFilter()">Apply</button>
+    </div>
+
     <section class="stats-container">
       <div class="stat-box">
         <div class="stat-title">Requests</div>
@@ -205,7 +226,7 @@
         <div class="stat-value">0 Units</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title" id="dynamic-date">Loading...</div>
+        <div class="stat-title" id="dynamic-date">بەروار هەڵنەبژێردراوە</div>
         <div class="stat-value">0 Visits</div>
       </div>
     </section>
@@ -214,30 +235,12 @@
 
     <h2>Quick Stats</h2>
     <section class="quick-stats-grid">
-      <div class="quick-stat-item">
-        <div>Debt to Receive</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>To Pay</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Stock Shortage</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Stock Value</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Number of Products</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Number of Customers</div>
-        <div id="party-count">0</div>
-      </div>
+      <div class="quick-stat-item"><div>Debt to Receive</div><div>0</div></div>
+      <div class="quick-stat-item"><div>To Pay</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Stock Shortage</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Stock Value</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Number of Products</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Number of Customers</div><div id="party-count">0</div></div>
     </section>
 
     <div class="divider"></div>
@@ -262,7 +265,6 @@
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (!div) return;
-
       const stored = localStorage.getItem("customers");
       const customers = stored ? JSON.parse(stored) : [];
       div.textContent = customers.length.toLocaleString();
@@ -276,15 +278,16 @@
 
     updatePartyCount();
 
-    // ✅ زیادکردنی بەرواری هەفتەی رابردوو
-    const today = new Date();
-    const pastWeek = new Date();
-    pastWeek.setDate(today.getDate() - 7);
+    function applyDateFilter() {
+      const from = document.getElementById("from-date").value;
+      const to = document.getElementById("to-date").value;
+      const display = document.getElementById("dynamic-date");
 
-    const format = d => d.toLocaleDateString('en-GB'); // dd/mm/yyyy
-    const dateEl = document.getElementById("dynamic-date");
-    if (dateEl) {
-      dateEl.textContent = `${format(pastWeek)} - ${format(today)}`;
+      if (from && to) {
+        display.textContent = `${from.split('-').reverse().join('/')} - ${to.split('-').reverse().join('/')}`;
+      } else {
+        display.textContent = "بەروار هەڵنەبژێردراوە";
+      }
     }
   </script>
 </body>
