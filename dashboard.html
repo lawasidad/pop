@@ -22,12 +22,13 @@
 
   // Show today's date initially
   const today = new Date();
-  const formattedDate = today.toLocaleDateString('en-GB');
+  const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
   const dateEl = document.getElementById("dynamic-date");
   if (dateEl) {
     dateEl.textContent = `${formattedDate} - ${formattedDate}`;
   }
 
+  // Date filter function
   function applyDateFilter() {
     const fromInput = document.getElementById("date-from");
     const toInput = document.getElementById("date-to");
@@ -40,24 +41,34 @@
       return;
     }
 
-    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-    const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
-    const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
-    if (document.getElementById("dynamic-date"))
-      document.getElementById("dynamic-date").textContent = `${fromStr} - ${toStr}`;
+    const dateEl = document.getElementById("dynamic-date");
+    if (dateEl) {
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
+      const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
+      dateEl.textContent = `${fromStr} - ${toStr}`;
+    }
+
+    // Add your data filtering logic here based on fromDate and toDate
   }
 
-  // ✅ Update Receipts box with total amount and count
+  // ✅ Update Receipts summary
   function updateReceiptsSummary() {
     const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+
     const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
     const totalReceipts = allSales.length;
 
-    const amountEl = document.getElementById("receipts-amount");
-    const unitsEl = document.getElementById("receipts-units");
+    const receiptsAmountEl = document.getElementById("receipts-amount");
+    const receiptsUnitsEl = document.getElementById("receipts-units");
 
-    if (amountEl) amountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
-    if (unitsEl) unitsEl.textContent = `${totalReceipts.toLocaleString()} Receipts`;
+    if (receiptsAmountEl) {
+      receiptsAmountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
+    }
+
+    if (receiptsUnitsEl) {
+      receiptsUnitsEl.textContent = `${totalReceipts.toLocaleString()} Receipts`;
+    }
   }
 
   updateReceiptsSummary();
