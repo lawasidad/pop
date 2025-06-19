@@ -76,6 +76,9 @@
       justify-content: center;
       align-items: center;
     }
+    .modal.show {
+      display: flex !important;
+    }
     .modal .modal-content {
       background: white;
       padding: 20px;
@@ -112,7 +115,6 @@
       <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
       <button class="btn" onclick="addNewCustomer()">Add Customer</button>
     </div>
-
     <table class="customer-table">
       <thead>
         <tr>
@@ -131,31 +133,28 @@
       <tbody></tbody>
     </table>
   </div>
-
   <div id="customerModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <iframe src="new-customer.html" style="width:100%; height:500px; border:none;"></iframe>
     </div>
   </div>
-
   <div id="mapModal" class="modal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeMap()">&times;</span>
       <div id="map"></div>
     </div>
   </div>
-
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     function addNewCustomer() {
-      document.getElementById('customerModal').style.display = 'flex';
+      document.getElementById('customerModal').classList.add('show');
     }
     function closeModal() {
-      document.getElementById('customerModal').style.display = 'none';
+      document.getElementById('customerModal').classList.remove('show');
     }
     function closeMap() {
-      document.getElementById('mapModal').style.display = 'none';
+      document.getElementById('mapModal').classList.remove('show');
       if (window.map) {
         window.map.remove();
         window.map = null;
@@ -165,8 +164,8 @@
       const stored = localStorage.getItem("customers");
       const customers = stored ? JSON.parse(stored) : [];
       const valid = customers.filter(c => c.location && c.location.includes(','));
-      if (!valid.length) return alert("No valid locations.");
-      document.getElementById('mapModal').style.display = 'flex';
+      if (!valid.length) return alert("No valid customer locations found.");
+      document.getElementById('mapModal').classList.add('show');
       if (window.map) window.map.remove();
       const avgLat = valid.reduce((sum, c) => sum + parseFloat(c.location.split(',')[0]), 0) / valid.length;
       const avgLng = valid.reduce((sum, c) => sum + parseFloat(c.location.split(',')[1]), 0) / valid.length;
@@ -176,7 +175,7 @@
         maxZoom: 18,
         attribution: '&copy; OpenStreetMap contributors'
       }).addTo(map);
-      setTimeout(() => map.invalidateSize(), 100);
+      setTimeout(() => map.invalidateSize(), 300);
       valid.forEach(c => {
         const [lat, lng] = c.location.split(',').map(Number);
         const marker = L.marker([lat, lng]).addTo(map);
