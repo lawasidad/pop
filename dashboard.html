@@ -20,7 +20,7 @@
     .dashboard {
       max-width: 1000px;
       margin: auto;
-      background: #14532d; /* سەوزی Rolex تۆخ */
+      background: #14532d;
       border-radius: 10px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
       padding: 20px;
@@ -205,7 +205,7 @@
         <div class="stat-value">0 Units</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title">03/06/2025 - 03/06/2021</div>
+        <div class="stat-title" id="dynamic-date">03/06/2025 - 03/06/2021</div>
         <div class="stat-value">0 Visits</div>
       </div>
     </section>
@@ -275,6 +275,14 @@
     });
 
     updatePartyCount();
+
+    // ✅ زیادکردنی بەرواری ئەمڕۆ داینامیک
+    const today = new Date();
+    const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    const dateEl = document.getElementById("dynamic-date");
+    if (dateEl) {
+      dateEl.textContent = `${formattedDate} - ${formattedDate}`;
+    }
   </script>
 </body>
 </html>
