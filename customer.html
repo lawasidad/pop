@@ -153,6 +153,7 @@
     <div class="top-bar">
       <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
+      <button class="new-customer-btn" onclick="showAllOnMap()" style="background-color:#0288d1;">Show All on Map</button>
     </div>
     <div class="export-buttons">
       <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
@@ -281,6 +282,31 @@
       a.href = 'data:' + dataType + ', ' + html;
       a.download = filename;
       a.click();
+    }
+
+    function showAllOnMap() {
+      const stored = localStorage.getItem("customers");
+      const data = stored ? JSON.parse(stored) : [];
+
+      if (data.length === 0) {
+        alert("No customers to show on map.");
+        return;
+      }
+
+      const baseUrl = "https://www.google.com/maps/dir/";
+
+      const locations = data
+        .filter(c => c.location && c.location.trim() !== '')
+        .map(c => encodeURIComponent(c.location.trim()))
+        .join('/');
+
+      if (!locations) {
+        alert("No valid GPS locations found for customers.");
+        return;
+      }
+
+      const url = baseUrl + locations;
+      window.open(url, "_blank");
     }
 
     window.onload = loadCustomerList;
