@@ -17,12 +17,12 @@
       font-family: 'Poppins', sans-serif;
       height: 100vh;
       display: flex;
+      background: #2ecc71; /* Rolex Pistachio Green */
     }
 
     .left-panel {
-      background: linear-gradient(135deg, #1e3c72, #2a5298);
-      color: white;
       width: 40%;
+      color: white;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -30,14 +30,10 @@
       padding: 40px;
     }
 
-    .left-panel img {
-      width: 100px;
-      margin-bottom: 20px;
-    }
-
     .left-panel h1 {
-      font-size: 36px;
-      font-weight: 600;
+      font-size: 42px;
+      font-weight: 700;
+      text-shadow: 1px 2px 5px rgba(0, 0, 0, 0.2);
     }
 
     .right-panel {
@@ -46,6 +42,9 @@
       justify-content: center;
       align-items: center;
       background: #f5f7fa;
+      border-top-left-radius: 50px;
+      border-bottom-left-radius: 50px;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.1);
     }
 
     .login-box {
@@ -60,7 +59,7 @@
     h2 {
       margin-bottom: 25px;
       font-weight: 600;
-      color: #1e3c72;
+      color: #27ae60;
       text-align: center;
     }
 
@@ -68,13 +67,13 @@
       width: 100%;
       padding: 14px 18px;
       margin: 12px 0 20px 0;
-      border: 2px solid #2a5298;
+      border: 2px solid #27ae60;
       border-radius: 8px;
       font-size: 16px;
     }
 
     button {
-      background-color: #1e3c72;
+      background-color: #27ae60;
       color: white;
       border: none;
       padding: 14px 0;
@@ -86,13 +85,13 @@
     }
 
     button:hover {
-      background-color: #144d7f;
+      background-color: #219150;
     }
 
     .forgot-password {
       margin-top: 15px;
       font-size: 14px;
-      color: #2a5298;
+      color: #2ecc71;
       cursor: pointer;
       text-align: center;
       display: block;
@@ -114,6 +113,7 @@
       .left-panel, .right-panel {
         width: 100%;
         height: auto;
+        border-radius: 0;
       }
     }
   </style>
@@ -121,7 +121,6 @@
 <body>
 
   <div class="left-panel">
-    <img src="https://via.placeholder.com/100x100?text=L" alt="lawaSales Logo" />
     <h1>lawaSales</h1>
   </div>
 
