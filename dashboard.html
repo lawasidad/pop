@@ -168,7 +168,7 @@
     }
 
     .date-filter {
-      margin: 10px 0;
+      margin: 15px 0;
       text-align: right;
     }
 
@@ -178,6 +178,20 @@
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 14px;
+    }
+
+    .date-filter button {
+      padding: 6px 12px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .date-filter button:hover {
+      background-color: #0056b3;
     }
 
     @media (max-width: 600px) {
@@ -207,9 +221,9 @@
     <div class="divider"></div>
 
     <div class="date-filter">
-      <label>لە:</label>
+      <label>From:</label>
       <input type="date" id="from-date" />
-      <label>تا:</label>
+      <label>To:</label>
       <input type="date" id="to-date" />
       <button onclick="applyDateFilter()">Apply</button>
     </div>
@@ -226,7 +240,7 @@
         <div class="stat-value">0 Units</div>
       </div>
       <div class="stat-box">
-        <div class="stat-title" id="dynamic-date">بەروار هەڵنەبژێردراوە</div>
+        <div class="stat-title" id="dynamic-date">Loading...</div>
         <div class="stat-value">0 Visits</div>
       </div>
     </section>
@@ -247,7 +261,7 @@
 
     <footer class="footer">
       <h2>lawaSales</h2>
-      <div>hellp ? </div>
+      <div>Need help?</div>
       <div>
         <a href="https://wa.me/9647502020061" target="_blank" style="font-size: 20px; color: #fff; text-decoration: none;">💬🟢</a>
       </div>
@@ -278,15 +292,31 @@
 
     updatePartyCount();
 
+    const today = new Date();
+    const pastWeek = new Date();
+    pastWeek.setDate(today.getDate() - 7);
+
+    const formatDate = d => d.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric'
+    });
+
+    const dateEl = document.getElementById("dynamic-date");
+    if (dateEl) {
+      dateEl.textContent = `${formatDate(pastWeek)} - ${formatDate(today)}`;
+    }
+
     function applyDateFilter() {
       const from = document.getElementById("from-date").value;
       const to = document.getElementById("to-date").value;
-      const display = document.getElementById("dynamic-date");
 
       if (from && to) {
-        display.textContent = `${from.split('-').reverse().join('/')} - ${to.split('-').reverse().join('/')}`;
+        const fromDate = new Date(from);
+        const toDate = new Date(to);
+        document.getElementById("dynamic-date").textContent = `${formatDate(fromDate)} - ${formatDate(toDate)}`;
       } else {
-        display.textContent = "بەروار هەڵنەبژێردراوە";
+        document.getElementById("dynamic-date").textContent = "Date not selected";
       }
     }
   </script>
