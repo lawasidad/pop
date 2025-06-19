@@ -28,7 +28,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 20px;
+      margin-bottom: 10px;
     }
     .total-customers {
       font-weight: bold;
@@ -47,6 +47,25 @@
     }
     .new-customer-btn:hover {
       background-color: #0056b3;
+    }
+    .export-buttons {
+      text-align: right;
+      margin: 10px 0;
+    }
+    .export-buttons button {
+      padding: 8px 14px;
+      margin-left: 10px;
+      border: none;
+      border-radius: 5px;
+      font-size: 13px;
+      color: white;
+      cursor: pointer;
+    }
+    .pdf-btn {
+      background-color: #28a745;
+    }
+    .excel-btn {
+      background-color: #17a2b8;
     }
     .customer-table {
       width: 100%;
@@ -136,6 +155,12 @@
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
     </div>
 
+    <!-- Export Buttons -->
+    <div class="export-buttons">
+      <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
+      <button class="excel-btn" onclick="exportToExcel()">Export Excel</button>
+    </div>
+
     <table class="customer-table">
       <thead>
         <tr>
@@ -202,10 +227,8 @@
 
     function editCustomer(index) {
       const stored = localStorage.getItem("customers");
-      if (!stored) return alert("No customers found.");
       const data = JSON.parse(stored);
       const c = data[index];
-      if (!c) return alert("Customer not found.");
 
       const newName = prompt("Enter new name:", c.name);
       if (newName === null) return;
@@ -243,7 +266,6 @@
     function deleteCustomer(index) {
       if (!confirm("Are you sure you want to delete this customer?")) return;
       const stored = localStorage.getItem("customers");
-      if (!stored) return alert("No customers found.");
       const data = JSON.parse(stored);
       data.splice(index, 1);
       localStorage.setItem("customers", JSON.stringify(data));
@@ -273,6 +295,30 @@
       const tbody = document.querySelector(".customer-table tbody");
       const visibleRows = [...tbody.querySelectorAll('tr')].filter(row => row.style.display !== "none");
       document.getElementById('totalCustomers').textContent = visibleRows.length;
+    }
+
+    function exportToPDF() {
+      const table = document.querySelector(".customer-table");
+      const win = window.open('', '', 'height=700,width=1000');
+      win.document.write('<html><head><title>Customers</title>');
+      win.document.write('<style>table { width: 100%; border-collapse: collapse; } th, td { border: 1px solid #ccc; padding: 8px; text-align: left; font-size: 12px; }</style>');
+      win.document.write('</head><body >');
+      win.document.write('<h2>Customer List</h2>');
+      win.document.write(table.outerHTML);
+      win.document.write('</body></html>');
+      win.document.close();
+      win.print();
+    }
+
+    function exportToExcel() {
+      const table = document.querySelector(".customer-table");
+      const html = table.outerHTML.replace(/ /g, '%20');
+      const filename = 'customers.xls';
+      const dataType = 'application/vnd.ms-excel';
+      const a = document.createElement('a');
+      a.href = 'data:' + dataType + ', ' + html;
+      a.download = filename;
+      a.click();
     }
 
     window.onload = loadCustomerList;
