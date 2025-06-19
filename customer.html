@@ -39,9 +39,9 @@
       font-weight: 600;
       color: #444;
     }
-    .new-customer-btn {
+    .new-customer-btn,
+    .show-map-btn {
       padding: 10px 20px;
-      background-color: #43a047;
       color: white;
       border: none;
       border-radius: 8px;
@@ -49,8 +49,17 @@
       cursor: pointer;
       transition: 0.3s;
     }
+    .new-customer-btn {
+      background-color: #43a047;
+    }
     .new-customer-btn:hover {
       background-color: #2e7d32;
+    }
+    .show-map-btn {
+      background-color: #0288d1;
+    }
+    .show-map-btn:hover {
+      background-color: #01579b;
     }
     .export-buttons button {
       padding: 8px 14px;
@@ -153,6 +162,7 @@
     <div class="top-bar">
       <div class="total-customers">Total Customers: <span id="totalCustomers">0</span></div>
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
+      <button class="show-map-btn" onclick="showAllCustomersOnMap()">Show All Customers on Map</button>
     </div>
     <div class="export-buttons">
       <button class="pdf-btn" onclick="exportToPDF()">Export PDF</button>
@@ -200,21 +210,21 @@
       tbody.innerHTML = "";
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
-        tr.innerHTML = `
-          <td data-label="Code">${c.code}</td>
-          <td data-label="Name">${c.name}</td>
-          <td data-label="Mobile">${c.mobile}</td>
-          <td data-label="Balance">IQD ${c.balance}</td>
-          <td data-label="GPS">${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '❌'}</td>
-          <td data-label="Route">${c.route || ''}</td>
-          <td data-label="City">${c.city || ''}</td>
-          <td data-label="Area">${c.area || ''}</td>
-          <td data-label="User">${c.user || ''}</td>
+        tr.innerHTML = \`
+          <td data-label="Code">\${c.code}</td>
+          <td data-label="Name">\${c.name}</td>
+          <td data-label="Mobile">\${c.mobile}</td>
+          <td data-label="Balance">IQD \${c.balance}</td>
+          <td data-label="GPS">\${c.location ? \`<a href="https://maps.google.com/?q=\${c.location}" target="_blank">📍 \${c.location}</a>\` : '❌'}</td>
+          <td data-label="Route">\${c.route || ''}</td>
+          <td data-label="City">\${c.city || ''}</td>
+          <td data-label="Area">\${c.area || ''}</td>
+          <td data-label="User">\${c.user || ''}</td>
           <td data-label="Actions">
-            <button onclick="editCustomer(${index})">✏️</button>
-            <button onclick="deleteCustomer(${index})">🗑️</button>
+            <button onclick="editCustomer(\${index})">✏️</button>
+            <button onclick="deleteCustomer(\${index})">🗑️</button>
           </td>
-        `;
+        \`;
         tbody.appendChild(tr);
       });
       updateCustomerCount();
@@ -249,7 +259,7 @@
     function exportToPDF() {
       const table = document.querySelector(".customer-table").outerHTML;
       const win = window.open('', '_blank');
-      win.document.write(`
+      win.document.write(\`
         <html>
         <head>
           <title>Customer List</title>
@@ -263,10 +273,10 @@
         </head>
         <body>
           <h2>Customer List</h2>
-          ${table}
+          \${table}
         </body>
         </html>
-      `);
+      \`);
       win.document.close();
       win.focus();
       win.print();
@@ -283,13 +293,25 @@
       a.click();
     }
 
-    window.onload = loadCustomerList;
-    window.addEventListener("message", function(e) {
-      if (e.data === "customer-added") {
-        closeModal();
-        loadCustomerList();
+    function showAllCustomersOnMap() {
+      const stored = localStorage.getItem("customers");
+      if (!stored) {
+        alert("No customers found.");
+        return;
       }
-    });
-  </script>
-</body>
-</html>
+      const data = JSON.parse(stored);
+      const locations = data
+        .map(c => c.location)
+        .filter(loc => loc && loc.trim() !== "");
+
+      if (locations.length === 0) {
+        alert("No customer locations found.");
+        return;
+      }
+
+      // Build Google Maps URL with multiple markers using pipe-separated lat,lng pairs
+      // Note: Google Maps URL supports only one 'q' parameter, so instead we open a map centered at the first location
+      // and let user zoom/pan. Alternatively, create a My Maps or use an external service for multiple markers.
+
+      // For simplicity, open Google Maps search with all locations concatenated
+      const
