@@ -48,16 +48,6 @@
     .new-customer-btn:hover {
       background-color: #0056b3;
     }
-    /* فلتەر input */
-    #customerFilter {
-      width: 100%;
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      margin-bottom: 15px;
-      box-sizing: border-box;
-    }
     .customer-table {
       width: 100%;
       border-collapse: collapse;
@@ -66,6 +56,14 @@
       border: 1px solid #ccc;
       padding: 10px;
       text-align: left;
+    }
+    .customer-table input[type="text"] {
+      width: 100%;
+      padding: 5px;
+      font-size: 13px;
+      box-sizing: border-box;
+      border: 1px solid #ccc;
+      border-radius: 4px;
     }
     .seo-status {
       color: green;
@@ -106,39 +104,6 @@
       border: none;
       border-radius: 8px;
     }
-    @media (max-width: 768px) {
-      .customer-table thead {
-        display: none;
-      }
-      .customer-table, .customer-table tbody, .customer-table tr, .customer-table td {
-        display: block;
-        width: 100%;
-      }
-      .customer-table tr {
-        margin-bottom: 15px;
-        border: 1px solid #ddd;
-        border-radius: 10px;
-        padding: 10px;
-        background-color: #fff;
-      }
-      .customer-table td {
-        text-align: right;
-        padding: 8px 10px;
-        position: relative;
-      }
-      .customer-table td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 10px;
-        top: 8px;
-        font-weight: bold;
-        color: #555;
-      }
-      .new-customer-btn {
-        width: 100%;
-        margin-bottom: 15px;
-      }
-    }
     button.action-btn {
       padding: 6px 10px;
       font-size: 13px;
@@ -171,26 +136,18 @@
       <button class="new-customer-btn" onclick="addNewCustomer()">Add Customer</button>
     </div>
 
-    <!-- فلتەر بۆ گەڕان -->
-    <input
-      type="text"
-      id="customerFilter"
-      placeholder="Search customers..."
-      oninput="filterCustomers()"
-    />
-
     <table class="customer-table">
       <thead>
         <tr>
-          <th>Code</th>
-          <th>Name</th>
-          <th>Mobile</th>
-          <th>Balance</th>
-          <th>GPS Location</th>
-          <th>Route</th>
-          <th>City</th>
-          <th>Area</th>
-          <th>User</th>
+          <th>Code<br><input type="text" oninput="filterTable(0, this.value)" /></th>
+          <th>Name<br><input type="text" oninput="filterTable(1, this.value)" /></th>
+          <th>Mobile<br><input type="text" oninput="filterTable(2, this.value)" /></th>
+          <th>Balance<br><input type="text" oninput="filterTable(3, this.value)" /></th>
+          <th>GPS<br><input type="text" oninput="filterTable(4, this.value)" /></th>
+          <th>Route<br><input type="text" oninput="filterTable(5, this.value)" /></th>
+          <th>City<br><input type="text" oninput="filterTable(6, this.value)" /></th>
+          <th>Area<br><input type="text" oninput="filterTable(7, this.value)" /></th>
+          <th>User<br><input type="text" oninput="filterTable(8, this.value)" /></th>
           <th>Actions</th>
         </tr>
       </thead>
@@ -198,7 +155,6 @@
     </table>
   </div>
 
-  <!-- Modal for adding customers -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -225,18 +181,16 @@
       data.forEach((c, index) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
-          <td data-label="Code">${c.code}</td>
-          <td data-label="Name">${c.name}</td>
-          <td data-label="Mobile">${c.mobile}</td>
-          <td data-label="Balance">IQD ${c.balance}</td>
-          <td data-label="GPS Location">
-            ${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '<span class="seo-status">❌</span>'}
-          </td>
-          <td data-label="Route">${c.route || ''}</td>
-          <td data-label="City">${c.city || ''}</td>
-          <td data-label="Area">${c.area || ''}</td>
-          <td data-label="User">${c.user || ''}</td>
-          <td data-label="Actions">
+          <td>${c.code}</td>
+          <td>${c.name}</td>
+          <td>${c.mobile}</td>
+          <td>IQD ${c.balance}</td>
+          <td>${c.location ? `<a href="https://maps.google.com/?q=${c.location}" target="_blank">📍 ${c.location}</a>` : '❌'}</td>
+          <td>${c.route || ''}</td>
+          <td>${c.city || ''}</td>
+          <td>${c.area || ''}</td>
+          <td>${c.user || ''}</td>
+          <td>
             <button class="action-btn edit-btn" onclick="editCustomer(${index})">Edit</button>
             <button class="action-btn delete-btn" onclick="deleteCustomer(${index})">Delete</button>
           </td>
@@ -283,7 +237,6 @@
 
       localStorage.setItem("customers", JSON.stringify(data));
       loadCustomerList();
-      filterCustomers(); // بۆ نوێکردنەوەی فلتەر دووبارە
     }
 
     function deleteCustomer(index) {
@@ -294,25 +247,20 @@
       data.splice(index, 1);
       localStorage.setItem("customers", JSON.stringify(data));
       loadCustomerList();
-      filterCustomers(); // بۆ نوێکردنەوەی فلتەر دووبارە
     }
 
-    function filterCustomers() {
-      const filterValue = document.getElementById('customerFilter').value.toLowerCase();
+    function filterTable(colIndex, value) {
       const tbody = document.querySelector(".customer-table tbody");
-      const rows = tbody.querySelectorAll('tr');
+      const rows = tbody.querySelectorAll("tr");
+      value = value.toLowerCase();
 
       rows.forEach(row => {
-        const cells = row.querySelectorAll('td');
-        let show = false;
-
-        cells.forEach(cell => {
-          if (cell.textContent.toLowerCase().includes(filterValue)) {
-            show = true;
-          }
-        });
-
-        row.style.display = show ? '' : 'none';
+        const cell = row.cells[colIndex];
+        if (cell && cell.textContent.toLowerCase().includes(value)) {
+          row.style.display = "";
+        } else {
+          row.style.display = "none";
+        }
       });
     }
 
@@ -322,7 +270,6 @@
       if (e.data === "customer-added") {
         closeModal();
         loadCustomerList();
-        filterCustomers();
       }
     });
   </script>
