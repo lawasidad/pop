@@ -1,149 +1,64 @@
-<!DOCTYPE html>
-<html lang="en" dir="rtl">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dashboard - lawasales</title>
-  <style>
-    /* ... (هەموو ستایلەکانی پێشووت) ... */
+<script>
+  function logout() {
+    window.location.href = './index.html';
+  }
 
-    .stat-value {
-      font-size: 16px;
-      font-weight: bold;
-      color: #000;
+  function updatePartyCount() {
+    const div = document.getElementById("party-count");
+    if (!div) return;
+
+    const stored = localStorage.getItem("customers");
+    const customers = stored ? JSON.parse(stored) : [];
+    div.textContent = customers.length.toLocaleString();
+  }
+
+  window.addEventListener("message", function(event) {
+    if (event.data === "customer-added") {
+      updatePartyCount();
     }
-  </style>
-</head>
-<body>
-  <div class="dashboard">
-    <!-- Title -->
-    <h1>Dashboard_lawaSales</h1>
+  });
 
-    <!-- Menu Navigation -->
-    <nav class="menu">
-      <div class="menu-item" onclick="location.href='inventory.html'">Inventory</div>
-      <div class="menu-item" onclick="location.href='customer.html'">Customers</div>
-      <div class="menu-item" onclick="location.href='sales.html'">Sales</div>
-      <div class="menu-item" onclick="location.href='purchase.html'">Purchases</div>
-      <div class="menu-item" onclick="location.href='new-sales.html'">New Sales</div>
-      <div class="menu-item" onclick="location.href='finance.html'">Finance</div>
-      <div class="menu-item" onclick="location.href='routes.html'">Routes</div>
-      <div class="menu-item" onclick="location.href='settings.html'">Settings</div>
-      <button class="new-customer-btn" onclick="location.href='new-customer.html'">Add New Customer</button>
-    </nav>
+  updatePartyCount();
 
-    <div class="divider"></div>
+  // Show today's date initially
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('en-GB');
+  const dateEl = document.getElementById("dynamic-date");
+  if (dateEl) {
+    dateEl.textContent = `${formattedDate} - ${formattedDate}`;
+  }
 
-    <!-- Date Filter -->
-    <div class="date-filter">
-      <label for="date-from">From:</label>
-      <input type="date" id="date-from" />
-      <label for="date-to">To:</label>
-      <input type="date" id="date-to" />
-      <button onclick="applyDateFilter()">Filter</button>
-    </div>
+  function applyDateFilter() {
+    const fromInput = document.getElementById("date-from");
+    const toInput = document.getElementById("date-to");
 
-    <div class="divider"></div>
+    const fromDate = fromInput.value ? new Date(fromInput.value) : null;
+    const toDate = toInput.value ? new Date(toInput.value) : null;
 
-    <!-- Stats -->
-    <section class="stats-container">
-      <div class="stat-box">
-        <div class="stat-title">Requests</div>
-        <div class="stat-value">IQD 0</div>
-        <div class="stat-value">0</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title">Receipts</div>
-        <div class="stat-value" id="receipts-amount">IQD 0</div>
-        <div class="stat-value" id="receipts-units">0 Receipts</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-title" id="dynamic-date">03/06/2025 - 03/06/2021</div>
-        <div class="stat-value">0 Visits</div>
-      </div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- Quick Stats -->
-    <h2>Quick Stats</h2>
-    <section class="quick-stats-grid">
-      <div class="quick-stat-item"><div>Debt to Receive</div><div>0</div></div>
-      <div class="quick-stat-item"><div>To Pay</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Stock Shortage</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Stock Value</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Number of Products</div><div>0</div></div>
-      <div class="quick-stat-item"><div>Number of Customers</div><div id="party-count">0</div></div>
-    </section>
-
-    <div class="divider"></div>
-
-    <!-- Footer -->
-    <footer class="footer">
-      <h2>lawaSales</h2>
-      <div>hello?</div>
-      <div>
-        <a href="https://wa.me/9647502020061" target="_blank" style="font-size: 20px; color: #fff; text-decoration: none;">💬🟢</a>
-      </div>
-      <button class="logout-btn" onclick="logout()">Logout</button>
-    </footer>
-
-    <input type="text" class="search-bar" placeholder="Search...">
-  </div>
-
-  <script>
-    function logout() {
-      window.location.href = './index.html';
+    if (fromDate && toDate && fromDate > toDate) {
+      alert("Please make sure the 'From' date is earlier than or equal to the 'To' date.");
+      return;
     }
 
-    function updatePartyCount() {
-      const div = document.getElementById("party-count");
-      if (!div) return;
-      const stored = localStorage.getItem("customers");
-      const customers = stored ? JSON.parse(stored) : [];
-      div.textContent = customers.length.toLocaleString();
-    }
+    const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+    const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
+    const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
+    if (document.getElementById("dynamic-date"))
+      document.getElementById("dynamic-date").textContent = `${fromStr} - ${toStr}`;
+  }
 
-    window.addEventListener("message", function(event) {
-      if (event.data === "customer-added") updatePartyCount();
-    });
+  // ✅ Update Receipts box with total amount and count
+  function updateReceiptsSummary() {
+    const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+    const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
+    const totalReceipts = allSales.length;
 
-    updatePartyCount();
+    const amountEl = document.getElementById("receipts-amount");
+    const unitsEl = document.getElementById("receipts-units");
 
-    const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB');
-    const dateEl = document.getElementById("dynamic-date");
-    if (dateEl) dateEl.textContent = `${formattedDate} - ${formattedDate}`;
+    if (amountEl) amountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
+    if (unitsEl) unitsEl.textContent = `${totalReceipts.toLocaleString()} Receipts`;
+  }
 
-    function applyDateFilter() {
-      const fromInput = document.getElementById("date-from");
-      const toInput = document.getElementById("date-to");
-      const fromDate = fromInput.value ? new Date(fromInput.value) : null;
-      const toDate = toInput.value ? new Date(toInput.value) : null;
-      if (fromDate && toDate && fromDate > toDate) {
-        alert("Please make sure the 'From' date is earlier than or equal to the 'To' date.");
-        return;
-      }
-
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
-      const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
-      if (dateEl) dateEl.textContent = `${fromStr} - ${toStr}`;
-    }
-
-    function updateReceiptsSummary() {
-      const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-      const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-      const totalReceipts = allSales.length;
-
-      const amountEl = document.getElementById("receipts-amount");
-      const unitsEl = document.getElementById("receipts-units");
-
-      if (amountEl) amountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
-      if (unitsEl) unitsEl.textContent = `${totalReceipts.toLocaleString()} Receipts`;
-    }
-
-    updateReceiptsSummary();
-  </script>
-</body>
-</html>
+  updateReceiptsSummary();
+</script>
