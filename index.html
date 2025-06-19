@@ -3,33 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Login</title>
+  <title>Login - lawaSales</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap');
 
-    * { box-sizing: border-box; }
-    body {
+    * {
+      box-sizing: border-box;
       margin: 0;
-      height: 100vh;
+      padding: 0;
+    }
+
+    body {
       font-family: 'Poppins', sans-serif;
+      height: 100vh;
+      display: flex;
+    }
+
+    .left-panel {
       background: linear-gradient(135deg, #1e3c72, #2a5298);
+      color: white;
+      width: 40%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+    }
+
+    .left-panel img {
+      width: 100px;
+      margin-bottom: 20px;
+    }
+
+    .left-panel h1 {
+      font-size: 36px;
+      font-weight: 600;
+    }
+
+    .right-panel {
+      width: 60%;
       display: flex;
       justify-content: center;
       align-items: center;
+      background: #f5f7fa;
     }
+
     .login-box {
-      background: #ffffffdd;
+      background: white;
       padding: 40px 50px;
       border-radius: 15px;
-      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
-      width: 350px;
-      text-align: center;
+      box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+      width: 100%;
+      max-width: 400px;
     }
+
     h2 {
       margin-bottom: 25px;
       font-weight: 600;
       color: #1e3c72;
+      text-align: center;
     }
+
     input[type="text"], input[type="password"] {
       width: 100%;
       padding: 14px 18px;
@@ -38,6 +72,7 @@
       border-radius: 8px;
       font-size: 16px;
     }
+
     button {
       background-color: #1e3c72;
       color: white;
@@ -49,72 +84,95 @@
       cursor: pointer;
       font-weight: 600;
     }
+
     button:hover {
       background-color: #144d7f;
     }
+
     .forgot-password {
       margin-top: 15px;
       font-size: 14px;
       color: #2a5298;
       cursor: pointer;
+      text-align: center;
+      display: block;
       text-decoration: underline;
     }
+
     .error-message {
       color: #e74c3c;
       margin-bottom: 15px;
       font-weight: 600;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        flex-direction: column;
+      }
+
+      .left-panel, .right-panel {
+        width: 100%;
+        height: auto;
+      }
     }
   </style>
 </head>
 <body>
 
-<div class="login-box">
-  <h2>Login to Dashboard</h2>
-  <form id="loginForm" novalidate>
-    <div id="errorMsg" class="error-message" style="display:none;"></div>
-    <input type="text" id="username" placeholder="Username" required autocomplete="off" />
-    <input type="password" id="password" placeholder="Password" required autocomplete="off" />
-    <button type="submit">Log In</button>
-  </form>
-  <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span>
-</div>
+  <div class="left-panel">
+    <img src="https://via.placeholder.com/100x100?text=L" alt="lawaSales Logo" />
+    <h1>lawaSales</h1>
+  </div>
 
-<script>
-  // ✅ دڵنیابە لەوەی تەنها جارێکی یەکەم یوزەر زیاد بکرێت
-  if (!localStorage.getItem('users')) {
-    const defaultUser = [{ username: 'admin', password: '1234' }];
-    localStorage.setItem('users', JSON.stringify(defaultUser));
-  }
+  <div class="right-panel">
+    <div class="login-box">
+      <h2>Login to Dashboard</h2>
+      <form id="loginForm" novalidate>
+        <div id="errorMsg" class="error-message" style="display:none;"></div>
+        <input type="text" id="username" placeholder="Username" required autocomplete="off" />
+        <input type="password" id="password" placeholder="Password" required autocomplete="off" />
+        <button type="submit">Log In</button>
+      </form>
+      <span class="forgot-password" onclick="alert('Please contact admin to reset your password.')">Forgot Password?</span>
+    </div>
+  </div>
 
-  const loginForm = document.getElementById('loginForm');
-  const errorMsg = document.getElementById('errorMsg');
-
-  loginForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    errorMsg.style.display = 'none';
-    errorMsg.textContent = '';
-
-    const username = document.getElementById('username').value.trim();
-    const password = document.getElementById('password').value.trim();
-
-    if (!username || !password) {
-      errorMsg.textContent = '❗ Please fill in both username and password.';
-      errorMsg.style.display = 'block';
-      return;
+  <script>
+    if (!localStorage.getItem('users')) {
+      const defaultUser = [{ username: 'admin', password: '1234' }];
+      localStorage.setItem('users', JSON.stringify(defaultUser));
     }
 
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    const userFound = users.find(u => u.username === username && u.password === password);
+    const loginForm = document.getElementById('loginForm');
+    const errorMsg = document.getElementById('errorMsg');
 
-    if (userFound) {
-      alert('✅ Login successful!');
-      window.location.href = 'dashboard.html';
-    } else {
-      errorMsg.textContent = '❌ Invalid username or password.';
-      errorMsg.style.display = 'block';
-    }
-  });
-</script>
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      errorMsg.style.display = 'none';
+      errorMsg.textContent = '';
+
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+
+      if (!username || !password) {
+        errorMsg.textContent = '❗ Please fill in both username and password.';
+        errorMsg.style.display = 'block';
+        return;
+      }
+
+      const users = JSON.parse(localStorage.getItem('users')) || [];
+      const userFound = users.find(u => u.username === username && u.password === password);
+
+      if (userFound) {
+        alert('✅ Login successful!');
+        window.location.href = 'dashboard.html';
+      } else {
+        errorMsg.textContent = '❌ Invalid username or password.';
+        errorMsg.style.display = 'block';
+      }
+    });
+  </script>
 
 </body>
 </html>
