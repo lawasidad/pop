@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Dashboard - lawasales</title>
   <style>
-    /* ... ستایلەکان هەمانە کە پێشتر بوو ... */
     * {
       margin: 0;
       padding: 0;
@@ -278,15 +277,15 @@
         inputTo.disabled = true;
       }
 
-      // Optional: if you want to set default from date to 7 days ago:
+      // "from" date is editable and starts as 7 days ago by default
       const inputFrom = document.getElementById("from-date");
       if (inputFrom) {
         const pastWeek = new Date();
         pastWeek.setDate(today.getDate() - 7);
         inputFrom.value = pastWeek.toISOString().split('T')[0];
+        inputFrom.disabled = false; // ensure it's editable
       }
 
-      // Update header date range display to show from - to
       updateHeaderDateRange();
     })();
 
