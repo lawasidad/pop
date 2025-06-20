@@ -2,169 +2,52 @@
 <html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>نیشاندانی شوێنی بەردەوام لەسەر نەخشە</title>
+  <title>نەخشەی گووگڵ - Simple Map</title>
   <style>
-    body {
-      margin: 0; padding: 0;
+    body, html {
+      height: 100%; margin: 0; padding: 0;
       font-family: Tahoma, sans-serif;
       direction: rtl;
       background: #f0f2f5;
-      text-align: right;
     }
     #map {
+      height: 100vh;
       width: 100%;
       max-width: 900px;
-      height: 450px;
       margin: 20px auto;
       border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    #address, #error {
-      max-width: 900px;
-      margin: 10px auto;
-      background: white;
-      padding: 15px 20px;
-      border-radius: 8px;
-      box-shadow: 0 0 8px rgba(0,0,0,0.1);
-      font-size: 17px;
-      user-select: text;
-    }
-    #error {
-      color: red;
-      font-weight: bold;
-    }
-    button {
-      display: block;
-      margin: 15px auto;
-      padding: 12px 25px;
-      font-weight: bold;
-      background: #256d24;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      max-width: 220px;
-    }
-    button:hover {
-      background: #1b4e18;
+      box-shadow: 0 0 12px rgba(0,0,0,0.3);
     }
   </style>
 </head>
 <body>
 
-  <h1 style="max-width: 900px; margin: 30px auto 10px;">نیشاندانی شوێنی بەردەوام لەسەر نەخشە</h1>
-
-  <button id="startBtn">دەستپێکردنی شوێنگرتن</button>
-  <button id="stopBtn" disabled>وەستاندنی شوێنگرتن</button>
+  <h2 style="text-align:center; margin-top: 20px;">نەخشەی گووگڵ - نیشاندانی شوێن</h2>
 
   <div id="map"></div>
-  <div id="address">ناونیشان: نا دیاری کراوە</div>
-  <div id="error"></div>
 
   <script>
-    let map, marker, watchId;
+    function initMap() {
+      const center = { lat: 33.312805, lng: 44.361488 };  // ناوەڕاستی کوردستان - ھەولێر
 
-    const addressDiv = document.getElementById('address');
-    const errorDiv = document.getElementById('error');
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
-
-    function initMap(lat = 33.312805, lng = 44.361488) {
-      map = new google.maps.Map(document.getElementById('map'), {
-        center: { lat, lng },
-        zoom: 15,
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: center,
       });
 
-      marker = new google.maps.Marker({
-        position: { lat, lng },
+      const marker = new google.maps.Marker({
+        position: center,
         map: map,
-        title: "شوێنی تۆ",
+        title: "نیشانی ناوەڕاست",
       });
     }
-
-    async function reverseGeocode(lat, lng) {
-      try {
-        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_API_KEY_HERE&language=ku`);
-        const data = await response.json();
-        if (data.status === "OK" && data.results.length > 0) {
-          return data.results[0].formatted_address;
-        }
-        return "ناونیشان ناتوانرێت بدۆزرێتەوە";
-      } catch {
-        return "کێشە لە وەریگرتنی ناونیشان هەیە";
-      }
-    }
-
-    async function updateLocation(position) {
-      const lat = position.coords.latitude;
-      const lng = position.coords.longitude;
-
-      const address = await reverseGeocode(lat, lng);
-      addressDiv.textContent = `ناونیشان: ${address}`;
-
-      const pos = { lat, lng };
-      map.setCenter(pos);
-      marker.setPosition(pos);
-    }
-
-    function startTracking() {
-      errorDiv.textContent = "";
-
-      if (!navigator.geolocation) {
-        errorDiv.textContent = "بەڕێز، بڕاوزەری تۆ پشتیوانی شوێنگرتن ناکات.";
-        return;
-      }
-
-      watchId = navigator.geolocation.watchPosition(
-        updateLocation,
-        (error) => {
-          switch (error.code) {
-            case error.PERMISSION_DENIED:
-              errorDiv.textContent = "ڕێگە پێ نەدرا بۆ شوێنگرتن.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorDiv.textContent = "زانیاری شوێن نەدۆزرایەوە.";
-              break;
-            case error.TIMEOUT:
-              errorDiv.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
-              break;
-            default:
-              errorDiv.textContent = "هەڵەیەک ڕوویدا لە کاتی وەریگرتنی شوێن.";
-          }
-        },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
-      );
-
-      startBtn.disabled = true;
-      stopBtn.disabled = false;
-    }
-
-    function stopTracking() {
-      if (watchId !== undefined) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = undefined;
-        addressDiv.textContent = "ناونیشان: نا دیاری کراوە";
-      }
-      errorDiv.textContent = "";
-      startBtn.disabled = false;
-      stopBtn.disabled = true;
-    }
-
-    startBtn.onclick = startTracking;
-    stopBtn.onclick = stopTracking;
-
-    function loadMapOnStart() {
-      initMap();
-    }
-
-    window.onload = loadMapOnStart;
   </script>
 
-  <script async defer
-    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE">
-  </script>
+  <!-- 
+    تکایە API Key ـت لێ دابنێ لە شوێنی YOUR_GOOGLE_API_KEY_HERE 
+    و ئەم کۆدە لە گووگڵ کلۆد پڕۆجەکەت دامەزراو بێت 
+  -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE&callback=initMap"></script>
 
 </body>
 </html>
