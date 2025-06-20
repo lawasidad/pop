@@ -308,6 +308,27 @@
       window.open(url, '_blank');
     }
 
+    function editCustomer(index) {
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      const customer = customers[index];
+      const updatedName = prompt("Update customer name:", customer.name);
+      if (updatedName !== null) {
+        customer.name = updatedName;
+        customers[index] = customer;
+        localStorage.setItem("customers", JSON.stringify(customers));
+        loadCustomerList();
+      }
+    }
+
+    function deleteCustomer(index) {
+      if (confirm("Are you sure you want to delete this customer?")) {
+        const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+        customers.splice(index, 1);
+        localStorage.setItem("customers", JSON.stringify(customers));
+        loadCustomerList();
+      }
+    }
+
     window.onload = loadCustomerList;
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
