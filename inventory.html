@@ -3,13 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sales Form</title>
+  <title>Inventory Form with Discount</title>
   <style>
-    body {
+    * {
+      box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
-      background: #f9f9f9;
-      margin: 0; padding: 20px;
     }
+
+    body {
+      margin: 0;
+      background: #f4f6f9;
+      padding: 20px;
+    }
+
     .container {
       max-width: 1000px;
       margin: auto;
@@ -18,31 +24,100 @@
       border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
+
     h2 {
       text-align: center;
       margin-bottom: 20px;
       color: #2c3e50;
     }
+
+    form {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: center;
+    }
+
+    form input {
+      flex: 1 1 140px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
+      color: #333;
+      outline-offset: 2px;
+      transition: background-color 0.3s;
+    }
+
+    form input:focus {
+      border-color: #3498db;
+      background-color: #eef6fc;
+    }
+
+    form button {
+      padding: 10px 20px;
+      background: #3498db;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background-color 0.3s;
+    }
+    form button:hover {
+      background: #2980b9;
+    }
+
+    .search-box {
+      text-align: right;
+      margin-bottom: 15px;
+    }
+
+    .search-box input {
+      padding: 10px;
+      width: 100%;
+      max-width: 300px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: white;
+      color: #333;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
       background-color: white;
     }
+
     th, td {
       padding: 10px;
       border-bottom: 1px solid #eee;
       text-align: left;
       vertical-align: middle;
+      background-color: white;
       color: #333;
     }
+
     th {
       background-color: #3498db;
       color: white;
     }
+
     tr:hover {
       background-color: #f1f1f1;
     }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: #3498db;
+      cursor: pointer;
+      margin: 0 5px;
+      font-size: 18px;
+    }
+
     .thumbnail {
       width: 50px;
       height: 50px;
@@ -51,12 +126,62 @@
       border-radius: 6px;
       background-color: white;
     }
+
+    @media (max-width: 768px) {
+      form {
+        flex-direction: column;
+      }
+
+      form input, form button {
+        width: 100%;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+      }
+
+      thead {
+        display: none;
+      }
+
+      td {
+        position: relative;
+        padding-left: 50%;
+      }
+
+      td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        font-weight: bold;
+        color: #555;
+      }
+
+      .thumbnail {
+        width: 40px;
+        height: 40px;
+      }
+    }
   </style>
 </head>
 <body>
 
 <div class="container">
-  <h2>New Sales Form</h2>
+  <h2>Inventory Management with Discount</h2>
+
+  <form id="inventoryForm" autocomplete="off">
+    <input type="text" id="name" placeholder="Product Name" required />
+    <input type="text" id="code" placeholder="Product Code" required />
+    <input type="number" id="quantity" placeholder="Quantity" required min="0" />
+    <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
+    <input type="number" id="discount" placeholder="Discount %" step="0.01" min="0" max="100" />
+    <input type="file" id="image" accept="image/*" />
+    <button type="submit">Add</button>
+  </form>
+
+  <div class="search-box">
+    <input type="text" id="searchInput" placeholder="Search product..." />
+  </div>
 
   <table>
     <thead>
@@ -64,78 +189,181 @@
         <th>Image</th>
         <th>Name</th>
         <th>Code</th>
-        <th>Quantity</th>
-        <th>Unit Price</th>
+        <th>Qty</th>
+        <th>Price</th>
         <th>Discount %</th>
-        <th>Total Price</th>
+        <th>Total</th>
+        <th>Action</th>
       </tr>
     </thead>
-    <tbody id="salesList"></tbody>
+    <tbody id="inventoryList"></tbody>
   </table>
 </div>
 
 <script>
-  const salesList = document.getElementById('salesList');
-  const products = JSON.parse(localStorage.getItem('products') || '[]');
+  const form = document.getElementById("inventoryForm");
+  const searchInput = document.getElementById("searchInput");
+  const inventoryList = document.getElementById("inventoryList");
+  const imageInput = document.getElementById("image");
 
-  function renderSales() {
-    salesList.innerHTML = '';
+  let products = JSON.parse(localStorage.getItem("products") || "[]");
+  let editIndex = -1;
 
-    if (products.length === 0) {
-      salesList.innerHTML = `<tr><td colspan="7" style="text-align:center;">No products available</td></tr>`;
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const code = document.getElementById("code").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const price = parseFloat(document.getElementById("price").value);
+    let discount = parseFloat(document.getElementById("discount").value);
+    if (isNaN(discount) || discount < 0) discount = 0;
+    if (discount > 100) discount = 100;
+
+    const file = imageInput.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageDataUrl = event.target.result;
+        saveProduct({ name, code, quantity, price, discount, image: imageDataUrl });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      saveProduct({ name, code, quantity, price, discount, image: null });
+    }
+  });
+
+  function saveProduct(product) {
+    if (editIndex > -1) {
+      products[editIndex] = product;
+      editIndex = -1;
+    } else {
+      products.push(product);
+    }
+
+    localStorage.setItem("products", JSON.stringify(products));
+    form.reset();
+    imageInput.value = "";
+    updateTable(products);
+  }
+
+  function updateTable(data) {
+    inventoryList.innerHTML = "";
+
+    if (data.length === 0) {
+      inventoryList.innerHTML = `<tr><td colspan="8" style="text-align:center;">No products</td></tr>`;
       return;
     }
 
-    products.forEach(item => {
-      const tr = document.createElement('tr');
+    const fragment = document.createDocumentFragment();
 
-      const imgTd = document.createElement('td');
+    data.forEach((item, index) => {
+      const tr = document.createElement("tr");
+
+      const imgTd = document.createElement("td");
+      imgTd.setAttribute("data-label", "Image");
       if (item.image) {
-        const img = document.createElement('img');
+        const img = document.createElement("img");
         img.src = item.image;
         img.alt = item.name;
-        img.className = 'thumbnail';
+        img.className = "thumbnail";
         imgTd.appendChild(img);
       } else {
-        const placeholder = document.createElement('div');
-        placeholder.style.width = '50px';
-        placeholder.style.height = '50px';
-        placeholder.style.background = '#eee';
-        placeholder.style.borderRadius = '6px';
+        const placeholder = document.createElement("div");
+        placeholder.style.width = "50px";
+        placeholder.style.height = "50px";
+        placeholder.style.background = "#eee";
+        placeholder.style.borderRadius = "6px";
         imgTd.appendChild(placeholder);
       }
       tr.appendChild(imgTd);
 
-      const nameTd = document.createElement('td');
+      const nameTd = document.createElement("td");
+      nameTd.setAttribute("data-label", "Name");
       nameTd.textContent = item.name;
       tr.appendChild(nameTd);
 
-      const codeTd = document.createElement('td');
+      const codeTd = document.createElement("td");
+      codeTd.setAttribute("data-label", "Code");
       codeTd.textContent = item.code;
       tr.appendChild(codeTd);
 
-      const qtyTd = document.createElement('td');
+      const qtyTd = document.createElement("td");
+      qtyTd.setAttribute("data-label", "Qty");
       qtyTd.textContent = item.quantity;
       tr.appendChild(qtyTd);
 
-      const priceTd = document.createElement('td');
-      priceTd.textContent = item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      const priceTd = document.createElement("td");
+      priceTd.setAttribute("data-label", "Price");
+      priceTd.textContent = item.price.toLocaleString();
       tr.appendChild(priceTd);
 
-      const discountTd = document.createElement('td');
-      discountTd.textContent = item.discount ? item.discount.toFixed(2) : '0.00';
+      const discountTd = document.createElement("td");
+      discountTd.setAttribute("data-label", "Discount %");
+      discountTd.textContent = item.discount ? item.discount.toFixed(2) : "0";
       tr.appendChild(discountTd);
 
+      const totalTd = document.createElement("td");
+      totalTd.setAttribute("data-label", "Total");
       const total = item.quantity * item.price * (1 - (item.discount || 0) / 100);
-      const totalTd = document.createElement('td');
-      totalTd.textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      totalTd.textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       tr.appendChild(totalTd);
 
-      salesList.appendChild(tr);
+      const actionTd = document.createElement("td");
+      actionTd.setAttribute("data-label", "Action");
+
+      const editBtn = document.createElement("button");
+      editBtn.className = "action-btn";
+      editBtn.title = "Edit";
+      editBtn.innerHTML = "✏️";
+      editBtn.addEventListener("click", () => editItem(index));
+      actionTd.appendChild(editBtn);
+
+      const deleteBtn = document.createElement("button");
+      deleteBtn.className = "action-btn";
+      deleteBtn.title = "Delete";
+      deleteBtn.innerHTML = "🗑️";
+      deleteBtn.addEventListener("click", () => deleteItem(index));
+      actionTd.appendChild(deleteBtn);
+
+      tr.appendChild(actionTd);
+
+      fragment.appendChild(tr);
     });
+
+    inventoryList.appendChild(fragment);
   }
 
-  renderSales();
+  function editItem(index) {
+    const item = products[index];
+    document.getElementById("name").value = item.name;
+    document.getElementById("code").value = item.code;
+    document.getElementById("quantity").value = item.quantity;
+    document.getElementById("price").value = item.price;
+    document.getElementById("discount").value = item.discount || 0;
+    imageInput.value = "";
+    editIndex = index;
+  }
+
+  function deleteItem(index) {
+    if (confirm("Are you sure you want to delete this product?")) {
+      products.splice(index, 1);
+      localStorage.setItem("products", JSON.stringify(products));
+      updateTable(products);
+    }
+  }
+
+  searchInput.addEventListener("input", () => {
+    const query = searchInput.value.toLowerCase();
+    const filtered = products.filter(p =>
+      p.name.toLowerCase().includes(query) ||
+      p.code.toLowerCase().includes(query)
+    );
+    updateTable(filtered);
+  });
+
+  updateTable(products);
 </script>
 
 </body>
