@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inventory Form with Persistence</title>
+  <title>Inventory Form with Discount</title>
   <style>
-    /* ستایلەکان هەمانە کە پێشترمان داناوە */
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
@@ -41,7 +40,7 @@
     }
 
     form input {
-      flex: 1 1 180px;
+      flex: 1 1 140px;
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
@@ -168,13 +167,14 @@
 <body>
 
 <div class="container">
-  <h2>Inventory Management with Persistence</h2>
+  <h2>Inventory Management with Discount</h2>
 
   <form id="inventoryForm" autocomplete="off">
     <input type="text" id="name" placeholder="Product Name" required />
     <input type="text" id="code" placeholder="Product Code" required />
     <input type="number" id="quantity" placeholder="Quantity" required min="0" />
     <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
+    <input type="number" id="discount" placeholder="Discount %" step="0.01" min="0" max="100" />
     <input type="file" id="image" accept="image/*" />
     <button type="submit">Add</button>
   </form>
@@ -191,6 +191,7 @@
         <th>Code</th>
         <th>Qty</th>
         <th>Price</th>
+        <th>Discount %</th>
         <th>Total</th>
         <th>Action</th>
       </tr>
@@ -205,16 +206,53 @@
   const inventoryList = document.getElementById("inventoryList");
   const imageInput = document.getElementById("image");
 
-  // بەکارهێنانی localStorage بۆ هەڵگرتنی داتا
   let products = JSON.parse(localStorage.getItem("products") || "[]");
   let editIndex = -1;
 
-  // نوێکردنەوەی خشتە
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value.trim();
+    const code = document.getElementById("code").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const price = parseFloat(document.getElementById("price").value);
+    let discount = parseFloat(document.getElementById("discount").value);
+    if (isNaN(discount) || discount < 0) discount = 0;
+    if (discount > 100) discount = 100;
+
+    const file = imageInput.files[0];
+
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(event) {
+        const imageDataUrl = event.target.result;
+        saveProduct({ name, code, quantity, price, discount, image: imageDataUrl });
+      };
+      reader.readAsDataURL(file);
+    } else {
+      saveProduct({ name, code, quantity, price, discount, image: null });
+    }
+  });
+
+  function saveProduct(product) {
+    if (editIndex > -1) {
+      products[editIndex] = product;
+      editIndex = -1;
+    } else {
+      products.push(product);
+    }
+
+    localStorage.setItem("products", JSON.stringify(products));
+    form.reset();
+    imageInput.value = "";
+    updateTable(products);
+  }
+
   function updateTable(data) {
     inventoryList.innerHTML = "";
 
     if (data.length === 0) {
-      inventoryList.innerHTML = `<tr><td colspan="7" style="text-align:center;">No products</td></tr>`;
+      inventoryList.innerHTML = `<tr><td colspan="8" style="text-align:center;">No products</td></tr>`;
       return;
     }
 
@@ -261,9 +299,15 @@
       priceTd.textContent = item.price.toLocaleString();
       tr.appendChild(priceTd);
 
+      const discountTd = document.createElement("td");
+      discountTd.setAttribute("data-label", "Discount %");
+      discountTd.textContent = item.discount ? item.discount.toFixed(2) : "0";
+      tr.appendChild(discountTd);
+
       const totalTd = document.createElement("td");
       totalTd.setAttribute("data-label", "Total");
-      totalTd.textContent = (item.quantity * item.price).toLocaleString();
+      const total = item.quantity * item.price * (1 - (item.discount || 0) / 100);
+      totalTd.textContent = total.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
       tr.appendChild(totalTd);
 
       const actionTd = document.createElement("td");
@@ -291,52 +335,13 @@
     inventoryList.appendChild(fragment);
   }
 
-  // زیادکردنی زیادکراو یان نوێکردنەوەیەک
-  function saveProduct(product) {
-    if (editIndex > -1) {
-      products[editIndex] = product;
-      editIndex = -1;
-    } else {
-      products.push(product);
-    }
-
-    // نوێکردنەوەی localStorage
-    localStorage.setItem("products", JSON.stringify(products));
-
-    form.reset();
-    imageInput.value = "";
-
-    updateTable(products);
-  }
-
-  form.addEventListener("submit", (e) => {
-    e.preventDefault();
-
-    const name = document.getElementById("name").value.trim();
-    const code = document.getElementById("code").value.trim();
-    const quantity = parseInt(document.getElementById("quantity").value);
-    const price = parseFloat(document.getElementById("price").value);
-
-    const file = imageInput.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const imageDataUrl = event.target.result;
-        saveProduct({ name, code, quantity, price, image: imageDataUrl });
-      };
-      reader.readAsDataURL(file);
-    } else {
-      saveProduct({ name, code, quantity, price, image: null });
-    }
-  });
-
   function editItem(index) {
     const item = products[index];
     document.getElementById("name").value = item.name;
     document.getElementById("code").value = item.code;
     document.getElementById("quantity").value = item.quantity;
     document.getElementById("price").value = item.price;
+    document.getElementById("discount").value = item.discount || 0;
     imageInput.value = "";
     editIndex = index;
   }
@@ -358,7 +363,6 @@
     updateTable(filtered);
   });
 
-  // بارکردنی داتا لە localStorage کاتێک پەڕە باری دەکات
   updateTable(products);
 </script>
 
