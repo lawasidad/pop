@@ -121,11 +121,6 @@
       box-shadow: 0 3px 8px rgba(0,0,0,0.15);
       border: 1px solid #ccc;
       background: #fff;
-      cursor: pointer; /* زۆر گرنگ بۆ کڵیکی وێنە */
-      transition: transform 0.3s ease;
-    }
-    .product-image:hover {
-      transform: scale(1.05);
     }
     .product-name {
       font-weight: 700;
@@ -190,46 +185,6 @@
       font-size: 1.1em;
       color: #1a4d1a;
     }
-    /* Modal styles */
-    #imageModal {
-      display: none;
-      position: fixed;
-      z-index: 9999;
-      padding-top: 60px;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.8);
-    }
-    #imageModalContent {
-      margin: auto;
-      display: block;
-      max-width: 90%;
-      max-height: 80vh;
-      border-radius: 16px;
-      box-shadow: 0 0 15px #0f9d58;
-      animation: zoomIn 0.3s ease;
-    }
-    @keyframes zoomIn {
-      from {transform: scale(0.7);}
-      to {transform: scale(1);}
-    }
-    #closeModal {
-      position: absolute;
-      top: 20px;
-      right: 30px;
-      color: #fff;
-      font-size: 36px;
-      font-weight: bold;
-      cursor: pointer;
-      user-select: none;
-      transition: color 0.3s ease;
-    }
-    #closeModal:hover {
-      color: #0f9d58;
-    }
     @media (min-width: 600px) {
       input[type="text"], select {
         max-width: 320px;
@@ -291,12 +246,6 @@
     <div class="product-list" id="productList"></div>
   </div>
 
-  <!-- Modal for image -->
-  <div id="imageModal" onclick="closeModal()">
-    <span id="closeModal">&times;</span>
-    <img id="imageModalContent" src="" alt="Product Image" />
-  </div>
-
   <script>
     const products = [
       {
@@ -340,16 +289,7 @@
         list.innerHTML += `
           <div class="product-item">
             <div class="product-left">
-              <img 
-                src="${item.image}" 
-                alt="${item.name}" 
-                class="product-image" 
-                onclick="openModal('${item.image}', '${item.name}')"
-                role="button"
-                tabindex="0"
-                aria-label="View large image of ${item.name}"
-                onkeydown="if(event.key==='Enter'){openModal('${item.image}', '${item.name}')}"
-              />
+              <img src="${item.image}" alt="${item.name}" class="product-image" />
               <div>
                 <div class="product-name">${item.name}</div>
                 <div class="details">
@@ -401,30 +341,6 @@
       document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
       document.getElementById("totalQty").textContent = `Qty: ${qty}`;
     }
-
-    // Modal control
-    function openModal(src, alt) {
-      const modal = document.getElementById("imageModal");
-      const modalImg = document.getElementById("imageModalContent");
-      modal.style.display = "block";
-      modalImg.src = src;
-      modalImg.alt = alt;
-      // Prevent scrolling when modal open
-      document.body.style.overflow = "hidden";
-    }
-
-    function closeModal() {
-      const modal = document.getElementById("imageModal");
-      modal.style.display = "none";
-      document.body.style.overflow = "";
-    }
-
-    // Close modal on Escape key
-    window.addEventListener("keydown", function(event) {
-      if(event.key === "Escape") {
-        closeModal();
-      }
-    });
 
     function getDistance(lat1, lon1, lat2, lon2) {
       function toRad(x) {
@@ -482,3 +398,84 @@
 
         if (distanceToCustomer > 50) {
           alert("You are too far from the customer's location (more than 50 meters). Check-in denied.");
+          checkInDone = false;
+          return;
+        }
+
+        checkInDone = true;
+        alert("Check-in successful.");
+      }, error => {
+        alert("Failed to get your location. Please allow location access.");
+      });
+    }
+
+    function submitSale() {
+      if (!checkInDone) {
+        alert("تکایە سەرەتا چیک-ئین بکە پێش ئەوەی فرۆشتن بکەیت.");
+        return;
+      }
+
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("Please select a customer.");
+        return;
+      }
+
+      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        discount: i.discount,
+        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+      }));
+
+      if (selectedItems.length === 0) {
+        alert("No products selected.");
+        return;
+      }
+
+      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
+      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      const saleData = {
+        customer,
+        items: selectedItems,
+        total,
+        totalQty: qty,
+        timestamp: new Date().toISOString(),
+        distance: distanceToCustomer
+      };
+
+      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      allSales.push(saleData);
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+
+      document.getElementById("customer").value = "";
+      document.getElementById("searchBox").value = "";
+      items.forEach(i => i.quantity = 0);
+      renderProducts();
+
+      alert("Sale submitted! View it on sales.html.");
+    }
+
+    function loadCustomers() {
+      const select = document.getElementById("customer");
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+
+      select.innerHTML = `<option value="">-- Select Customer --</option>`;
+      customers.forEach(customer => {
+        const name = typeof customer === "object" ? customer.name : customer;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    window.onload = function () {
+      loadCustomers();
+      renderProducts();
+    };
+  </script>
+</body>
+</html>
