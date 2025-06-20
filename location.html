@@ -3,39 +3,46 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Live Location Continuous</title>
+  <title>Live Location on Map</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
-      background-color: #f0f2f5;
-      padding: 20px;
+      margin: 0; padding: 0;
       direction: rtl;
       text-align: right;
+      background-color: #f0f2f5;
     }
-    #locationDisplay {
-      margin-top: 20px;
+    #map {
+      height: 400px;
+      width: 100%;
+      margin-top: 10px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+    }
+    #address {
+      margin: 15px 20px;
       background: #fff;
-      padding: 15px;
-      border-radius: 8px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      color: #000;
+      padding: 12px 15px;
+      border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
       font-size: 16px;
+      color: #333;
       user-select: text;
-      white-space: pre-wrap;
     }
-    #errorMessage {
+    #error {
       color: red;
-      margin-top: 15px;
+      margin: 15px 20px;
       font-weight: bold;
     }
     button {
+      margin: 15px 20px;
+      padding: 10px 18px;
       background-color: #256d24;
       color: white;
       border: none;
-      padding: 12px 20px;
       border-radius: 6px;
-      font-weight: bold;
       cursor: pointer;
+      font-weight: bold;
       transition: background-color 0.3s ease;
     }
     button:hover {
@@ -45,28 +52,28 @@
 </head>
 <body>
 
-  <h1>ناونیشانی ئێستا و کاتی وەستاندن</h1>
+  <h1 style="margin:20px;">نیشاندانی شوێنی بەردەوام لەسەر نەخشە</h1>
+  <button id="startTrackingBtn">دەستپێکردنی بەردەوامی شوێنگرتن</button>
+  <button id="stopTrackingBtn" disabled>وەستاندنی شوێنگرتن</button>
 
-  <button id="startBtn">دەستپێکردنی بەردەوامی شوێنگرتن</button>
-  <button id="stopBtn" disabled>وەستاندنی شوێنگرتن</button>
+  <div id="map"></div>
+  <div id="address">ناونیشان: نا دیاری کراوە</div>
+  <div id="error"></div>
 
-  <div id="locationDisplay">هیچ شوێنێک نیشان نەدراوە.</div>
-  <div id="errorMessage"></div>
+  <!-- Google Maps JS API -->
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE"></script>
 
   <script>
-    const locationDisplay = document.getElementById('locationDisplay');
-    const errorMessage = document.getElementById('errorMessage');
-    const startBtn = document.getElementById('startBtn');
-    const stopBtn = document.getElementById('stopBtn');
+    let map, marker, watchId;
+    const addressDiv = document.getElementById('address');
+    const errorDiv = document.getElementById('error');
+    const startBtn = document.getElementById('startTrackingBtn');
+    const stopBtn = document.getElementById('stopTrackingBtn');
 
-    const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY_HERE'; // لێرە API key ی خۆت دابنێ
-
-    let watchId = null;
-    let lastPosition = null;
-    let stopTime = null;
-
+    // Google Geocoding API URL function
     async function reverseGeocode(lat, lng) {
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}&language=ku`;
+      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE'; // API Key تۆی گووگڵ
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ku`;
       try {
         const response = await fetch(url);
         const data = await response.json();
@@ -75,95 +82,91 @@
         } else {
           return "ناونیشان ناتوانرێت بدۆزرێتەوە.";
         }
-      } catch (error) {
+      } catch (e) {
         return "کێشە لە وەریگرتنی ناونیشان هەیە.";
       }
     }
 
-    function formatTime(date) {
-      return date.toLocaleTimeString('en-GB', { hour12: false });
+    function initMap(lat = 33.312805, lng = 44.361488) {
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: { lat, lng },
+        zoom: 15,
+      });
+      marker = new google.maps.Marker({
+        position: { lat, lng },
+        map: map,
+        title: "شوێنی تۆ",
+      });
     }
 
-    function updateDisplay(position, address) {
-      const { latitude, longitude } = position.coords;
-      let msg = `شوێن: ${address}\n`;
-      msg += `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}\n`;
+    async function updateLocation(position) {
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
 
-      if (stopTime) {
-        msg += `کاتی وەستاندن: ${formatTime(stopTime)}`;
-      } else {
-        msg += `کاتی کۆنترۆل: ${formatTime(new Date())}`;
-      }
+      // ناونیشان وەریگرە
+      const addr = await reverseGeocode(lat, lng);
+      addressDiv.textContent = `ناونیشان: ${addr}`;
 
-      locationDisplay.textContent = msg;
+      // نەخشە و مارکەر نوێ بکە
+      const pos = { lat, lng };
+      map.setCenter(pos);
+      marker.setPosition(pos);
     }
 
-    function handlePosition(position) {
-      stopTime = null; // چونە شوێنەوە، وەستاندن ڕەتکراوە
-      lastPosition = position;
-
-      reverseGeocode(position.coords.latitude, position.coords.longitude)
-        .then(address => {
-          updateDisplay(position, address);
-        });
-    }
-
-    function handleError(error) {
-      switch(error.code) {
-        case error.PERMISSION_DENIED:
-          errorMessage.textContent = "دەستپێکردنەوەی شوێنگرتن ڕەتکراوە.";
-          break;
-        case error.POSITION_UNAVAILABLE:
-          errorMessage.textContent = "زانیاری شوێن بەرز نەبوو.";
-          break;
-        case error.TIMEOUT:
-          errorMessage.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
-          break;
-        default:
-          errorMessage.textContent = "کێشەیەک ڕوویدا لە کاتی وەریگرتن.";
-      }
-    }
-
-    function startWatching() {
+    function startTracking() {
+      errorDiv.textContent = '';
       if (!navigator.geolocation) {
-        errorMessage.textContent = 'بەڕێز، شوێنگرتن پشتیوانی ناکرێت لەو وێبسایتە.';
+        errorDiv.textContent = 'بەڕێز، شوێنگرتن پشتیوانی ناکرێت لە وێبسایتەکەت.';
         return;
       }
-      errorMessage.textContent = '';
-      locationDisplay.textContent = 'لە کاتی دیاریکردنی شوێن...';
-      watchId = navigator.geolocation.watchPosition(handlePosition, handleError, {
-        enableHighAccuracy: true,
-        maximumAge: 0,
-        timeout: 10000
-      });
+
+      watchId = navigator.geolocation.watchPosition(
+        updateLocation,
+        (error) => {
+          switch(error.code) {
+            case error.PERMISSION_DENIED:
+              errorDiv.textContent = "دەستپێکردنەوەی شوێنگرتن ڕەتکراوە.";
+              break;
+            case error.POSITION_UNAVAILABLE:
+              errorDiv.textContent = "زانیاری شوێن بەرز نەبوو.";
+              break;
+            case error.TIMEOUT:
+              errorDiv.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
+              break;
+            default:
+              errorDiv.textContent = "کێشەیەک ڕوویدا لە کاتی وەریگرتن.";
+          }
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000
+        }
+      );
+
       startBtn.disabled = true;
       stopBtn.disabled = false;
     }
 
-    function stopWatching() {
-      if (watchId !== null) {
+    function stopTracking() {
+      if (watchId !== undefined) {
         navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-        stopTime = new Date();
-        errorMessage.textContent = '';
-        if (lastPosition) {
-          reverseGeocode(lastPosition.coords.latitude, lastPosition.coords.longitude)
-            .then(address => {
-              updateDisplay(lastPosition, address);
-            });
-        }
-        startBtn.disabled = false;
-        stopBtn.disabled = true;
+        watchId = undefined;
+        addressDiv.textContent = "ناونیشان: نا دیاری کراوە";
       }
+      startBtn.disabled = false;
+      stopBtn.disabled = true;
+      errorDiv.textContent = '';
     }
 
-    startBtn.addEventListener('click', startWatching);
-    stopBtn.addEventListener('click', stopWatching);
-
-    // بەردەوام کردن بەخۆی خۆ لە لادانی پەڕە
-    window.onload = () => {
-      startWatching();
+    window.onload = function() {
+      // نەخشە بە شوێنی ناوەڕۆک دیاری بکە (مثلا سلێمانی)
+      initMap();
     };
+
+    startBtn.addEventListener('click', startTracking);
+    stopBtn.addEventListener('click', stopTracking);
   </script>
+
 </body>
 </html>
