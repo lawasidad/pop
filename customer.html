@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Customer Dashboard with Map Markers</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Dashboard with Map Modal</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -17,7 +17,7 @@
       margin: auto;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
     }
     h1 {
       font-size: 26px;
@@ -110,8 +110,6 @@
       font-size: 24px;
       cursor: pointer;
     }
-
-    /* موداڵی مەپ */
     #mapModal {
       display: none;
       position: fixed;
@@ -205,7 +203,6 @@
     </table>
   </div>
 
-  <!-- موداڵی زیادکردنی کڕیار -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
@@ -213,7 +210,6 @@
     </div>
   </div>
 
-  <!-- موداڵی نیشاندانی مەپ -->
   <div id="mapModal">
     <div>
       <span class="close-btn-map" onclick="closeMapModal()">&times;</span>
@@ -221,7 +217,7 @@
     </div>
   </div>
 
-  <!-- Google Maps API -->
+  <!-- Replace YOUR_API_KEY with your actual Google Maps JavaScript API key -->
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
 
   <script>
@@ -231,18 +227,13 @@
     function addNewCustomer() {
       document.getElementById('customerModal').style.display = 'flex';
     }
-
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
     }
-
     function closeMapModal() {
       document.getElementById('mapModal').style.display = 'none';
-      // دڵنیابوونەوەیەکە لەسەر map و markers بۆ نوێکردنەوەیەکی پاک
-      if (markers.length) {
-        markers.forEach(m => m.setMap(null));
-        markers = [];
-      }
+      markers.forEach(marker => marker.setMap(null));
+      markers = [];
     }
 
     function loadCustomerList() {
@@ -363,25 +354,20 @@
         return;
       }
 
-      // موداڵ نیشان بدە
       document.getElementById('mapModal').style.display = 'flex';
 
-      // وەستاندان لە markers کۆن
       if (markers.length) {
         markers.forEach(m => m.setMap(null));
         markers = [];
       }
 
-      // دیاری کردنی ناوەڕاستی مەپ بۆ ناوچەی کۆمەڵە شوێنەکان
       const bounds = new google.maps.LatLngBounds();
 
-      // دروستکردنی map
       map = new google.maps.Map(document.getElementById('map'), {
         zoom: 6,
         center: { lat: locations[0].lat, lng: locations[0].lng }
       });
 
-      // زیادکردنی markers بۆ هەموو شوێنەکان
       locations.forEach(loc => {
         const marker = new google.maps.Marker({
           position: { lat: loc.lat, lng: loc.lng },
@@ -391,7 +377,6 @@
         markers.push(marker);
         bounds.extend(marker.position);
 
-        // info window بۆ هەر marker
         const infoWindow = new google.maps.InfoWindow({
           content: `<strong>${loc.name}</strong><br>Code: ${loc.code}<br>Mobile: ${loc.mobile}`
         });
@@ -400,7 +385,6 @@
         });
       });
 
-      // سەنتەرکردنی map بەپێی هەموو markers
       map.fitBounds(bounds);
     }
 
