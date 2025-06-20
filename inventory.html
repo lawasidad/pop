@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Inventory Form</title>
   <style>
+    /* (ستایلەکان هەمانن و لە کۆدەکەت دانراون) */
     * {
       box-sizing: border-box;
       font-family: 'Segoe UI', sans-serif;
@@ -44,7 +45,7 @@
       padding: 10px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: white; /* prevent black background on input */
+      background-color: white;
       color: #333;
       outline-offset: 2px;
       transition: background-color 0.3s;
@@ -80,7 +81,7 @@
       max-width: 300px;
       border: 1px solid #ccc;
       border-radius: 8px;
-      background-color: white; /* prevent black background */
+      background-color: white;
       color: #333;
     }
 
@@ -88,7 +89,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 14px;
-      background-color: white; /* table background white */
+      background-color: white;
     }
 
     th, td {
@@ -96,7 +97,7 @@
       border-bottom: 1px solid #eee;
       text-align: left;
       vertical-align: middle;
-      background-color: white; /* prevent black */
+      background-color: white;
       color: #333;
     }
 
@@ -124,7 +125,7 @@
       object-fit: contain;
       border: 1px solid #ccc;
       border-radius: 6px;
-      background-color: white; /* keep white behind images */
+      background-color: white;
     }
 
     @media (max-width: 768px) {
@@ -249,7 +250,6 @@
       return;
     }
 
-    // Use document fragment to avoid multiple innerHTML appends (reduce flicker)
     const fragment = document.createDocumentFragment();
 
     data.forEach((item, index) => {
@@ -349,6 +349,7 @@
     updateTable(filtered);
   });
 
+  // initialize table
   updateTable(products);
 </script>
 
