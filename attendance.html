@@ -1,224 +1,222 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attendance In/Out - Enhanced Camera</title>
-  <style>
-    body {
-      font-family: Tahoma, sans-serif;
-      background: #f0f2f5;
-      max-width: 700px;
-      margin: 20px auto;
-      padding: 15px;
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Attendance In/Out Reliable</title>
+<style>
+  body {
+    font-family: Tahoma, sans-serif;
+    background: #f0f2f5;
+    max-width: 700px;
+    margin: 20px auto;
+    padding: 15px;
+  }
+  h1 {
+    text-align: center;
+    color: #14532d;
+    margin-bottom: 20px;
+  }
+  .section {
+    background: #fff;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    margin-bottom: 30px;
+  }
+  label, input, button {
+    width: 100%;
+    display: block;
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
+  input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #aaa;
+  }
+  input:focus {
+    border-color: #14532d;
+    outline: none;
+  }
+  button {
+    background-color: #14532d;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  button:hover {
+    background-color: #0c2e17;
+  }
+  video, canvas {
+    width: 100%;
+    max-height: 320px;
+    border-radius: 14px;
+    margin-bottom: 15px;
+    object-fit: cover;
+    background: #000;
+  }
+  .entry {
+    background: #fafafa;
+    border-radius: 10px;
+    padding: 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    font-size: 14px;
+    color: #222;
+  }
+  .entry div {
+    margin-bottom: 8px;
+  }
+  .entry img {
+    max-width: 140px;
+    border-radius: 12px;
+    object-fit: cover;
+    margin-top: 6px;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+  }
+  @media (max-width: 480px) {
+    input, button {
+      font-size: 18px;
     }
-    h1 {
-      text-align: center;
-      color: #14532d;
-      margin-bottom: 20px;
-    }
-    .section {
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
-      margin-bottom: 30px;
-    }
-    label, input, button {
-      width: 100%;
-      display: block;
-      margin-bottom: 12px;
-      font-size: 16px;
-    }
-    input {
-      padding: 12px;
-      border-radius: 8px;
-      border: 1px solid #aaa;
-      transition: border-color 0.3s ease;
-    }
-    input:focus {
-      border-color: #14532d;
-      outline: none;
-    }
-    button {
-      background-color: #14532d;
-      color: white;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-    button:hover {
-      background-color: #0c2e17;
-    }
-    video, canvas {
-      width: 100%;
-      max-height: 320px;
-      border-radius: 14px;
-      margin-bottom: 15px;
-      object-fit: cover;
-      filter: brightness(1.2) contrast(1.3) saturate(1.3);
-      background: #000;
-    }
-    .entry {
-      background: #fafafa;
-      border-radius: 10px;
-      padding: 18px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-      font-size: 14px;
-      color: #222;
-    }
-    .entry div {
-      margin-bottom: 8px;
-    }
-    .entry img {
-      max-width: 140px;
-      border-radius: 12px;
-      object-fit: cover;
-      filter: brightness(1.1) contrast(1.2);
-      margin-top: 6px;
-      box-shadow: 0 1px 6px rgba(0,0,0,0.1);
-    }
-    @media (max-width: 480px) {
-      input, button {
-        font-size: 18px;
-      }
-    }
-  </style>
+  }
+</style>
 </head>
 <body>
 
-  <h1>Attendance In/Out</h1>
+<h1>Attendance In/Out</h1>
 
-  <section class="section">
-    <label for="name">Employee Name</label>
-    <input type="text" id="name" placeholder="Enter your full name" required />
+<section class="section">
+  <label for="name">Employee Name</label>
+  <input type="text" id="name" placeholder="Enter your full name" required />
 
-    <video id="video" autoplay playsinline muted></video>
-    <button type="button" onclick="takeSelfie()">📸 Take Selfie</button>
-    <canvas id="canvas" style="display:none;"></canvas>
+  <video id="video" autoplay playsinline muted></video>
+  <button type="button" id="takeSelfieBtn">📸 Take Selfie</button>
+  <canvas id="canvas" style="display:none;"></canvas>
 
-    <button onclick="markIn()">🟢 Mark In</button>
-    <button onclick="markOut()">🔴 Mark Out</button>
-  </section>
+  <button id="markInBtn">🟢 Mark In</button>
+  <button id="markOutBtn">🔴 Mark Out</button>
+</section>
 
-  <section id="entries"></section>
+<section id="entries"></section>
 
 <script>
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
-  let selfie = "";
+  const takeSelfieBtn = document.getElementById("takeSelfieBtn");
+  const markInBtn = document.getElementById("markInBtn");
+  const markOutBtn = document.getElementById("markOutBtn");
+  let selfieData = "";
 
   async function startCamera() {
     try {
-      const constraints = {
-        video: {
-          facingMode: "user",
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30 },
-          advanced: [
-            { brightness: 150 },
-            { contrast: 120 },
-            { saturation: 130 }
-          ]
-        },
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
         audio: false
-      };
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      });
       video.srcObject = stream;
-    } catch (error) {
-      alert("Error accessing camera: " + error.message);
+    } catch (err) {
+      alert("Camera error: " + err.message);
     }
   }
+
   startCamera();
 
-  function takeSelfie() {
-    canvas.style.display = "block";
+  takeSelfieBtn.onclick = () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
-    ctx.filter = "brightness(1.3) contrast(1.4) saturate(1.4)";
+    ctx.filter = "brightness(1.2) contrast(1.3) saturate(1.2)";
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-    selfie = canvas.toDataURL("image/png");
-  }
+    selfieData = canvas.toDataURL("image/png");
+    alert("Selfie taken!");
+  };
 
   function getTime() {
-    const now = new Date();
-    return now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+    return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
   function getDate() {
     return new Date().toISOString().split("T")[0];
   }
 
-  function markIn() {
+  function getLocation() {
+    return new Promise((resolve, reject) => {
+      if (!navigator.geolocation) {
+        reject("Geolocation not supported");
+      } else {
+        navigator.geolocation.getCurrentPosition(
+          pos => resolve(`https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`),
+          err => reject(err.message)
+        );
+      }
+    });
+  }
+
+  async function markIn() {
     const name = document.getElementById("name").value.trim();
     if (!name) {
       alert("Please enter your name");
       return;
     }
-    if (!selfie) {
+    if (!selfieData) {
       alert("Please take a selfie before marking In.");
       return;
     }
-    navigator.geolocation.getCurrentPosition(position => {
-      const location = `https://maps.google.com?q=${position.coords.latitude},${position.coords.longitude}`;
+    try {
+      const location = await getLocation();
       const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
-
       attendance.push({
         name,
         date: getDate(),
         in: getTime(),
         out: "",
-        selfieIn: selfie,
+        selfieIn: selfieData,
         selfieOut: "",
         locationIn: location,
         locationOut: ""
       });
-
       localStorage.setItem("attendance", JSON.stringify(attendance));
-      selfie = "";
-      canvas.style.display = "none";
-      loadEntries();
+      selfieData = "";
       alert("Marked In successfully!");
-    }, err => {
-      alert("Error getting location: " + err.message);
-    });
+      loadEntries();
+    } catch (err) {
+      alert("Error getting location: " + err);
+    }
   }
 
-  function markOut() {
+  async function markOut() {
     const name = document.getElementById("name").value.trim();
     if (!name) {
       alert("Please enter your name");
       return;
     }
-    if (!selfie) {
+    if (!selfieData) {
       alert("Please take a selfie before marking Out.");
       return;
     }
-    navigator.geolocation.getCurrentPosition(position => {
-      let attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
+    try {
+      const location = await getLocation();
+      const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
       const lastIndex = attendance.map(e => e.name).lastIndexOf(name);
       if (lastIndex === -1 || attendance[lastIndex].out) {
         alert("No In record found or Out already marked for this name.");
         return;
       }
       attendance[lastIndex].out = getTime();
-      attendance[lastIndex].selfieOut = selfie;
-      attendance[lastIndex].locationOut = `https://maps.google.com?q=${position.coords.latitude},${position.coords.longitude}`;
-
+      attendance[lastIndex].selfieOut = selfieData;
+      attendance[lastIndex].locationOut = location;
       localStorage.setItem("attendance", JSON.stringify(attendance));
-      selfie = "";
-      canvas.style.display = "none";
-      loadEntries();
+      selfieData = "";
       alert("Marked Out successfully!");
-    }, err => {
-      alert("Error getting location: " + err.message);
-    });
+      loadEntries();
+    } catch (err) {
+      alert("Error getting location: " + err);
+    }
   }
 
   function loadEntries() {
@@ -240,6 +238,9 @@
       `;
     });
   }
+
+  markInBtn.onclick = markIn;
+  markOutBtn.onclick = markOut;
 
   loadEntries();
 </script>
