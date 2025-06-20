@@ -115,6 +115,38 @@
       height: 500px;
       border: none;
     }
+    /* موداڵی مەپ */
+    #mapModal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: rgba(0,0,0,0.6);
+      z-index: 10000;
+      justify-content: center;
+      align-items: center;
+    }
+    #mapModal > div {
+      position: relative;
+      width: 90%;
+      max-width: 900px;
+      height: 600px;
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    #mapModal .close-btn-map {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      font-size: 28px;
+      cursor: pointer;
+      z-index: 10001;
+    }
+    #mapFrame {
+      border: none;
+      width: 100%;
+      height: 100%;
+    }
     @media screen and (max-width: 768px) {
       .top-bar, .export-buttons {
         flex-direction: column;
@@ -178,10 +210,19 @@
     </table>
   </div>
 
+  <!-- موداڵی زیادکردنی کڕیار -->
   <div id="customerModal">
     <div class="modal-content">
       <span class="close-btn" onclick="closeModal()">&times;</span>
       <iframe src="new-customer.html"></iframe>
+    </div>
+  </div>
+
+  <!-- موداڵی نیشاندانی مەپ -->
+  <div id="mapModal">
+    <div>
+      <span class="close-btn-map" onclick="closeMapModal()">&times;</span>
+      <iframe id="mapFrame" src=""></iframe>
     </div>
   </div>
 
@@ -192,6 +233,11 @@
 
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
+    }
+
+    function closeMapModal() {
+      document.getElementById('mapModal').style.display = 'none';
+      document.getElementById('mapFrame').src = '';
     }
 
     function loadCustomerList() {
@@ -293,19 +339,28 @@
         return;
       }
 
-      const locations = data
-        .filter(c => c.location && c.location.trim() !== '')
-        .map(c => c.location.trim());
+      const validCustomers = data.filter(c => c.location && c.location.trim() !== '');
 
-      if (locations.length === 0) {
+      if (validCustomers.length === 0) {
         alert("No valid GPS locations found for customers.");
         return;
       }
 
-      const query = locations.map(loc => encodeURIComponent(loc)).join('|');
-      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+      const markers = validCustomers.map(c => {
+        const parts = c.location.split(',');
+        return {
+          name: c.name,
+          lat: parseFloat(parts[0]),
+          lng: parseFloat(parts[1])
+        };
+      }).filter(m => !isNaN(m.lat) && !isNaN(m.lng));
 
-      window.open(url, '_blank');
+      const queryParts = markers.map(m => `${m.lat},${m.lng}`);
+      const query = queryParts.join('|');
+      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+
+      document.getElementById('mapFrame').src = mapsUrl;
+      document.getElementById('mapModal').style.display = 'flex';
     }
 
     function editCustomer(index) {
@@ -331,7 +386,6 @@
 
     window.onload = loadCustomerList;
 
-    // Listen for postMessage from iframe (new-customer.html) when a new customer is added
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
