@@ -247,45 +247,51 @@
   </div>
 
   <script>
-    const products = [
-      {
-        name: "Kalesheen",
-        unitPrice: 1000,
-        discount: 0,
-        stock: 50,
-        image: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
-      },
-      {
-        name: "Bottle",
-        unitPrice: 1500,
-        discount: 5,
-        stock: 30,
-        image: "https://cdn-icons-png.flaticon.com/512/1076/1076984.png"
-      },
-      {
-        name: "Electronics",
-        unitPrice: 3000,
-        discount: 10,
-        stock: 20,
-        image: "https://cdn-icons-png.flaticon.com/512/181/181541.png"
-      },
-    ];
+    // لۆدکردنی کریارەکان لە localStorage بۆ سلێکت
+    function loadCustomers() {
+      const select = document.getElementById("customer");
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      select.innerHTML = `<option value="">-- Select Customer --</option>`;
+      customers.forEach(c => {
+        const name = typeof c === "object" ? c.name : c;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
 
-    const items = products.map(p => ({ ...p, quantity: 0 }));
-
-    let checkInDone = false;
-    let userLocation = null;
-    let distanceToCustomer = null;
+    // خوێندنەوەی داتای پرۆداکتەکان لە localStorage بەپێی کەیشەی "new_sales"
+    let items = [];
+    function loadProducts() {
+      const saved = localStorage.getItem("new_sales");
+      if (saved) {
+        try {
+          const savedItems = JSON.parse(saved);
+          items = savedItems.map(p => ({
+            name: p.name,
+            unitPrice: p.price ?? p.unitPrice ?? 0,
+            discount: p.discount ?? 0,
+            stock: 999999,
+            image: p.image ?? "",
+            quantity: 0
+          }));
+        } catch {
+          items = [];
+        }
+      } else {
+        items = [];
+      }
+    }
 
     function renderProducts() {
       const list = document.getElementById("productList");
       const search = document.getElementById("searchBox").value.trim().toLowerCase();
       list.innerHTML = "";
 
-      items.forEach((item, index) => {
+      items.forEach((item, i) => {
         if (search && !item.name.toLowerCase().includes(search)) return;
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
-
         list.innerHTML += `
           <div class="product-item">
             <div class="product-left">
@@ -293,20 +299,18 @@
               <div>
                 <div class="product-name">${item.name}</div>
                 <div class="details">
-                  Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                  Stock: ${item.stock}
+                  Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%
                 </div>
                 <div class="qty-controls">
-                  <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">−</button>
+                  <button aria-label="Decrease quantity" onclick="changeQty(${i}, -1)">−</button>
                   <input 
                     type="number" 
                     min="0" 
-                    max="${item.stock}" 
                     value="${item.quantity}" 
-                    onchange="changeQtyDirect(${index}, this.value)" 
+                    onchange="changeQtyDirect(${i}, this.value)" 
                     aria-label="Quantity for ${item.name}"
                   />
-                  <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">＋</button>
+                  <button aria-label="Increase quantity" onclick="changeQty(${i}, 1)">＋</button>
                 </div>
               </div>
             </div>
@@ -316,22 +320,19 @@
           </div>
         `;
       });
-
       updateSummary();
     }
 
     function changeQty(index, delta) {
       items[index].quantity += delta;
       if (items[index].quantity < 0) items[index].quantity = 0;
-      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
       renderProducts();
     }
 
-    function changeQtyDirect(index, value) {
-      let val = parseInt(value);
-      if (isNaN(val) || val < 0) val = 0;
-      if (val > items[index].stock) val = items[index].stock;
-      items[index].quantity = val;
+    function changeQtyDirect(index, val) {
+      let value = parseInt(val);
+      if (isNaN(value) || value < 0) value = 0;
+      items[index].quantity = value;
       renderProducts();
     }
 
@@ -342,23 +343,23 @@
       document.getElementById("totalQty").textContent = `Qty: ${qty}`;
     }
 
-    function getDistance(lat1, lon1, lat2, lon2) {
-      function toRad(x) {
-        return x * Math.PI / 180;
-      }
+    // Check-in و محاسبەی دووری - هەمانەوە لە کۆدەکەت
+    let checkInDone = false;
+    let userLocation = null;
+    let distanceToCustomer = null;
 
+    function getDistance(lat1, lon1, lat2, lon2) {
+      function toRad(x) { return x * Math.PI / 180; }
       const R = 6371e3; // meters
       const φ1 = toRad(lat1);
       const φ2 = toRad(lat2);
       const Δφ = toRad(lat2 - lat1);
       const Δλ = toRad(lon2 - lon1);
-
       const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
                 Math.cos(φ1) * Math.cos(φ2) *
                 Math.sin(Δλ/2) * Math.sin(Δλ/2);
       const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-
-      return R * c; // in meters
+      return R * c; // meters
     }
 
     function checkIn() {
@@ -369,9 +370,8 @@
         return;
       }
 
-      // Find customer's location from localStorage
       const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-      const customer = customers.find(c => c.name === customerName);
+      const customer = customers.find(c => (typeof c === "object" ? c.name : c) === customerName);
       if (!customer || !customer.location) {
         alert("Selected customer does not have a valid location.");
         return;
@@ -388,7 +388,6 @@
           lng: position.coords.longitude
         };
 
-        // customer's location assumed to be "lat,lng" string
         const [custLatStr, custLngStr] = customer.location.split(",");
         const custLat = parseFloat(custLatStr);
         const custLng = parseFloat(custLngStr);
@@ -404,11 +403,12 @@
 
         checkInDone = true;
         alert("Check-in successful.");
-      }, error => {
+      }, () => {
         alert("Failed to get your location. Please allow location access.");
       });
     }
 
+    // ئەنجامدانی فرۆشتن و ذخیرەکردنی وەسڵ لە localStorage
     function submitSale() {
       if (!checkInDone) {
         alert("تکایە سەرەتا چیک-ئین بکە پێش ئەوەی فرۆشتن بکەیت.");
@@ -450,30 +450,22 @@
       allSales.push(saleData);
       localStorage.setItem("allSales", JSON.stringify(allSales));
 
+      // ریستکردنی فۆرم
       document.getElementById("customer").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
+      checkInDone = false;
+      distanceToCustomer = null;
+      document.getElementById("distanceDisplay").textContent = "Distance: - m";
       renderProducts();
 
       alert("Sale submitted! View it on sales.html.");
     }
 
-    function loadCustomers() {
-      const select = document.getElementById("customer");
-      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-
-      select.innerHTML = `<option value="">-- Select Customer --</option>`;
-      customers.forEach(customer => {
-        const name = typeof customer === "object" ? customer.name : customer;
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    }
-
-    window.onload = function () {
+    // هەموو لۆدکراوەکان لە سەرەتادا
+    window.onload = () => {
       loadCustomers();
+      loadProducts();
       renderProducts();
     };
   </script>
