@@ -3,22 +3,22 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Live Location with Google Maps</title>
+  <title>Live Location on Google Map</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       margin: 0; padding: 0;
       direction: rtl;
-      background-color: #f0f2f5;
       text-align: right;
+      background-color: #f0f2f5;
     }
     #map {
       height: 400px;
       width: 100%;
-      margin: 10px auto;
+      max-width: 900px;
+      margin: 20px auto;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.15);
-      max-width: 900px;
     }
     #address, #error {
       max-width: 900px;
@@ -36,8 +36,8 @@
       font-weight: bold;
     }
     button {
-      margin: 10px auto;
       display: block;
+      margin: 10px auto;
       padding: 10px 20px;
       background-color: #256d24;
       color: white;
@@ -46,7 +46,7 @@
       font-weight: bold;
       cursor: pointer;
       transition: background-color 0.3s ease;
-      max-width: 200px;
+      max-width: 220px;
     }
     button:hover {
       background-color: #1b4e18;
@@ -64,7 +64,7 @@
   <div id="address">ناونیشان: نا دیاری کراوە</div>
   <div id="error"></div>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE&callback=initMap" async defer></script>
 
   <script>
     let map, marker, watchId;
@@ -73,40 +73,41 @@
     const startBtn = document.getElementById("startBtn");
     const stopBtn = document.getElementById("stopBtn");
 
+    function initMap() {
+      const defaultPos = { lat: 33.312805, lng: 44.361488 }; // ئەم شوێنە بەردەوامە بۆ نیشاندانی نەخشە لە سەر دەرەوە
+      map = new google.maps.Map(document.getElementById("map"), {
+        center: defaultPos,
+        zoom: 15,
+      });
+      marker = new google.maps.Marker({
+        position: defaultPos,
+        map: map,
+        title: "شوێنی تۆ",
+      });
+    }
+
     async function reverseGeocode(lat, lng) {
-      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE';
+      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE'; // API Key لێرە بگۆڕە
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ku`;
       try {
-        const res = await fetch(url);
-        const data = await res.json();
+        const response = await fetch(url);
+        const data = await response.json();
         if (data.status === "OK" && data.results.length > 0) {
           return data.results[0].formatted_address;
         } else {
           return "ناونیشان ناتوانرێت بدۆزرێتەوە";
         }
-      } catch {
+      } catch (e) {
         return "کێشە لە وەریگرتنی ناونیشان هەیە";
       }
-    }
-
-    function initMap(lat=33.312805, lng=44.361488) {
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: { lat, lng },
-        zoom: 15,
-      });
-      marker = new google.maps.Marker({
-        position: { lat, lng },
-        map: map,
-        title: "شوێنی تۆ",
-      });
     }
 
     async function updatePosition(position) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      const address = await reverseGeocode(lat, lng);
-      addressDiv.textContent = `ناونیشان: ${address}`;
+      const addr = await reverseGeocode(lat, lng);
+      addressDiv.textContent = `ناونیشان: ${addr}`;
 
       const pos = { lat, lng };
       map.setCenter(pos);
@@ -116,26 +117,27 @@
     function startTracking() {
       errorDiv.textContent = "";
       if (!navigator.geolocation) {
-        errorDiv.textContent = "بەڕێز، وێبسایتی تۆ پشتیوانی شوێنگرتن ناکات.";
+        errorDiv.textContent = "بەڕێز، وێبسایتەکەت پشتیوانی نەکردنی شوێنگرتن دەکات.";
         return;
       }
 
       watchId = navigator.geolocation.watchPosition(updatePosition,
-        error => {
+        (error) => {
           switch (error.code) {
             case error.PERMISSION_DENIED:
-              errorDiv.textContent = "دەستپێکردنی شوێنگرتن ڕەتکراوە.";
+              errorDiv.textContent = "ڕێگە پێ نەدرا بۆ شوێنگرتن.";
               break;
             case error.POSITION_UNAVAILABLE:
-              errorDiv.textContent = "زانیاری شوێن ناتوانرێت بدۆزرێتەوە.";
+              errorDiv.textContent = "زانیاری شوێن نەدۆزرایەوە.";
               break;
             case error.TIMEOUT:
               errorDiv.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
               break;
             default:
-              errorDiv.textContent = "کێشەیەک ڕوویدا لە کاتی وەریگرتن.";
+              errorDiv.textContent = "هەڵەیەک ڕوویدا لە کاتی وەریگرتنی شوێن.";
           }
-        }, { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+        },
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
       );
 
       startBtn.disabled = true;
@@ -153,9 +155,7 @@
       stopBtn.disabled = true;
     }
 
-    window.onload = () => {
-      initMap();
-    };
+    window.initMap = initMap;
 
     startBtn.addEventListener("click", startTracking);
     stopBtn.addEventListener("click", stopTracking);
