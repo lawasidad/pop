@@ -3,32 +3,31 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Live Location on Google Map</title>
+  <title>نیشاندانی شوێنی بەردەوام لەسەر نەخشە</title>
   <style>
     body {
-      font-family: Tahoma, sans-serif;
       margin: 0; padding: 0;
+      font-family: Tahoma, sans-serif;
       direction: rtl;
+      background: #f0f2f5;
       text-align: right;
-      background-color: #f0f2f5;
     }
     #map {
-      height: 400px;
       width: 100%;
       max-width: 900px;
+      height: 450px;
       margin: 20px auto;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.15);
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.2);
     }
     #address, #error {
       max-width: 900px;
       margin: 10px auto;
-      padding: 12px 15px;
-      border-radius: 6px;
-      background-color: white;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      font-size: 16px;
-      color: #333;
+      background: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 8px rgba(0,0,0,0.1);
+      font-size: 17px;
       user-select: text;
     }
     #error {
@@ -37,25 +36,25 @@
     }
     button {
       display: block;
-      margin: 10px auto;
-      padding: 10px 20px;
-      background-color: #256d24;
+      margin: 15px auto;
+      padding: 12px 25px;
+      font-weight: bold;
+      background: #256d24;
       color: white;
       border: none;
-      border-radius: 6px;
-      font-weight: bold;
+      border-radius: 8px;
       cursor: pointer;
       transition: background-color 0.3s ease;
       max-width: 220px;
     }
     button:hover {
-      background-color: #1b4e18;
+      background: #1b4e18;
     }
   </style>
 </head>
 <body>
 
-  <h1 style="margin:20px auto; max-width: 900px;">نیشاندانی شوێنی بەردەوام لەسەر نەخشەی گووگڵ</h1>
+  <h1 style="max-width: 900px; margin: 30px auto 10px;">نیشاندانی شوێنی بەردەوام لەسەر نەخشە</h1>
 
   <button id="startBtn">دەستپێکردنی شوێنگرتن</button>
   <button id="stopBtn" disabled>وەستاندنی شوێنگرتن</button>
@@ -64,50 +63,46 @@
   <div id="address">ناونیشان: نا دیاری کراوە</div>
   <div id="error"></div>
 
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE&callback=initMap" async defer></script>
-
   <script>
     let map, marker, watchId;
-    const addressDiv = document.getElementById("address");
-    const errorDiv = document.getElementById("error");
-    const startBtn = document.getElementById("startBtn");
-    const stopBtn = document.getElementById("stopBtn");
 
-    function initMap() {
-      const defaultPos = { lat: 33.312805, lng: 44.361488 }; // ئەم شوێنە بەردەوامە بۆ نیشاندانی نەخشە لە سەر دەرەوە
-      map = new google.maps.Map(document.getElementById("map"), {
-        center: defaultPos,
+    const addressDiv = document.getElementById('address');
+    const errorDiv = document.getElementById('error');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
+
+    function initMap(lat = 33.312805, lng = 44.361488) {
+      map = new google.maps.Map(document.getElementById('map'), {
+        center: { lat, lng },
         zoom: 15,
       });
+
       marker = new google.maps.Marker({
-        position: defaultPos,
+        position: { lat, lng },
         map: map,
         title: "شوێنی تۆ",
       });
     }
 
     async function reverseGeocode(lat, lng) {
-      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE'; // API Key لێرە بگۆڕە
-      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ku`;
       try {
-        const response = await fetch(url);
+        const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=YOUR_GOOGLE_API_KEY_HERE&language=ku`);
         const data = await response.json();
         if (data.status === "OK" && data.results.length > 0) {
           return data.results[0].formatted_address;
-        } else {
-          return "ناونیشان ناتوانرێت بدۆزرێتەوە";
         }
-      } catch (e) {
+        return "ناونیشان ناتوانرێت بدۆزرێتەوە";
+      } catch {
         return "کێشە لە وەریگرتنی ناونیشان هەیە";
       }
     }
 
-    async function updatePosition(position) {
+    async function updateLocation(position) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      const addr = await reverseGeocode(lat, lng);
-      addressDiv.textContent = `ناونیشان: ${addr}`;
+      const address = await reverseGeocode(lat, lng);
+      addressDiv.textContent = `ناونیشان: ${address}`;
 
       const pos = { lat, lng };
       map.setCenter(pos);
@@ -116,12 +111,14 @@
 
     function startTracking() {
       errorDiv.textContent = "";
+
       if (!navigator.geolocation) {
-        errorDiv.textContent = "بەڕێز، وێبسایتەکەت پشتیوانی نەکردنی شوێنگرتن دەکات.";
+        errorDiv.textContent = "بەڕێز، بڕاوزەری تۆ پشتیوانی شوێنگرتن ناکات.";
         return;
       }
 
-      watchId = navigator.geolocation.watchPosition(updatePosition,
+      watchId = navigator.geolocation.watchPosition(
+        updateLocation,
         (error) => {
           switch (error.code) {
             case error.PERMISSION_DENIED:
@@ -137,7 +134,7 @@
               errorDiv.textContent = "هەڵەیەک ڕوویدا لە کاتی وەریگرتنی شوێن.";
           }
         },
-        { enableHighAccuracy: true, maximumAge: 0, timeout: 10000 }
+        { enableHighAccuracy: true, maximumAge: 0, timeout: 15000 }
       );
 
       startBtn.disabled = true;
@@ -155,10 +152,19 @@
       stopBtn.disabled = true;
     }
 
-    window.initMap = initMap;
+    startBtn.onclick = startTracking;
+    stopBtn.onclick = stopTracking;
 
-    startBtn.addEventListener("click", startTracking);
-    stopBtn.addEventListener("click", stopTracking);
+    // Initialize map with default position on load
+    function loadMapOnStart() {
+      initMap();
+    }
+
+    window.onload = loadMapOnStart;
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE">
   </script>
 
 </body>
