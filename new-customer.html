@@ -104,12 +104,12 @@
   </select>
 
   <label for="city">City</label>
-  <select id="city">
+  <select id="city" disabled>
     <option value="" selected disabled>Select city</option>
   </select>
 
   <label for="area">Area</label>
-  <select id="area">
+  <select id="area" disabled>
     <option value="" selected disabled>Select area</option>
   </select>
 
@@ -123,6 +123,83 @@
 </div>
 
 <script>
+  // Load route data from localStorage and populate selects
+  function loadRouteData() {
+    const routeSelect = document.getElementById("route");
+    const citySelect = document.getElementById("city");
+    const areaSelect = document.getElementById("area");
+
+    const routes = JSON.parse(localStorage.getItem("routes") || "[]");
+    // Clear any existing options except first
+    routeSelect.innerHTML = '<option value="" selected disabled>Select country</option>';
+    citySelect.innerHTML = '<option value="" selected disabled>Select city</option>';
+    areaSelect.innerHTML = '<option value="" selected disabled>Select area</option>';
+    citySelect.disabled = true;
+    areaSelect.disabled = true;
+
+    // Get unique countries
+    const countries = [...new Set(routes.map(r => r.country))];
+
+    countries.forEach(c => {
+      const option = document.createElement("option");
+      option.value = c;
+      option.textContent = c;
+      routeSelect.appendChild(option);
+    });
+
+    routeSelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const filteredCities = routes.filter(r => r.country === selectedCountry);
+      const cities = [...new Set(filteredCities.map(r => r.city))];
+      citySelect.innerHTML = '<option value="" selected disabled>Select city</option>';
+      areaSelect.innerHTML = '<option value="" selected disabled>Select area</option>';
+      areaSelect.disabled = true;
+      if (cities.length > 0) {
+        citySelect.disabled = false;
+        cities.forEach(city => {
+          const option = document.createElement("option");
+          option.value = city;
+          option.textContent = city;
+          citySelect.appendChild(option);
+        });
+      } else {
+        citySelect.disabled = true;
+      }
+    });
+
+    citySelect.addEventListener("change", () => {
+      const selectedCountry = routeSelect.value;
+      const selectedCity = citySelect.value;
+      const filteredAreas = routes.filter(r => r.country === selectedCountry && r.city === selectedCity);
+      const areas = [...new Set(filteredAreas.map(r => r.area))];
+      areaSelect.innerHTML = '<option value="" selected disabled>Select area</option>';
+      if (areas.length > 0) {
+        areaSelect.disabled = false;
+        areas.forEach(area => {
+          const option = document.createElement("option");
+          option.value = area;
+          option.textContent = area;
+          areaSelect.appendChild(option);
+        });
+      } else {
+        areaSelect.disabled = true;
+      }
+    });
+  }
+
+  // Generate unique customer code based on count of saved customers
+  function generateCustomerCode() {
+    let customers = [];
+    try {
+      customers = JSON.parse(localStorage.getItem("customers")) || [];
+    } catch {
+      customers = [];
+    }
+    const nextId = (customers.length + 1).toString().padStart(3, '0');
+    return "CUST" + nextId;
+  }
+
+  // Get GPS location and put in input, open Google Maps in new tab
   function getLocation() {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(function(position) {
@@ -138,67 +215,16 @@
     }
   }
 
-  function loadRouteData() {
-    const routeSelect = document.getElementById("route");
-    const citySelect = document.getElementById("city");
-    const areaSelect = document.getElementById("area");
-
-    const routes = JSON.parse(localStorage.getItem("routes") || "[]");
-    const countries = [...new Set(routes.map(r => r.country))];
-
-    countries.forEach(c => {
-      const option = document.createElement("option");
-      option.value = c;
-      option.textContent = c;
-      routeSelect.appendChild(option);
-    });
-
-    routeSelect.addEventListener("change", () => {
-      const selectedCountry = routeSelect.value;
-      const cities = [...new Set(routes.filter(r => r.country === selectedCountry).map(r => r.city))];
-      citySelect.innerHTML = `<option value="" selected disabled>Select city</option>`;
-      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
-      cities.forEach(city => {
-        const option = document.createElement("option");
-        option.value = city;
-        option.textContent = city;
-        citySelect.appendChild(option);
-      });
-    });
-
-    citySelect.addEventListener("change", () => {
-      const selectedCountry = routeSelect.value;
-      const selectedCity = citySelect.value;
-      const areas = routes.filter(r => r.country === selectedCountry && r.city === selectedCity).map(r => r.area);
-      areaSelect.innerHTML = `<option value="" selected disabled>Select area</option>`;
-      areas.forEach(area => {
-        const option = document.createElement("option");
-        option.value = area;
-        option.textContent = area;
-        areaSelect.appendChild(option);
-      });
-    });
-  }
-
-  function generateCustomerCode() {
-    let customers = [];
-    try {
-      customers = JSON.parse(localStorage.getItem("customers")) || [];
-    } catch {
-      customers = [];
-    }
-    const nextId = (customers.length + 1).toString().padStart(3, '0');
-    return "CUST" + nextId;
-  }
-
+  // Save new customer to localStorage
   function saveCustomer() {
     const code = document.getElementById("code").value.trim();
     const name = document.getElementById("name").value.trim();
     const mobile = document.getElementById("mobile").value.trim();
-    const balance = parseFloat(document.getElementById("balance").value.trim() || "0");
-    const route = document.getElementById("route").value;
-    const city = document.getElementById("city").value;
-    const area = document.getElementById("area").value;
+    const balanceRaw = document.getElementById("balance").value.trim();
+    const balance = balanceRaw === "" ? 0 : parseFloat(balanceRaw);
+    const route = document.getElementById("route").value || "";
+    const city = document.getElementById("city").value || "";
+    const area = document.getElementById("area").value || "";
     const location = document.getElementById("location").value.trim();
 
     if (!name || !mobile) {
@@ -219,6 +245,7 @@
       customers = [];
     }
 
+    // Just in case, check for duplicate code, but code is auto-generated so unlikely
     const duplicate = customers.find(c => c.code.toLowerCase() === code.toLowerCase());
     if (duplicate) {
       alert("This customer code is already used.");
@@ -232,19 +259,25 @@
 
     alert("Customer saved successfully!");
 
+    // Reset form for next entry
     document.getElementById("code").value = generateCustomerCode();
     document.getElementById("name").value = "";
     document.getElementById("mobile").value = "";
     document.getElementById("balance").value = 0;
     document.getElementById("route").value = "";
-    document.getElementById("city").value = "";
-    document.getElementById("area").value = "";
+    document.getElementById("city").innerHTML = '<option value="" selected disabled>Select city</option>';
+    document.getElementById("city").disabled = true;
+    document.getElementById("area").innerHTML = '<option value="" selected disabled>Select area</option>';
+    document.getElementById("area").disabled = true;
     document.getElementById("location").value = "";
     document.getElementById("name").focus();
   }
 
-  loadRouteData();
-  document.getElementById("code").value = generateCustomerCode();
+  // Initialize on page load
+  window.onload = function() {
+    loadRouteData();
+    document.getElementById("code").value = generateCustomerCode();
+  }
 </script>
 
 </body>
