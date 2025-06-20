@@ -302,10 +302,50 @@
         return;
       }
 
-      const query = locations.map(loc => encodeURIComponent(loc)).join('|');
-      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
+      let mapWindow = window.open('', 'MapWindow', 'width=800,height=600');
+      let mapHtml = `
+        <html>
+        <head>
+          <title>Customers Map</title>
+          <style>
+            #map { height: 100vh; width: 100vw; margin: 0; padding: 0; }
+            body, html { margin: 0; padding: 0; height: 100%; }
+          </style>
+          <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
+        </head>
+        <body>
+          <div id="map"></div>
+          <script>
+            function initMap() {
+              const bounds = new google.maps.LatLngBounds();
+              const map = new google.maps.Map(document.getElementById('map'), {
+                zoom: 6,
+                center: { lat: 33.0, lng: 44.0 }
+              });
 
-      window.open(url, '_blank');
+              const locations = ${JSON.stringify(locations)};
+
+              locations.forEach(function(loc) {
+                const parts = loc.split(',');
+                if(parts.length === 2) {
+                  const latLng = new google.maps.LatLng(parseFloat(parts[0]), parseFloat(parts[1]));
+                  const marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map
+                  });
+                  bounds.extend(latLng);
+                }
+              });
+
+              map.fitBounds(bounds);
+            }
+            window.onload = initMap;
+          </script>
+        </body>
+        </html>
+      `;
+      mapWindow.document.write(mapHtml);
+      mapWindow.document.close();
     }
 
     function editCustomer(index) {
