@@ -167,7 +167,6 @@
       font-size: 14px;
     }
 
-    /* Date filter styles */
     .date-filter {
       margin-top: 15px;
       text-align: right;
@@ -220,7 +219,7 @@
       <div class="menu-item" onclick="location.href='sales.html'">Sales</div>
       <div class="menu-item" onclick="location.href='purchase.html'">Purchases</div>
       <div class="menu-item" onclick="location.href='new-sales.html'">New Sales</div>
-      <div class="menu-item" onclick="location.href='finance.html'">Finance</div>
+      <div class="menu-item" onclick="location.href='attendance.html'">Attendance</div>
       <div class="menu-item" onclick="location.href='routes.html'">Routes</div>
       <div class="menu-item" onclick="location.href='settings.html'">Settings</div>
       <button class="new-customer-btn" onclick="location.href='new-customer.html'">Add New Customer</button>
@@ -228,7 +227,6 @@
 
     <div class="divider"></div>
 
-    <!-- Date filter -->
     <div class="date-filter">
       <label for="date-from">From:</label>
       <input type="date" id="date-from" />
@@ -260,30 +258,12 @@
 
     <h2>Quick Stats</h2>
     <section class="quick-stats-grid">
-      <div class="quick-stat-item">
-        <div>Debt to Receive</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>To Pay</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Stock Shortage</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Stock Value</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Number of Products</div>
-        <div>0</div>
-      </div>
-      <div class="quick-stat-item">
-        <div>Number of Customers</div>
-        <div id="party-count">0</div>
-      </div>
+      <div class="quick-stat-item"><div>Debt to Receive</div><div>0</div></div>
+      <div class="quick-stat-item"><div>To Pay</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Stock Shortage</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Stock Value</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Number of Products</div><div>0</div></div>
+      <div class="quick-stat-item"><div>Number of Customers</div><div id="party-count">0</div></div>
     </section>
 
     <div class="divider"></div>
@@ -308,7 +288,6 @@
     function updatePartyCount() {
       const div = document.getElementById("party-count");
       if (!div) return;
-
       const stored = localStorage.getItem("customers");
       const customers = stored ? JSON.parse(stored) : [];
       div.textContent = customers.length.toLocaleString();
@@ -322,15 +301,13 @@
 
     updatePartyCount();
 
-    // Show today's date initially
     const today = new Date();
-    const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
+    const formattedDate = today.toLocaleDateString('en-GB');
     const dateEl = document.getElementById("dynamic-date");
     if (dateEl) {
       dateEl.textContent = `${formattedDate} - ${formattedDate}`;
     }
 
-    // Date filter function
     function applyDateFilter() {
       const fromInput = document.getElementById("date-from");
       const toInput = document.getElementById("date-to");
@@ -343,25 +320,17 @@
         return;
       }
 
-      const dateEl = document.getElementById("dynamic-date");
+      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
+      const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
+      const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
       if (dateEl) {
-        const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-        const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
-        const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
         dateEl.textContent = `${fromStr} - ${toStr}`;
       }
-
-      // Add your data filtering logic here based on fromDate and toDate
     }
 
-    // New function to update Receipts summary based on allSales in localStorage
     function updateReceiptsSummary() {
       const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-
-      // Calculate total sales amount
       const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-
-      // Calculate total units sold
       const totalUnits = allSales.reduce((sum, sale) => {
         if (!sale.items) return sum;
         return sum + sale.items.reduce((itemSum, item) => itemSum + (item.quantity || 0), 0);
@@ -383,78 +352,3 @@
   </script>
 </body>
 </html>
-<script>
-  function logout() {
-    window.location.href = './index.html';
-  }
-
-  function updatePartyCount() {
-    const div = document.getElementById("party-count");
-    if (!div) return;
-
-    const stored = localStorage.getItem("customers");
-    const customers = stored ? JSON.parse(stored) : [];
-    div.textContent = customers.length.toLocaleString();
-  }
-
-  window.addEventListener("message", function(event) {
-    if (event.data === "customer-added") {
-      updatePartyCount();
-    }
-  });
-
-  updatePartyCount();
-
-  // Show today's date initially
-  const today = new Date();
-  const formattedDate = today.toLocaleDateString('en-GB'); // dd/mm/yyyy
-  const dateEl = document.getElementById("dynamic-date");
-  if (dateEl) {
-    dateEl.textContent = `${formattedDate} - ${formattedDate}`;
-  }
-
-  // Date filter function
-  function applyDateFilter() {
-    const fromInput = document.getElementById("date-from");
-    const toInput = document.getElementById("date-to");
-
-    const fromDate = fromInput.value ? new Date(fromInput.value) : null;
-    const toDate = toInput.value ? new Date(toInput.value) : null;
-
-    if (fromDate && toDate && fromDate > toDate) {
-      alert("Please make sure the 'From' date is earlier than or equal to the 'To' date.");
-      return;
-    }
-
-    const dateEl = document.getElementById("dynamic-date");
-    if (dateEl) {
-      const options = { day: '2-digit', month: '2-digit', year: 'numeric' };
-      const fromStr = fromDate ? fromDate.toLocaleDateString('en-GB', options) : "From";
-      const toStr = toDate ? toDate.toLocaleDateString('en-GB', options) : "To";
-      dateEl.textContent = `${fromStr} - ${toStr}`;
-    }
-
-    // Add your data filtering logic here based on fromDate and toDate
-  }
-
-  // ✅ Update Receipts summary
-  function updateReceiptsSummary() {
-    const allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-
-    const totalAmount = allSales.reduce((sum, sale) => sum + (sale.total || 0), 0);
-    const totalReceipts = allSales.length;
-
-    const receiptsAmountEl = document.getElementById("receipts-amount");
-    const receiptsUnitsEl = document.getElementById("receipts-units");
-
-    if (receiptsAmountEl) {
-      receiptsAmountEl.textContent = `IQD ${totalAmount.toLocaleString()}`;
-    }
-
-    if (receiptsUnitsEl) {
-      receiptsUnitsEl.textContent = `${totalReceipts.toLocaleString()} Receipts`;
-    }
-  }
-
-  updateReceiptsSummary();
-</script>
