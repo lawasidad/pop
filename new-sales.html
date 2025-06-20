@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>New Sale</title>
   <style>
-    /* هەموو style ـەکان وەک خۆیان */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: #eef6fb;
@@ -167,7 +166,7 @@
               <div class="details">
                 Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
                 Qty: 
-                <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">-</button>
+                <button onclick="changeQty(${index}, -1)">-</button>
                 <input 
                   type="number" 
                   min="0" 
@@ -176,7 +175,7 @@
                   onchange="changeQtyDirect(${index}, this.value)" 
                   style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
                 />
-                <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">+</button>
+                <button onclick="changeQty(${index}, 1)">+</button>
                 | Total: ${total.toLocaleString()} IQD
               </div>
             </div>
@@ -257,7 +256,8 @@
       const customers = JSON.parse(localStorage.getItem("customers") || "[]");
 
       select.innerHTML = `<option value="">-- Select Customer --</option>`;
-      customers.forEach(name => {
+      customers.forEach(customer => {
+        const name = typeof customer === "object" ? customer.name : customer;
         const opt = document.createElement("option");
         opt.value = name;
         opt.textContent = name;
