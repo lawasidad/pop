@@ -107,16 +107,83 @@
     .product-item:hover {
       background-color: #e8f2ff;
     }
+    .product-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      min-width: 220px;
+    }
+    .product-image {
+      width: 60px;
+      height: 60px;
+      border-radius: 12px;
+      object-fit: cover;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+      border: 1px solid #ccc;
+      background: #fff;
+    }
     .product-name {
       font-weight: 700;
       font-size: 1.1em;
       color: #003366;
+      user-select: none;
     }
     .details {
       font-size: 0.95em;
       color: #444;
       margin-top: 6px;
       user-select: none;
+    }
+    .qty-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 8px;
+    }
+    .qty-controls button {
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-weight: 700;
+      font-size: 1.2em;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 2px 7px rgba(40,167,69,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      user-select: none;
+    }
+    .qty-controls button:hover {
+      background-color: #1e7e34;
+      box-shadow: 0 4px 12px rgba(30,126,52,0.8);
+    }
+    .qty-controls input[type="number"] {
+      width: 55px;
+      border-radius: 12px;
+      border: 1.5px solid #bbb;
+      text-align: center;
+      font-weight: 600;
+      font-size: 1em;
+      padding: 6px 8px;
+      transition: border-color 0.3s ease;
+      user-select: text;
+    }
+    .qty-controls input[type="number"]:focus {
+      outline: none;
+      border-color: #28a745;
+      box-shadow: 0 0 6px #8ddf8d;
+    }
+    .product-right {
+      text-align: right;
+      min-width: 180px;
+      user-select: none;
+      font-weight: 700;
+      font-size: 1.1em;
+      color: #1a4d1a;
     }
     @media (min-width: 600px) {
       input[type="text"], select {
@@ -145,6 +212,18 @@
         min-width: auto;
         width: 100%;
       }
+      .product-item {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+      .product-right {
+        text-align: left;
+        min-width: auto;
+        margin-top: 8px;
+      }
+      .qty-controls {
+        margin-top: 12px;
+      }
     }
   </style>
 </head>
@@ -169,9 +248,27 @@
 
   <script>
     const products = [
-      { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
-      { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
-      { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
+      {
+        name: "Kalesheen",
+        unitPrice: 1000,
+        discount: 0,
+        stock: 50,
+        image: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
+      },
+      {
+        name: "Bottle",
+        unitPrice: 1500,
+        discount: 5,
+        stock: 30,
+        image: "https://cdn-icons-png.flaticon.com/512/1076/1076984.png"
+      },
+      {
+        name: "Electronics",
+        unitPrice: 3000,
+        discount: 10,
+        stock: 20,
+        image: "https://cdn-icons-png.flaticon.com/512/181/181541.png"
+      },
     ];
 
     const items = products.map(p => ({ ...p, quantity: 0 }));
@@ -188,25 +285,33 @@
       items.forEach((item, index) => {
         if (search && !item.name.toLowerCase().includes(search)) return;
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
+
         list.innerHTML += `
           <div class="product-item">
-            <div>
-              <div class="product-name">${item.name}</div>
-              <div class="details">
-                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                Qty: 
-                <button onclick="changeQty(${index}, -1)">-</button>
-                <input 
-                  type="number" 
-                  min="0" 
-                  max="${item.stock}" 
-                  value="${item.quantity}" 
-                  onchange="changeQtyDirect(${index}, this.value)" 
-                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
-                />
-                <button onclick="changeQty(${index}, 1)">+</button>
-                | Total: ${total.toLocaleString()} IQD
+            <div class="product-left">
+              <img src="${item.image}" alt="${item.name}" class="product-image" />
+              <div>
+                <div class="product-name">${item.name}</div>
+                <div class="details">
+                  Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
+                  Stock: ${item.stock}
+                </div>
+                <div class="qty-controls">
+                  <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">−</button>
+                  <input 
+                    type="number" 
+                    min="0" 
+                    max="${item.stock}" 
+                    value="${item.quantity}" 
+                    onchange="changeQtyDirect(${index}, this.value)" 
+                    aria-label="Quantity for ${item.name}"
+                  />
+                  <button aria-label="Increase quantity" onclick="changeQty(${index}, 1)">＋</button>
+                </div>
               </div>
+            </div>
+            <div class="product-right">
+              Total: ${total.toLocaleString()} IQD
             </div>
           </div>
         `;
