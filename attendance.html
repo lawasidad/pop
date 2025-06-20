@@ -5,6 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Employee Attendance</title>
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Tahoma, sans-serif;
       background: #f0f2f5;
@@ -60,10 +64,11 @@
     }
 
     .entry {
-      background: #e8f4ea;
+      background: #fff;
       padding: 15px;
       margin-bottom: 15px;
       border-radius: 6px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
     }
 
     .entry div {
@@ -73,6 +78,16 @@
     .entry img {
       max-width: 150px;
       border-radius: 10px;
+    }
+
+    @media (max-width: 600px) {
+      input, button {
+        font-size: 16px;
+      }
+
+      .entry {
+        font-size: 14px;
+      }
     }
   </style>
 </head>
@@ -123,6 +138,24 @@
       selfieData = canvas.toDataURL("image/png");
     }
 
+    function loadEntries() {
+      const all = JSON.parse(localStorage.getItem("attendance")) || [];
+      entriesDiv.innerHTML = "";
+      all.reverse().forEach(entry => {
+        const html = `
+          <div class="entry">
+            <div><strong>Name:</strong> ${entry.name}</div>
+            <div><strong>Date:</strong> ${entry.date}</div>
+            <div><strong>Start:</strong> ${entry.start}</div>
+            <div><strong>End:</strong> ${entry.end}</div>
+            <div><strong>Total Hours:</strong> ${entry.hours}</div>
+            <div><strong>Location:</strong> <a href="${entry.location}" target="_blank">View on Map</a></div>
+            <div><strong>Selfie:</strong><br><img src="${entry.selfie}" /></div>
+          </div>`;
+        entriesDiv.innerHTML += html;
+      });
+    }
+
     form.addEventListener("submit", function (e) {
       e.preventDefault();
 
@@ -131,23 +164,15 @@
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
 
-      if (!start || !end) {
-        alert("Please enter start and end time.");
-        return;
-      }
-
-      // Calculate duration
       const [startH, startM] = start.split(":").map(Number);
       const [endH, endM] = end.split(":").map(Number);
-      const startDate = new Date(0, 0, 0, startH, startM);
-      const endDate = new Date(0, 0, 0, endH, endM);
-      let diff = (endDate - startDate) / (1000 * 60 * 60); // hours
-
+      let startDate = new Date(0, 0, 0, startH, startM);
+      let endDate = new Date(0, 0, 0, endH, endM);
+      let diff = (endDate - startDate) / (1000 * 60 * 60);
       if (diff < 0) diff += 24;
 
-      // Get location
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
+      if (!selfieData) {
+        alert("Please take a selfie before submitting.");
         return;
       }
 
@@ -156,26 +181,30 @@
         const lng = position.coords.longitude;
         const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
 
-        const entryHTML = `
-          <div class="entry">
-            <div><strong>Name:</strong> ${name}</div>
-            <div><strong>Date:</strong> ${date}</div>
-            <div><strong>Start:</strong> ${start}</div>
-            <div><strong>End:</strong> ${end}</div>
-            <div><strong>Total Hours:</strong> ${diff.toFixed(2)} hours</div>
-            <div><strong>Location:</strong> <a href="${locationLink}" target="_blank">View on Map</a></div>
-            ${selfieData ? `<div><strong>Selfie:</strong><br><img src="${selfieData}" /></div>` : ""}
-          </div>
-        `;
+        const entry = {
+          name,
+          date,
+          start,
+          end,
+          hours: diff.toFixed(2),
+          selfie: selfieData,
+          location: locationLink
+        };
 
-        entriesDiv.innerHTML = entryHTML + entriesDiv.innerHTML;
+        const all = JSON.parse(localStorage.getItem("attendance")) || [];
+        all.push(entry);
+        localStorage.setItem("attendance", JSON.stringify(all));
         form.reset();
-        canvas.style.display = "none";
         selfieData = "";
+        canvas.style.display = "none";
+        loadEntries();
       }, error => {
         alert("Location error: " + error.message);
       });
     });
+
+    // Load data when page loads
+    loadEntries();
   </script>
 
 </body>
