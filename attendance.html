@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attendance - lawaSales</title>
+  <title>Attendance Form</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       background: #f0f2f5;
       padding: 20px;
-      max-width: 600px;
+      max-width: 700px;
       margin: auto;
     }
 
@@ -24,15 +24,16 @@
       padding: 20px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
     }
 
     label {
       display: block;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
       font-weight: bold;
     }
 
-    input, select {
+    input {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -55,9 +56,9 @@
     }
 
     .entry {
-      background: #e7f4ea;
-      margin-top: 20px;
-      padding: 10px;
+      background: #e8f4ea;
+      padding: 15px;
+      margin-bottom: 15px;
       border-radius: 6px;
     }
 
@@ -68,20 +69,20 @@
 </head>
 <body>
 
-  <h1>فۆرمی Attendance</h1>
+  <h1>فۆرمی تۆمارکردنی کاتی کارکردن</h1>
 
   <form id="attendance-form">
     <label for="name">ناوی کارمەند</label>
     <input type="text" id="name" required>
 
-    <label for="type">جۆری تۆمارکردن</label>
-    <select id="type" required>
-      <option value="checkin">چوونەژوورەوە</option>
-      <option value="checkout">دەرچوون</option>
-    </select>
-
     <label for="date">ڕێکەوت</label>
     <input type="date" id="date" required>
+
+    <label for="start">کاتی دەستپێکردن</label>
+    <input type="time" id="start" required>
+
+    <label for="end">کاتی کۆتایی</label>
+    <input type="time" id="end" required>
 
     <button type="submit">تۆمارکردن</button>
   </form>
@@ -96,14 +97,16 @@
       e.preventDefault();
 
       const name = document.getElementById("name").value;
-      const type = document.getElementById("type").value;
       const date = document.getElementById("date").value;
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
 
       const entryHTML = `
         <div class="entry">
           <div><strong>ناو:</strong> ${name}</div>
-          <div><strong>جۆر:</strong> ${type === "checkin" ? "چوونەژوورەوە" : "دەرچوون"}</div>
           <div><strong>ڕێکەوت:</strong> ${date}</div>
+          <div><strong>کاتی دەستپێکردن:</strong> ${start}</div>
+          <div><strong>کاتی کۆتایی:</strong> ${end}</div>
         </div>
       `;
 
