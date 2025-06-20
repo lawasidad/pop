@@ -3,17 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Employee Attendance</title>
+  <title>Attendance In/Out</title>
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       font-family: Tahoma, sans-serif;
       background: #f0f2f5;
       padding: 20px;
-      max-width: 750px;
+      max-width: 700px;
       margin: auto;
     }
 
@@ -23,7 +19,7 @@
       margin-bottom: 20px;
     }
 
-    form {
+    .section {
       background: #fff;
       padding: 20px;
       border-radius: 10px;
@@ -31,16 +27,14 @@
       margin-bottom: 30px;
     }
 
-    label {
+    label, input, button {
+      width: 100%;
       display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
+      margin-bottom: 10px;
     }
 
-    input, button {
-      width: 100%;
+    input {
       padding: 10px;
-      margin-bottom: 15px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
@@ -48,6 +42,9 @@
     button {
       background-color: #14532d;
       color: white;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
     }
@@ -59,16 +56,16 @@
     video, canvas {
       width: 100%;
       max-height: 300px;
-      margin-bottom: 10px;
       border-radius: 10px;
+      margin-bottom: 10px;
     }
 
     .entry {
       background: #fff;
-      padding: 15px;
-      margin-bottom: 15px;
       border-radius: 6px;
+      padding: 15px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      margin-bottom: 15px;
     }
 
     .entry div {
@@ -79,53 +76,31 @@
       max-width: 150px;
       border-radius: 10px;
     }
-
-    @media (max-width: 600px) {
-      input, button {
-        font-size: 16px;
-      }
-
-      .entry {
-        font-size: 14px;
-      }
-    }
   </style>
 </head>
 <body>
 
-  <h1>Employee Attendance</h1>
+  <h1>Employee In/Out Attendance</h1>
 
-  <form id="attendance-form">
+  <div class="section">
     <label for="name">Employee Name</label>
-    <input type="text" id="name" required />
+    <input type="text" id="name" placeholder="Enter name" required />
 
-    <label for="date">Date</label>
-    <input type="date" id="date" required />
-
-    <label for="start">Start Time</label>
-    <input type="time" id="start" required />
-
-    <label for="end">End Time</label>
-    <input type="time" id="end" required />
-
-    <label>Take Selfie</label>
     <video id="video" autoplay></video>
     <button type="button" onclick="takeSelfie()">📸 Take Selfie</button>
-    <canvas id="canvas" style="display: none;"></canvas>
+    <canvas id="canvas" style="display:none;"></canvas>
 
-    <button type="submit">Submit Attendance</button>
-  </form>
+    <button onclick="markIn()">🟢 Mark In</button>
+    <button onclick="markOut()">🔴 Mark Out</button>
+  </div>
 
   <div id="entries"></div>
 
   <script>
-    const form = document.getElementById("attendance-form");
-    const entriesDiv = document.getElementById("entries");
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
-    let selfieData = "";
+    let selfie = "";
 
-    // Start webcam
     navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
       video.srcObject = stream;
     });
@@ -135,75 +110,95 @@
       canvas.width = video.videoWidth;
       canvas.height = video.videoHeight;
       canvas.getContext("2d").drawImage(video, 0, 0);
-      selfieData = canvas.toDataURL("image/png");
+      selfie = canvas.toDataURL("image/png");
     }
 
-    function loadEntries() {
-      const all = JSON.parse(localStorage.getItem("attendance")) || [];
-      entriesDiv.innerHTML = "";
-      all.reverse().forEach(entry => {
-        const html = `
-          <div class="entry">
-            <div><strong>Name:</strong> ${entry.name}</div>
-            <div><strong>Date:</strong> ${entry.date}</div>
-            <div><strong>Start:</strong> ${entry.start}</div>
-            <div><strong>End:</strong> ${entry.end}</div>
-            <div><strong>Total Hours:</strong> ${entry.hours}</div>
-            <div><strong>Location:</strong> <a href="${entry.location}" target="_blank">View on Map</a></div>
-            <div><strong>Selfie:</strong><br><img src="${entry.selfie}" /></div>
-          </div>`;
-        entriesDiv.innerHTML += html;
-      });
+    function getTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     }
 
-    form.addEventListener("submit", function (e) {
-      e.preventDefault();
+    function getDate() {
+      return new Date().toISOString().split('T')[0];
+    }
 
+    function markIn() {
       const name = document.getElementById("name").value;
-      const date = document.getElementById("date").value;
-      const start = document.getElementById("start").value;
-      const end = document.getElementById("end").value;
-
-      const [startH, startM] = start.split(":").map(Number);
-      const [endH, endM] = end.split(":").map(Number);
-      let startDate = new Date(0, 0, 0, startH, startM);
-      let endDate = new Date(0, 0, 0, endH, endM);
-      let diff = (endDate - startDate) / (1000 * 60 * 60);
-      if (diff < 0) diff += 24;
-
-      if (!selfieData) {
-        alert("Please take a selfie before submitting.");
+      if (!name || !selfie) {
+        alert("Please enter name and take selfie first.");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(position => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-        const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      navigator.geolocation.getCurrentPosition(pos => {
+        const location = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
 
-        const entry = {
+        attendance.push({
           name,
-          date,
-          start,
-          end,
-          hours: diff.toFixed(2),
-          selfie: selfieData,
-          location: locationLink
-        };
+          date: getDate(),
+          in: getTime(),
+          out: "",
+          selfieIn: selfie,
+          selfieOut: "",
+          locationIn: location,
+          locationOut: ""
+        });
 
-        const all = JSON.parse(localStorage.getItem("attendance")) || [];
-        all.push(entry);
-        localStorage.setItem("attendance", JSON.stringify(all));
-        form.reset();
-        selfieData = "";
+        localStorage.setItem("attendance", JSON.stringify(attendance));
+        selfie = "";
         canvas.style.display = "none";
         loadEntries();
-      }, error => {
-        alert("Location error: " + error.message);
+        alert("Marked IN successfully!");
       });
-    });
+    }
 
-    // Load data when page loads
+    function markOut() {
+      const name = document.getElementById("name").value;
+      if (!name || !selfie) {
+        alert("Please enter name and take selfie first.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(pos => {
+        const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
+        const last = attendance.reverse().find(e => e.name === name && !e.out);
+
+        if (!last) {
+          alert("No IN record found for this name.");
+          return;
+        }
+
+        last.out = getTime();
+        last.selfieOut = selfie;
+        last.locationOut = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
+        localStorage.setItem("attendance", JSON.stringify(attendance.reverse()));
+        selfie = "";
+        canvas.style.display = "none";
+        loadEntries();
+        alert("Marked OUT successfully!");
+      });
+    }
+
+    function loadEntries() {
+      const entriesDiv = document.getElementById("entries");
+      const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
+      entriesDiv.innerHTML = "";
+
+      attendance.slice().reverse().forEach(e => {
+        entriesDiv.innerHTML += `
+          <div class="entry">
+            <div><strong>Name:</strong> ${e.name}</div>
+            <div><strong>Date:</strong> ${e.date}</div>
+            <div><strong>In:</strong> ${e.in || "—"}</div>
+            <div><strong>Out:</strong> ${e.out || "—"}</div>
+            <div><strong>In Location:</strong> <a href="${e.locationIn}" target="_blank">View</a></div>
+            ${e.locationOut ? `<div><strong>Out Location:</strong> <a href="${e.locationOut}" target="_blank">View</a></div>` : ""}
+            <div><strong>Selfie In:</strong><br><img src="${e.selfieIn}" /></div>
+            ${e.selfieOut ? `<div><strong>Selfie Out:</strong><br><img src="${e.selfieOut}" /></div>` : ""}
+          </div>`;
+      });
+    }
+
     loadEntries();
   </script>
 
