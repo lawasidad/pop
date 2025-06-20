@@ -3,16 +3,17 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>New Sale</title>
+  <title>New Sale with Check-In</title>
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #14532d; /* ← ئەمە گۆڕدرا */
-      margin: 0;
-      padding: 10px;
+      background: #14532d;
+      margin: 0; padding: 10px;
+      color: #fff;
     }
     .container {
       background: white;
+      color: #000;
       padding: 20px 25px;
       border-radius: 12px;
       max-width: 900px;
@@ -21,125 +22,128 @@
     }
     .top-bar {
       display: flex;
-      flex-wrap: wrap;
       justify-content: space-between;
-      gap: 10px;
-      margin-bottom: 20px;
       align-items: center;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+      gap: 10px;
     }
     .summary {
-      font-size: 1.3em;
+      font-size: 1.2em;
       font-weight: 700;
-      padding: 12px 20px;
-      border-radius: 12px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+      padding: 10px 18px;
+      border-radius: 10px;
+      background: #e0f7e9;
+      color: #146c35;
       user-select: none;
-    }
-    .total-qty {
-      background: #d0e8ff;
-      color: #003366;
-      min-width: 90px;
+      min-width: 100px;
       text-align: center;
     }
-    .total-amount {
-      background: #d7f0dc;
-      color: #1a4d1a;
-      min-width: 130px;
-      text-align: center;
-    }
-    button.submit-btn {
-      background-color: #28a745;
-      color: white;
-      border: none;
-      padding: 12px 30px;
-      font-weight: 700;
-      font-size: 1.1em;
-      border-radius: 12px;
-      cursor: pointer;
-      transition: background-color 0.25s ease;
-      box-shadow: 0 3px 8px rgba(40,167,69,0.5);
-      white-space: nowrap;
-    }
-    button.submit-btn:hover {
-      background-color: #218838;
-    }
-    input[type="text"], select {
-      padding: 12px 15px;
-      font-size: 1em;
-      margin-top: 5px;
-      border-radius: 12px;
+    select, input[type="text"], button {
+      padding: 10px 15px;
+      border-radius: 8px;
       border: 1.8px solid #bbb;
-      width: 100%;
+      font-size: 1em;
+    }
+    select {
+      min-width: 200px;
       max-width: 100%;
-      box-sizing: border-box;
-      transition: border-color 0.3s ease;
     }
-    input[type="text"]:focus, select:focus {
-      outline: none;
-      border-color: #28a745;
-      box-shadow: 0 0 6px #8ddf8d;
+    input[type="text"] {
+      flex: 1;
+      margin-left: 10px;
     }
-    .product-list {
-      margin-top: 25px;
-    }
-    .product-item {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      border: 1.2px solid #ddd;
-      padding: 15px 20px;
-      border-radius: 14px;
-      background: #f9fbff;
-      margin-bottom: 14px;
-      box-shadow: 0 2px 7px rgba(0,0,0,0.04);
+    button {
+      cursor: pointer;
+      background-color: #28a745;
+      border: none;
+      color: white;
+      font-weight: 700;
       transition: background-color 0.3s ease;
     }
-    .product-item:hover {
-      background-color: #e8f2ff;
+    button:hover {
+      background-color: #218838;
+    }
+    .product-list {
+      margin-top: 20px;
+    }
+    .product-item {
+      background: #f9fbff;
+      border-radius: 10px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
     }
     .product-name {
       font-weight: 700;
-      font-size: 1.1em;
       color: #003366;
+      flex: 1 1 150px;
     }
     .details {
       font-size: 0.95em;
-      color: #444;
-      margin-top: 6px;
-      user-select: none;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex: 2 1 400px;
     }
-    @media (min-width: 600px) {
-      input[type="text"], select {
-        max-width: 320px;
-      }
-      button.submit-btn {
-        width: auto;
-      }
-      .product-item {
-        flex-wrap: nowrap;
-      }
-      .details {
-        margin-top: 0;
-      }
+    .details button {
+      width: 32px; height: 32px;
+      font-weight: 700;
+      border-radius: 6px;
+      background-color: #ddd;
+      color: #333;
+      border: 1px solid #bbb;
+      line-height: 1;
+    }
+    .details input[type="number"] {
+      width: 60px;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid #bbb;
+      padding: 5px;
+      margin: 0 4px;
+    }
+    #checkInfo {
+      margin-top: 15px;
+      padding: 12px;
+      background-color: #c8e6c9;
+      border-radius: 10px;
+      font-weight: 600;
+      color: #256029;
+      min-height: 40px;
+    }
+    #errorMsg {
+      color: #b71c1c;
+      margin-top: 10px;
+      font-weight: 700;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="top-bar">
-      <div class="summary total-qty" id="totalQty">Qty: 0</div>
-      <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
-      <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
+      <select id="customerSelect" onchange="resetCheckStatus()">
+        <option value="">-- Select Customer --</option>
+      </select>
+      <div class="summary" id="totalQty">Qty: 0</div>
+      <div class="summary" id="totalAmount">Total: 0 IQD</div>
+      <button onclick="submitSale()">Submit Sale</button>
     </div>
 
-    <select id="customer">
-      <option value="">-- Select Customer --</option>
-    </select>
-
-    <input type="text" id="searchBox" oninput="renderProducts()" placeholder="Search product..." autocomplete="off" />
+    <input type="text" id="searchBox" placeholder="Search products..." oninput="renderProducts()" />
 
     <div class="product-list" id="productList"></div>
+
+    <div id="checkInfo">Check-In Status: <span id="checkStatus">Not checked in</span></div>
+    <div id="errorMsg"></div>
+    <button id="checkInBtn" onclick="checkInCustomer()" style="margin-top:12px;">Check In</button>
+    <button id="checkOutBtn" onclick="checkOutCustomer()" style="margin-top:12px; display:none;">Check Out</button>
   </div>
 
   <script>
@@ -148,8 +152,48 @@
       { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
       { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
     ];
-
     const items = products.map(p => ({ ...p, quantity: 0 }));
+
+    // Load customers from localStorage into dropdown
+    function loadCustomers() {
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      const select = document.getElementById("customerSelect");
+      select.innerHTML = `<option value="">-- Select Customer --</option>`;
+      customers.forEach(c => {
+        const name = typeof c === "object" ? c.name : c;
+        const option = document.createElement("option");
+        option.value = name;
+        option.textContent = name;
+        select.appendChild(option);
+      });
+    }
+
+    // Helper: parse lat,lng string
+    function parseLatLng(str) {
+      if (!str) return null;
+      const parts = str.split(',');
+      if (parts.length !== 2) return null;
+      const lat = parseFloat(parts[0]);
+      const lng = parseFloat(parts[1]);
+      if (isNaN(lat) || isNaN(lng)) return null;
+      return { lat, lng };
+    }
+
+    // Haversine formula for distance in meters
+    function getDistanceMeters(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // Earth radius in meters
+      const dLat = deg2rad(lat2 - lat1);
+      const dLon = deg2rad(lon2 - lon1);
+      const a =
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
+    }
+    function deg2rad(deg) {
+      return deg * (Math.PI/180);
+    }
 
     function renderProducts() {
       const list = document.getElementById("productList");
@@ -161,28 +205,19 @@
         const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
         list.innerHTML += `
           <div class="product-item">
-            <div>
-              <div class="product-name">${item.name}</div>
-              <div class="details">
-                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                Qty: 
-                <button onclick="changeQty(${index}, -1)">-</button>
-                <input 
-                  type="number" 
-                  min="0" 
-                  max="${item.stock}" 
-                  value="${item.quantity}" 
-                  onchange="changeQtyDirect(${index}, this.value)" 
-                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
-                />
-                <button onclick="changeQty(${index}, 1)">+</button>
-                | Total: ${total.toLocaleString()} IQD
-              </div>
+            <div class="product-name">${item.name}</div>
+            <div class="details">
+              Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%
+              <br>
+              Qty:
+              <button onclick="changeQty(${index}, -1)">-</button>
+              <input type="number" min="0" max="${item.stock}" value="${item.quantity}" onchange="changeQtyDirect(${index}, this.value)" />
+              <button onclick="changeQty(${index}, 1)">+</button>
+              | Total: ${total.toLocaleString()} IQD
             </div>
           </div>
         `;
       });
-
       updateSummary();
     }
 
@@ -192,7 +227,6 @@
       if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
       renderProducts();
     }
-
     function changeQtyDirect(index, value) {
       let val = parseInt(value);
       if (isNaN(val) || val < 0) val = 0;
@@ -202,15 +236,95 @@
     }
 
     function updateSummary() {
-      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
-      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
-      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
-      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
+      const totalQty = items.reduce((sum, i) => sum + i.quantity, 0);
+      const totalAmount = items.reduce((sum, i) => sum + i.quantity * i.unitPrice * (1 - i.discount/100), 0);
+      document.getElementById("totalQty").textContent = `Qty: ${totalQty}`;
+      document.getElementById("totalAmount").textContent = `Total: ${totalAmount.toLocaleString()} IQD`;
     }
 
+    // Global vars for check in/out
+    let checkInDone = false;
+    let checkInCoords = null;
+
+    // Reset check-in status on customer change
+    function resetCheckStatus() {
+      checkInDone = false;
+      checkInCoords = null;
+      document.getElementById("checkStatus").textContent = "Not checked in";
+      document.getElementById("checkInBtn").style.display = "inline-block";
+      document.getElementById("checkOutBtn").style.display = "none";
+      document.getElementById("errorMsg").textContent = "";
+    }
+
+    // Check-in function
+    function checkInCustomer() {
+      const custName = document.getElementById("customerSelect").value;
+      if (!custName) {
+        alert("Please select a customer first.");
+        return;
+      }
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      const customer = customers.find(c => (typeof c === "object" ? c.name : c) === custName);
+
+      if (!customer || !customer.location) {
+        alert("Selected customer has no GPS location.");
+        return;
+      }
+      if (!navigator.geolocation) {
+        alert("Geolocation not supported by your browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(pos => {
+        const userLat = pos.coords.latitude;
+        const userLng = pos.coords.longitude;
+        const custLatLng = parseLatLng(customer.location);
+
+        if (!custLatLng) {
+          alert("Invalid customer GPS data.");
+          return;
+        }
+
+        const dist = getDistanceMeters(userLat, userLng, custLatLng.lat, custLatLng.lng);
+
+        if (dist > 50) {
+          document.getElementById("errorMsg").textContent = `You are too far from the customer (${Math.round(dist)} meters). Check-in requires max 50 meters.`;
+          return;
+        }
+
+        checkInDone = true;
+        checkInCoords = { lat: userLat, lng: userLng };
+        document.getElementById("checkStatus").textContent = `Checked in (Distance: ${Math.round(dist)} m)`;
+        document.getElementById("checkInBtn").style.display = "none";
+        document.getElementById("checkOutBtn").style.display = "inline-block";
+        document.getElementById("errorMsg").textContent = "";
+      }, err => {
+        alert("Error getting your location: " + err.message);
+      });
+    }
+
+    // Check-out function
+    function checkOutCustomer() {
+      if (!checkInDone) {
+        alert("You must check in first.");
+        return;
+      }
+      checkInDone = false;
+      checkInCoords = null;
+      document.getElementById("checkStatus").textContent = "Checked out";
+      document.getElementById("checkInBtn").style.display = "inline-block";
+      document.getElementById("checkOutBtn").style.display = "none";
+    }
+
+    // Submit sale with check for check-in done
     function submitSale() {
-      const customer = document.getElementById("customer").value.trim();
-      if (!customer) {
+      if (!checkInDone) {
+        alert("You must check in before submitting a sale.");
+        return;
+      }
+
+      const custName = document.getElementById("customerSelect").value;
+      if (!custName) {
         alert("Please select a customer.");
         return;
       }
@@ -232,40 +346,29 @@
       const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
 
       const saleData = {
-        customer,
+        customer: custName,
         items: selectedItems,
         total,
         totalQty: qty,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        checkInCoords
       };
 
-      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      let allSales = JSON.parse(localStorage.getItem("allSales") || "[]");
       allSales.push(saleData);
       localStorage.setItem("allSales", JSON.stringify(allSales));
 
-      document.getElementById("customer").value = "";
+      // Reset form and check-in status
+      document.getElementById("customerSelect").value = "";
       document.getElementById("searchBox").value = "";
       items.forEach(i => i.quantity = 0);
       renderProducts();
+      resetCheckStatus();
 
-      alert("Sale submitted! View it on sales.html.");
+      alert("Sale submitted successfully.");
     }
 
-    function loadCustomers() {
-      const select = document.getElementById("customer");
-      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-
-      select.innerHTML = `<option value="">-- Select Customer --</option>`;
-      customers.forEach(customer => {
-        const name = typeof customer === "object" ? customer.name : customer;
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    }
-
-    window.onload = function () {
+    window.onload = () => {
       loadCustomers();
       renderProducts();
     };
