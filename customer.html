@@ -339,25 +339,27 @@
         return;
       }
 
-      const validCustomers = data.filter(c => c.location && c.location.trim() !== '');
+      const validLocations = data
+        .filter(c => c.location && c.location.trim() !== '')
+        .map(c => {
+          const parts = c.location.split(',');
+          return {
+            lat: parseFloat(parts[0]),
+            lng: parseFloat(parts[1])
+          };
+        })
+        .filter(loc => !isNaN(loc.lat) && !isNaN(loc.lng));
 
-      if (validCustomers.length === 0) {
+      if (validLocations.length === 0) {
         alert("No valid GPS locations found for customers.");
         return;
       }
 
-      const markers = validCustomers.map(c => {
-        const parts = c.location.split(',');
-        return {
-          name: c.name,
-          lat: parseFloat(parts[0]),
-          lng: parseFloat(parts[1])
-        };
-      }).filter(m => !isNaN(m.lat) && !isNaN(m.lng));
+      // ئەنجامی یەکەمین شوێن بۆ سەنتەرکردنی مەپ
+      const center = validLocations[0];
 
-      const queryParts = markers.map(m => `${m.lat},${m.lng}`);
-      const query = queryParts.join('|');
-      const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(query)}`;
+      const zoom = 8;
+      const mapsUrl = `https://maps.google.com/maps?q=${center.lat},${center.lng}&z=${zoom}&output=embed`;
 
       document.getElementById('mapFrame').src = mapsUrl;
       document.getElementById('mapModal').style.display = 'flex';
