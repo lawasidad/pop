@@ -288,23 +288,17 @@
       const stored = localStorage.getItem("customers");
       const data = stored ? JSON.parse(stored) : [];
 
-      if (data.length === 0) {
-        alert("No customers to show on map.");
-        return;
-      }
-
+      const base = "https://www.google.com/maps/dir/";
       const locations = data
         .filter(c => c.location && c.location.trim() !== '')
-        .map(c => c.location.trim());
+        .map(c => encodeURIComponent(c.location.trim()));
 
       if (locations.length === 0) {
-        alert("No valid GPS locations found for customers.");
+        alert("هیچ شوێنی دروستی GPS بۆ کریارەکان نەدۆزرایەوە.");
         return;
       }
 
-      const query = locations.map(loc => encodeURIComponent(loc)).join('|');
-      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
-
+      const url = base + locations.join('/');
       window.open(url, '_blank');
     }
 
@@ -331,7 +325,6 @@
 
     window.onload = loadCustomerList;
 
-    // Listen for postMessage from iframe (new-customer.html) when a new customer is added
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
