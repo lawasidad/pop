@@ -2,8 +2,8 @@
 <html lang="en" dir="ltr">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Customer Dashboard with Map Modal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Customer Dashboard</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet" />
   <style>
     body {
@@ -17,7 +17,7 @@
       margin: auto;
       padding: 30px;
       border-radius: 16px;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
     }
     h1 {
       font-size: 26px;
@@ -110,35 +110,10 @@
       font-size: 24px;
       cursor: pointer;
     }
-    #mapModal {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background-color: rgba(0,0,0,0.6);
-      z-index: 10000;
-      justify-content: center;
-      align-items: center;
-    }
-    #mapModal > div {
-      position: relative;
-      width: 90%;
-      max-width: 900px;
-      height: 600px;
-      background: #fff;
-      border-radius: 10px;
-      overflow: hidden;
-    }
-    #mapModal .close-btn-map {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 28px;
-      cursor: pointer;
-      z-index: 10001;
-    }
-    #map {
+    iframe {
       width: 100%;
-      height: 100%;
+      height: 500px;
+      border: none;
     }
     @media screen and (max-width: 768px) {
       .top-bar, .export-buttons {
@@ -210,30 +185,13 @@
     </div>
   </div>
 
-  <div id="mapModal">
-    <div>
-      <span class="close-btn-map" onclick="closeMapModal()">&times;</span>
-      <div id="map"></div>
-    </div>
-  </div>
-
-  <!-- Replace YOUR_API_KEY with your actual Google Maps JavaScript API key -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY"></script>
-
   <script>
-    let map;
-    let markers = [];
-
     function addNewCustomer() {
       document.getElementById('customerModal').style.display = 'flex';
     }
+
     function closeModal() {
       document.getElementById('customerModal').style.display = 'none';
-    }
-    function closeMapModal() {
-      document.getElementById('mapModal').style.display = 'none';
-      markers.forEach(marker => marker.setMap(null));
-      markers = [];
     }
 
     function loadCustomerList() {
@@ -337,55 +295,17 @@
 
       const locations = data
         .filter(c => c.location && c.location.trim() !== '')
-        .map(c => {
-          const parts = c.location.split(',');
-          return {
-            lat: parseFloat(parts[0]),
-            lng: parseFloat(parts[1]),
-            name: c.name,
-            code: c.code,
-            mobile: c.mobile
-          };
-        })
-        .filter(loc => !isNaN(loc.lat) && !isNaN(loc.lng));
+        .map(c => c.location.trim());
 
       if (locations.length === 0) {
         alert("No valid GPS locations found for customers.");
         return;
       }
 
-      document.getElementById('mapModal').style.display = 'flex';
+      const query = locations.map(loc => encodeURIComponent(loc)).join('|');
+      const url = `https://www.google.com/maps/search/?api=1&query=${query}`;
 
-      if (markers.length) {
-        markers.forEach(m => m.setMap(null));
-        markers = [];
-      }
-
-      const bounds = new google.maps.LatLngBounds();
-
-      map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 6,
-        center: { lat: locations[0].lat, lng: locations[0].lng }
-      });
-
-      locations.forEach(loc => {
-        const marker = new google.maps.Marker({
-          position: { lat: loc.lat, lng: loc.lng },
-          map: map,
-          title: `${loc.name} (${loc.code})`
-        });
-        markers.push(marker);
-        bounds.extend(marker.position);
-
-        const infoWindow = new google.maps.InfoWindow({
-          content: `<strong>${loc.name}</strong><br>Code: ${loc.code}<br>Mobile: ${loc.mobile}`
-        });
-        marker.addListener('click', () => {
-          infoWindow.open(map, marker);
-        });
-      });
-
-      map.fitBounds(bounds);
+      window.open(url, '_blank');
     }
 
     function editCustomer(index) {
@@ -411,6 +331,7 @@
 
     window.onload = loadCustomerList;
 
+    // Listen for postMessage from iframe (new-customer.html) when a new customer is added
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
