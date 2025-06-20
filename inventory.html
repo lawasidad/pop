@@ -3,110 +3,139 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Inventory Form</title>
+  <title>New Sales Form</title>
   <style>
-    /* ... کۆدەکە هەمان ستایلەکان ... */
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f4f6f9;
+      background: #f9f9f9;
       margin: 0; padding: 20px;
     }
     .container {
-      max-width: 900px; margin: auto; background: white;
-      padding: 20px; border-radius: 10px;
+      max-width: 1000px;
+      margin: auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    /* ... بقیەی CSS ... */
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      background-color: white;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #eee;
+      text-align: left;
+      vertical-align: middle;
+      color: #333;
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+    }
+    tr:hover {
+      background-color: #f1f1f1;
+    }
+    .thumbnail {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      background-color: white;
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <h2>Inventory Management</h2>
-  <form id="inventoryForm" autocomplete="off">
-    <input type="text" id="name" placeholder="Product Name" required />
-    <input type="text" id="code" placeholder="Product Code" required />
-    <input type="number" id="quantity" placeholder="Quantity" required min="0" />
-    <input type="number" id="price" placeholder="Unit Price" required step="0.01" min="0" />
-    <input type="number" id="discount" placeholder="Discount %" step="0.01" min="0" max="100" />
-    <input type="file" id="image" accept="image/*" />
-    <button type="submit">Add</button>
-  </form>
 
-  <table border="1" width="100%" style="margin-top:20px; border-collapse: collapse;">
+<div class="container">
+  <h2>New Sales Form</h2>
+
+  <table>
     <thead>
       <tr>
-        <th>Name</th><th>Code</th><th>Qty</th><th>Price</th><th>Discount %</th><th>Total</th>
+        <th>Image</th>
+        <th>Name</th>
+        <th>Code</th>
+        <th>Quantity</th>
+        <th>Unit Price</th>
+        <th>Discount %</th>
+        <th>Total Price</th>
       </tr>
     </thead>
-    <tbody id="inventoryList"></tbody>
+    <tbody id="salesList"></tbody>
   </table>
-
-  <p style="margin-top:20px;">
-    <a href="new_sales.html" target="_blank">Go to Sales Form →</a>
-  </p>
 </div>
 
 <script>
-  const form = document.getElementById('inventoryForm');
-  const inventoryList = document.getElementById('inventoryList');
-  const imageInput = document.getElementById('image');
+  const salesList = document.getElementById('salesList');
+  const products = JSON.parse(localStorage.getItem('products') || '[]');
 
-  // وەرگرتنی داتا لە localStorage یان بەردەوامکردنی بێ داتاکان
-  let products = JSON.parse(localStorage.getItem('products') || '[]');
+  function renderSales() {
+    salesList.innerHTML = '';
 
-  function updateTable() {
-    inventoryList.innerHTML = '';
     if (products.length === 0) {
-      inventoryList.innerHTML = '<tr><td colspan="6" style="text-align:center;">No products</td></tr>';
+      salesList.innerHTML = `<tr><td colspan="7" style="text-align:center;">No products available</td></tr>`;
       return;
     }
-    products.forEach((item) => {
+
+    products.forEach(item => {
       const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td>${item.name}</td>
-        <td>${item.code}</td>
-        <td>${item.quantity}</td>
-        <td>${item.price.toFixed(2)}</td>
-        <td>${item.discount ? item.discount.toFixed(2) : '0'}</td>
-        <td>${(item.quantity * item.price * (1 - (item.discount || 0)/100)).toFixed(2)}</td>
-      `;
-      inventoryList.appendChild(tr);
+
+      const imgTd = document.createElement('td');
+      if (item.image) {
+        const img = document.createElement('img');
+        img.src = item.image;
+        img.alt = item.name;
+        img.className = 'thumbnail';
+        imgTd.appendChild(img);
+      } else {
+        const placeholder = document.createElement('div');
+        placeholder.style.width = '50px';
+        placeholder.style.height = '50px';
+        placeholder.style.background = '#eee';
+        placeholder.style.borderRadius = '6px';
+        imgTd.appendChild(placeholder);
+      }
+      tr.appendChild(imgTd);
+
+      const nameTd = document.createElement('td');
+      nameTd.textContent = item.name;
+      tr.appendChild(nameTd);
+
+      const codeTd = document.createElement('td');
+      codeTd.textContent = item.code;
+      tr.appendChild(codeTd);
+
+      const qtyTd = document.createElement('td');
+      qtyTd.textContent = item.quantity;
+      tr.appendChild(qtyTd);
+
+      const priceTd = document.createElement('td');
+      priceTd.textContent = item.price.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      tr.appendChild(priceTd);
+
+      const discountTd = document.createElement('td');
+      discountTd.textContent = item.discount ? item.discount.toFixed(2) : '0.00';
+      tr.appendChild(discountTd);
+
+      const total = item.quantity * item.price * (1 - (item.discount || 0) / 100);
+      const totalTd = document.createElement('td');
+      totalTd.textContent = total.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      tr.appendChild(totalTd);
+
+      salesList.appendChild(tr);
     });
   }
 
-  form.addEventListener('submit', e => {
-    e.preventDefault();
-    const name = document.getElementById('name').value.trim();
-    const code = document.getElementById('code').value.trim();
-    const quantity = parseInt(document.getElementById('quantity').value);
-    const price = parseFloat(document.getElementById('price').value);
-    let discount = parseFloat(document.getElementById('discount').value);
-    if (isNaN(discount) || discount < 0) discount = 0;
-    if (discount > 100) discount = 100;
-
-    const file = imageInput.files[0];
-
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(event) {
-        const imageDataUrl = event.target.result;
-        addProduct({name, code, quantity, price, discount, image: imageDataUrl});
-      };
-      reader.readAsDataURL(file);
-    } else {
-      addProduct({name, code, quantity, price, discount, image: null});
-    }
-  });
-
-  function addProduct(product) {
-    products.push(product);
-    localStorage.setItem('products', JSON.stringify(products));
-    form.reset();
-    imageInput.value = '';
-    updateTable();
-  }
-
-  updateTable();
+  renderSales();
 </script>
 
 </body>
