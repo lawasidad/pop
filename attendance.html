@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attendance In/Out</title>
+  <title>Attendance In/Out with Clear Camera</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -37,16 +37,18 @@
       padding: 10px;
       border-radius: 6px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
 
     button {
       background-color: #14532d;
       color: white;
-      padding: 10px;
+      padding: 12px;
       border: none;
       border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
+      font-size: 16px;
     }
 
     button:hover {
@@ -58,6 +60,8 @@
       max-height: 300px;
       border-radius: 10px;
       margin-bottom: 10px;
+      object-fit: cover;
+      filter: brightness(1) contrast(1);
     }
 
     .entry {
@@ -66,6 +70,7 @@
       padding: 15px;
       box-shadow: 0 0 5px rgba(0,0,0,0.1);
       margin-bottom: 15px;
+      font-size: 14px;
     }
 
     .entry div {
@@ -75,6 +80,14 @@
     .entry img {
       max-width: 150px;
       border-radius: 10px;
+      object-fit: cover;
+      filter: brightness(1) contrast(1);
+    }
+
+    @media (max-width: 600px) {
+      input, button {
+        font-size: 18px;
+      }
     }
   </style>
 </head>
@@ -84,9 +97,9 @@
 
   <div class="section">
     <label for="name">Employee Name</label>
-    <input type="text" id="name" placeholder="Enter name" required />
+    <input type="text" id="name" placeholder="Enter your name" required />
 
-    <video id="video" autoplay></video>
+    <video id="video" autoplay playsinline muted></video>
     <button type="button" onclick="takeSelfie()">📸 Take Selfie</button>
     <canvas id="canvas" style="display:none;"></canvas>
 
@@ -96,111 +109,131 @@
 
   <div id="entries"></div>
 
-  <script>
-    const video = document.getElementById("video");
-    const canvas = document.getElementById("canvas");
-    let selfie = "";
+<script>
+  const video = document.getElementById("video");
+  const canvas = document.getElementById("canvas");
+  let selfie = "";
 
-    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+  async function startCamera() {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "user",  // front camera for selfie
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      });
       video.srcObject = stream;
-    });
+    } catch (err) {
+      alert("Camera error: " + err.message);
+    }
+  }
 
-    function takeSelfie() {
-      canvas.style.display = "block";
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
-      canvas.getContext("2d").drawImage(video, 0, 0);
-      selfie = canvas.toDataURL("image/png");
+  startCamera();
+
+  function takeSelfie() {
+    canvas.style.display = "block";
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.filter = 'brightness(1.1) contrast(1.2)'; // adjust brightness/contrast for clearer selfie
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+    selfie = canvas.toDataURL("image/png");
+  }
+
+  function getTime() {
+    const now = new Date();
+    return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  function getDate() {
+    return new Date().toISOString().split('T')[0];
+  }
+
+  function markIn() {
+    const name = document.getElementById("name").value.trim();
+    if (!name || !selfie) {
+      alert("Please enter your name and take a selfie first.");
+      return;
     }
 
-    function getTime() {
-      const now = new Date();
-      return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    function getDate() {
-      return new Date().toISOString().split('T')[0];
-    }
-
-    function markIn() {
-      const name = document.getElementById("name").value;
-      if (!name || !selfie) {
-        alert("Please enter name and take selfie first.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(pos => {
-        const location = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
-
-        attendance.push({
-          name,
-          date: getDate(),
-          in: getTime(),
-          out: "",
-          selfieIn: selfie,
-          selfieOut: "",
-          locationIn: location,
-          locationOut: ""
-        });
-
-        localStorage.setItem("attendance", JSON.stringify(attendance));
-        selfie = "";
-        canvas.style.display = "none";
-        loadEntries();
-        alert("Marked IN successfully!");
-      });
-    }
-
-    function markOut() {
-      const name = document.getElementById("name").value;
-      if (!name || !selfie) {
-        alert("Please enter name and take selfie first.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(pos => {
-        const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
-        const last = attendance.reverse().find(e => e.name === name && !e.out);
-
-        if (!last) {
-          alert("No IN record found for this name.");
-          return;
-        }
-
-        last.out = getTime();
-        last.selfieOut = selfie;
-        last.locationOut = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
-        localStorage.setItem("attendance", JSON.stringify(attendance.reverse()));
-        selfie = "";
-        canvas.style.display = "none";
-        loadEntries();
-        alert("Marked OUT successfully!");
-      });
-    }
-
-    function loadEntries() {
-      const entriesDiv = document.getElementById("entries");
+    navigator.geolocation.getCurrentPosition(pos => {
+      const location = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
       const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
-      entriesDiv.innerHTML = "";
 
-      attendance.slice().reverse().forEach(e => {
-        entriesDiv.innerHTML += `
-          <div class="entry">
-            <div><strong>Name:</strong> ${e.name}</div>
-            <div><strong>Date:</strong> ${e.date}</div>
-            <div><strong>In:</strong> ${e.in || "—"}</div>
-            <div><strong>Out:</strong> ${e.out || "—"}</div>
-            <div><strong>In Location:</strong> <a href="${e.locationIn}" target="_blank">View</a></div>
-            ${e.locationOut ? `<div><strong>Out Location:</strong> <a href="${e.locationOut}" target="_blank">View</a></div>` : ""}
-            <div><strong>Selfie In:</strong><br><img src="${e.selfieIn}" /></div>
-            ${e.selfieOut ? `<div><strong>Selfie Out:</strong><br><img src="${e.selfieOut}" /></div>` : ""}
-          </div>`;
+      attendance.push({
+        name,
+        date: getDate(),
+        in: getTime(),
+        out: "",
+        selfieIn: selfie,
+        selfieOut: "",
+        locationIn: location,
+        locationOut: ""
       });
+
+      localStorage.setItem("attendance", JSON.stringify(attendance));
+      selfie = "";
+      canvas.style.display = "none";
+      loadEntries();
+      alert("Marked IN successfully!");
+    }, err => {
+      alert("Location error: " + err.message);
+    });
+  }
+
+  function markOut() {
+    const name = document.getElementById("name").value.trim();
+    if (!name || !selfie) {
+      alert("Please enter your name and take a selfie first.");
+      return;
     }
 
-    loadEntries();
-  </script>
+    navigator.geolocation.getCurrentPosition(pos => {
+      const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
+      const lastIndex = attendance.map(e => e.name).lastIndexOf(name);
+      if (lastIndex === -1 || attendance[lastIndex].out) {
+        alert("No IN record found for this name or OUT already marked.");
+        return;
+      }
+
+      attendance[lastIndex].out = getTime();
+      attendance[lastIndex].selfieOut = selfie;
+      attendance[lastIndex].locationOut = `https://maps.google.com?q=${pos.coords.latitude},${pos.coords.longitude}`;
+
+      localStorage.setItem("attendance", JSON.stringify(attendance));
+      selfie = "";
+      canvas.style.display = "none";
+      loadEntries();
+      alert("Marked OUT successfully!");
+    }, err => {
+      alert("Location error: " + err.message);
+    });
+  }
+
+  function loadEntries() {
+    const entriesDiv = document.getElementById("entries");
+    const attendance = JSON.parse(localStorage.getItem("attendance") || "[]");
+    entriesDiv.innerHTML = "";
+
+    attendance.slice().reverse().forEach(e => {
+      entriesDiv.innerHTML += `
+        <div class="entry">
+          <div><strong>Name:</strong> ${e.name}</div>
+          <div><strong>Date:</strong> ${e.date}</div>
+          <div><strong>In:</strong> ${e.in || "—"}</div>
+          <div><strong>Out:</strong> ${e.out || "—"}</div>
+          <div><strong>In Location:</strong> <a href="${e.locationIn}" target="_blank">View</a></div>
+          ${e.locationOut ? `<div><strong>Out Location:</strong> <a href="${e.locationOut}" target="_blank">View</a></div>` : ""}
+          <div><strong>Selfie In:</strong><br><img src="${e.selfieIn}" /></div>
+          ${e.selfieOut ? `<div><strong>Selfie Out:</strong><br><img src="${e.selfieOut}" /></div>` : ""}
+        </div>`;
+    });
+  }
+
+  loadEntries();
+</script>
 
 </body>
 </html>
