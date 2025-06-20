@@ -52,20 +52,24 @@
       text-align: center;
     }
     button.checkin-btn, button.submit-btn {
-      background-color: #28a745;
+      background-color: #2e7d32;
       color: white;
       border: none;
-      padding: 12px 20px;
+      padding: 12px 24px;
       font-weight: 700;
       font-size: 1.1em;
-      border-radius: 12px;
+      border-radius: 14px;
       cursor: pointer;
-      transition: background-color 0.25s ease;
-      box-shadow: 0 3px 8px rgba(40,167,69,0.5);
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+      box-shadow: 0 5px 15px rgba(46,125,50,0.6);
       white-space: nowrap;
+      flex-shrink: 0;
+      min-width: 140px;
+      text-align: center;
     }
     button.checkin-btn:hover, button.submit-btn:hover {
-      background-color: #218838;
+      background-color: #27632a;
+      box-shadow: 0 8px 20px rgba(39,99,42,0.8);
     }
     input[type="text"], select {
       padding: 12px 15px;
@@ -126,6 +130,20 @@
       }
       .details {
         margin-top: 0;
+      }
+    }
+    @media (max-width: 599px) {
+      .top-bar {
+        flex-direction: column;
+        gap: 15px;
+      }
+      button.checkin-btn, button.submit-btn {
+        width: 100%;
+        min-width: auto;
+      }
+      .summary {
+        min-width: auto;
+        width: 100%;
       }
     }
   </style>
