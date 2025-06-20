@@ -36,6 +36,8 @@
       border-radius: 12px;
       box-shadow: 0 3px 8px rgba(0,0,0,0.1);
       user-select: none;
+      min-width: 150px;
+      text-align: center;
     }
     .total-qty {
       background: #d0e8ff;
@@ -49,7 +51,7 @@
       min-width: 130px;
       text-align: center;
     }
-    button.submit-btn, button.checkin-btn, button.checkout-btn {
+    button.checkin-btn, button.submit-btn {
       background-color: #28a745;
       color: white;
       border: none;
@@ -62,7 +64,7 @@
       box-shadow: 0 3px 8px rgba(40,167,69,0.5);
       white-space: nowrap;
     }
-    button.submit-btn:hover, button.checkin-btn:hover, button.checkout-btn:hover {
+    button.checkin-btn:hover, button.submit-btn:hover {
       background-color: #218838;
     }
     input[type="text"], select {
@@ -133,8 +135,8 @@
     <div class="top-bar">
       <div class="summary total-qty" id="totalQty">Qty: 0</div>
       <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
+      <div class="summary" id="distanceDisplay">Distance: - m</div>
       <button class="checkin-btn" onclick="checkIn()">Check In</button>
-      <button class="checkout-btn" onclick="checkOut()" disabled>Check Out</button>
       <button class="submit-btn" onclick="submitSale()">Submit Sale</button>
     </div>
 
@@ -158,6 +160,7 @@
 
     let checkInDone = false;
     let userLocation = null;
+    let distanceToCustomer = null;
 
     function renderProducts() {
       const list = document.getElementById("productList");
@@ -216,35 +219,71 @@
       document.getElementById("totalQty").textContent = `Qty: ${qty}`;
     }
 
+    function getDistance(lat1, lon1, lat2, lon2) {
+      function toRad(x) {
+        return x * Math.PI / 180;
+      }
+
+      const R = 6371e3; // meters
+      const φ1 = toRad(lat1);
+      const φ2 = toRad(lat2);
+      const Δφ = toRad(lat2 - lat1);
+      const Δλ = toRad(lon2 - lon1);
+
+      const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) +
+                Math.cos(φ1) * Math.cos(φ2) *
+                Math.sin(Δλ/2) * Math.sin(Δλ/2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+
+      return R * c; // in meters
+    }
+
     function checkIn() {
+      const customerSelect = document.getElementById("customer");
+      const customerName = customerSelect.value;
+      if (!customerName) {
+        alert("Please select a customer first.");
+        return;
+      }
+
+      // Find customer's location from localStorage
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+      const customer = customers.find(c => c.name === customerName);
+      if (!customer || !customer.location) {
+        alert("Selected customer does not have a valid location.");
+        return;
+      }
+
       if (!navigator.geolocation) {
         alert("Geolocation is not supported by your browser.");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          userLocation = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude,
-          };
-          checkInDone = true;
-          alert("Check-in successful!");
-          document.querySelector(".checkin-btn").disabled = true;
-          document.querySelector(".checkout-btn").disabled = false;
-        },
-        (error) => {
-          alert("Failed to get your location. Please allow location access.");
-        }
-      );
-    }
+      navigator.geolocation.getCurrentPosition(position => {
+        userLocation = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        };
 
-    function checkOut() {
-      checkInDone = false;
-      userLocation = null;
-      alert("Checked out successfully.");
-      document.querySelector(".checkin-btn").disabled = false;
-      document.querySelector(".checkout-btn").disabled = true;
+        // customer's location assumed to be "lat,lng" string
+        const [custLatStr, custLngStr] = customer.location.split(",");
+        const custLat = parseFloat(custLatStr);
+        const custLng = parseFloat(custLngStr);
+
+        distanceToCustomer = getDistance(userLocation.lat, userLocation.lng, custLat, custLng);
+        document.getElementById("distanceDisplay").textContent = `Distance: ${distanceToCustomer.toFixed(1)} m`;
+
+        if (distanceToCustomer > 50) {
+          alert("You are too far from the customer's location (more than 50 meters). Check-in denied.");
+          checkInDone = false;
+          return;
+        }
+
+        checkInDone = true;
+        alert("Check-in successful.");
+      }, error => {
+        alert("Failed to get your location. Please allow location access.");
+      });
     }
 
     function submitSale() {
@@ -281,7 +320,7 @@
         total,
         totalQty: qty,
         timestamp: new Date().toISOString(),
-        location: userLocation,
+        distance: distanceToCustomer
       };
 
       let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
