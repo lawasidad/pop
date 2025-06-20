@@ -226,11 +226,15 @@
       const reader = new FileReader();
       reader.onload = function(event) {
         const imageDataUrl = event.target.result;
-        saveProduct({ name, code, quantity, price, discount, image: imageDataUrl });
+        const product = { name, code, quantity, price, discount, image: imageDataUrl };
+        saveProduct(product);
+        sendDataToNewSales(product);
       };
       reader.readAsDataURL(file);
     } else {
-      saveProduct({ name, code, quantity, price, discount, image: null });
+      const product = { name, code, quantity, price, discount, image: null };
+      saveProduct(product);
+      sendDataToNewSales(product);
     }
   });
 
@@ -362,6 +366,16 @@
     );
     updateTable(filtered);
   });
+
+  // Function to send product data to new_sales.html via localStorage
+  function sendDataToNewSales(product) {
+    // Get current sales from localStorage or empty array
+    const sales = JSON.parse(localStorage.getItem("new_sales") || "[]");
+    // Add the new product
+    sales.push(product);
+    // Save back to localStorage
+    localStorage.setItem("new_sales", JSON.stringify(sales));
+  }
 
   updateTable(products);
 </script>
