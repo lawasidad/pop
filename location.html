@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Live Location on Map</title>
+  <title>Live Location on Google Map</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -60,7 +60,7 @@
   <div id="address">ناونیشان: نا دیاری کراوە</div>
   <div id="error"></div>
 
-  <!-- Google Maps JS API -->
+  <!-- گووگڵ مەپس جەڤاسکریپت API -->
   <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE"></script>
 
   <script>
@@ -70,9 +70,8 @@
     const startBtn = document.getElementById('startTrackingBtn');
     const stopBtn = document.getElementById('stopTrackingBtn');
 
-    // Google Geocoding API URL function
     async function reverseGeocode(lat, lng) {
-      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE'; // API Key تۆی گووگڵ
+      const apiKey = 'YOUR_GOOGLE_API_KEY_HERE'; // API Key ی گووگڵ لێرە دانێ
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ku`;
       try {
         const response = await fetch(url);
@@ -82,7 +81,7 @@
         } else {
           return "ناونیشان ناتوانرێت بدۆزرێتەوە.";
         }
-      } catch (e) {
+      } catch {
         return "کێشە لە وەریگرتنی ناونیشان هەیە.";
       }
     }
@@ -103,11 +102,9 @@
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
 
-      // ناونیشان وەریگرە
       const addr = await reverseGeocode(lat, lng);
       addressDiv.textContent = `ناونیشان: ${addr}`;
 
-      // نەخشە و مارکەر نوێ بکە
       const pos = { lat, lng };
       map.setCenter(pos);
       marker.setPosition(pos);
@@ -160,7 +157,6 @@
     }
 
     window.onload = function() {
-      // نەخشە بە شوێنی ناوەڕۆک دیاری بکە (مثلا سلێمانی)
       initMap();
     };
 
