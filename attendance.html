@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -69,22 +69,22 @@
 </head>
 <body>
 
-  <h1>فۆرمی تۆمارکردنی کاتی کارکردن</h1>
+  <h1>Employee Attendance</h1>
 
   <form id="attendance-form">
-    <label for="name">ناوی کارمەند</label>
+    <label for="name">Employee Name</label>
     <input type="text" id="name" required>
 
-    <label for="date">ڕێکەوت</label>
+    <label for="date">Date</label>
     <input type="date" id="date" required>
 
-    <label for="start">کاتی دەستپێکردن</label>
+    <label for="start">Start Time</label>
     <input type="time" id="start" required>
 
-    <label for="end">کاتی کۆتایی</label>
+    <label for="end">End Time</label>
     <input type="time" id="end" required>
 
-    <button type="submit">تۆمارکردن</button>
+    <button type="submit">Submit Attendance</button>
   </form>
 
   <div id="entries"></div>
@@ -93,7 +93,7 @@
     const form = document.getElementById("attendance-form");
     const entriesDiv = document.getElementById("entries");
 
-    form.addEventListener("submit", function(e) {
+    form.addEventListener("submit", function (e) {
       e.preventDefault();
 
       const name = document.getElementById("name").value;
@@ -101,18 +101,34 @@
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
 
-      const entryHTML = `
-        <div class="entry">
-          <div><strong>ناو:</strong> ${name}</div>
-          <div><strong>ڕێکەوت:</strong> ${date}</div>
-          <div><strong>کاتی دەستپێکردن:</strong> ${start}</div>
-          <div><strong>کاتی کۆتایی:</strong> ${end}</div>
-        </div>
-      `;
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser");
+        return;
+      }
 
-      entriesDiv.innerHTML = entryHTML + entriesDiv.innerHTML;
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const lat = position.coords.latitude;
+          const lng = position.coords.longitude;
+          const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
 
-      form.reset();
+          const entryHTML = `
+            <div class="entry">
+              <div><strong>Name:</strong> ${name}</div>
+              <div><strong>Date:</strong> ${date}</div>
+              <div><strong>Start Time:</strong> ${start}</div>
+              <div><strong>End Time:</strong> ${end}</div>
+              <div><strong>Location:</strong> <a href="${locationLink}" target="_blank">View on Map</a></div>
+            </div>
+          `;
+
+          entriesDiv.innerHTML = entryHTML + entriesDiv.innerHTML;
+          form.reset();
+        },
+        function (error) {
+          alert("Failed to get location: " + error.message);
+        }
+      );
     });
   </script>
 
