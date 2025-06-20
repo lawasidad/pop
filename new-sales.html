@@ -247,31 +247,29 @@
   </div>
 
   <script>
-    const products = [
-      {
-        name: "Kalesheen",
-        unitPrice: 1000,
-        discount: 0,
-        stock: 50,
-        image: "https://cdn-icons-png.flaticon.com/512/3075/3075977.png"
-      },
-      {
-        name: "Bottle",
-        unitPrice: 1500,
-        discount: 5,
-        stock: 30,
-        image: "https://cdn-icons-png.flaticon.com/512/1076/1076984.png"
-      },
-      {
-        name: "Electronics",
-        unitPrice: 3000,
-        discount: 10,
-        stock: 20,
-        image: "https://cdn-icons-png.flaticon.com/512/181/181541.png"
-      },
-    ];
+    // === بۆ خوێندنەوەی داتاکان لە inventory.html کە لە localStorage بە ناوی "new_sales" هەیە ===
+    let items = [];
 
-    const items = products.map(p => ({ ...p, quantity: 0 }));
+    function loadProductsFromStorage() {
+      const saved = localStorage.getItem("new_sales");
+      if (saved) {
+        try {
+          const savedItems = JSON.parse(saved);
+          // خۆکارانە شتێک کە inventory.html ـە زیادکردووە و خوێندنەوەی لە localStorage
+          // بۆ ئەوەی format یان جۆرەکان هەمان بمانن، ئەمە دەکات
+          items = savedItems.map(p => ({
+            name: p.name,
+            unitPrice: p.price || p.unitPrice || 0,
+            discount: p.discount || 0,
+            stock: 999999, // نیازی بە stock نییە لەم پەڕەیە
+            image: p.image || '',
+            quantity: p.quantity || 0
+          }));
+        } catch {
+          items = [];
+        }
+      }
+    }
 
     let checkInDone = false;
     let userLocation = null;
@@ -294,14 +292,12 @@
                 <div class="product-name">${item.name}</div>
                 <div class="details">
                   Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-                  Stock: ${item.stock}
                 </div>
                 <div class="qty-controls">
                   <button aria-label="Decrease quantity" onclick="changeQty(${index}, -1)">−</button>
                   <input 
                     type="number" 
                     min="0" 
-                    max="${item.stock}" 
                     value="${item.quantity}" 
                     onchange="changeQtyDirect(${index}, this.value)" 
                     aria-label="Quantity for ${item.name}"
@@ -323,14 +319,12 @@
     function changeQty(index, delta) {
       items[index].quantity += delta;
       if (items[index].quantity < 0) items[index].quantity = 0;
-      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
       renderProducts();
     }
 
     function changeQtyDirect(index, value) {
       let val = parseInt(value);
       if (isNaN(val) || val < 0) val = 0;
-      if (val > items[index].stock) val = items[index].stock;
       items[index].quantity = val;
       renderProducts();
     }
@@ -341,6 +335,8 @@
       document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
       document.getElementById("totalQty").textContent = `Qty: ${qty}`;
     }
+
+    // ... (CheckIn and submitSale functions بەم شێوەیە لە کۆدەکەت هەمان دەبێت)
 
     function getDistance(lat1, lon1, lat2, lon2) {
       function toRad(x) {
@@ -369,113 +365,5 @@
         return;
       }
 
-      // Find customer's location from localStorage
       const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-      const customer = customers.find(c => c.name === customerName);
-      if (!customer || !customer.location) {
-        alert("Selected customer does not have a valid location.");
-        return;
-      }
-
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser.");
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(position => {
-        userLocation = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude
-        };
-
-        // customer's location assumed to be "lat,lng" string
-        const [custLatStr, custLngStr] = customer.location.split(",");
-        const custLat = parseFloat(custLatStr);
-        const custLng = parseFloat(custLngStr);
-
-        distanceToCustomer = getDistance(userLocation.lat, userLocation.lng, custLat, custLng);
-        document.getElementById("distanceDisplay").textContent = `Distance: ${distanceToCustomer.toFixed(1)} m`;
-
-        if (distanceToCustomer > 50) {
-          alert("You are too far from the customer's location (more than 50 meters). Check-in denied.");
-          checkInDone = false;
-          return;
-        }
-
-        checkInDone = true;
-        alert("Check-in successful.");
-      }, error => {
-        alert("Failed to get your location. Please allow location access.");
-      });
-    }
-
-    function submitSale() {
-      if (!checkInDone) {
-        alert("تکایە سەرەتا چیک-ئین بکە پێش ئەوەی فرۆشتن بکەیت.");
-        return;
-      }
-
-      const customer = document.getElementById("customer").value.trim();
-      if (!customer) {
-        alert("Please select a customer.");
-        return;
-      }
-
-      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
-        name: i.name,
-        quantity: i.quantity,
-        unitPrice: i.unitPrice,
-        discount: i.discount,
-        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
-      }));
-
-      if (selectedItems.length === 0) {
-        alert("No products selected.");
-        return;
-      }
-
-      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
-      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
-
-      const saleData = {
-        customer,
-        items: selectedItems,
-        total,
-        totalQty: qty,
-        timestamp: new Date().toISOString(),
-        distance: distanceToCustomer
-      };
-
-      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-      allSales.push(saleData);
-      localStorage.setItem("allSales", JSON.stringify(allSales));
-
-      document.getElementById("customer").value = "";
-      document.getElementById("searchBox").value = "";
-      items.forEach(i => i.quantity = 0);
-      renderProducts();
-
-      alert("Sale submitted! View it on sales.html.");
-    }
-
-    function loadCustomers() {
-      const select = document.getElementById("customer");
-      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-
-      select.innerHTML = `<option value="">-- Select Customer --</option>`;
-      customers.forEach(customer => {
-        const name = typeof customer === "object" ? customer.name : customer;
-        const opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name;
-        select.appendChild(opt);
-      });
-    }
-
-    window.onload = function () {
-      loadCustomers();
-      renderProducts();
-    };
-  </script>
-</body>
-</html>
+      const customer = customers.find(c =>
