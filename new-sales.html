@@ -7,7 +7,7 @@
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #14532d;
+      background: #14532d; /* ← ئەمە گۆڕدرا */
       margin: 0;
       padding: 10px;
     }
@@ -109,45 +109,6 @@
       margin-top: 6px;
       user-select: none;
     }
-    .check-buttons {
-      margin-bottom: 15px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .check-buttons button {
-      flex: 1 1 150px;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      color: white;
-      font-size: 1.1em;
-      transition: background-color 0.25s ease;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.15);
-    }
-    .check-in-btn {
-      background-color: #007bff;
-    }
-    .check-in-btn:hover {
-      background-color: #0069d9;
-    }
-    .check-out-btn {
-      background-color: #dc3545;
-    }
-    .check-out-btn:hover {
-      background-color: #c82333;
-    }
-    .location-info {
-      margin-bottom: 15px;
-      font-size: 0.95em;
-      color: #222;
-      background: #f0f8ff;
-      padding: 10px 15px;
-      border-radius: 12px;
-      user-select: none;
-    }
     @media (min-width: 600px) {
       input[type="text"], select {
         max-width: 320px;
@@ -161,27 +122,11 @@
       .details {
         margin-top: 0;
       }
-      .check-buttons button {
-        flex: none;
-        width: 150px;
-      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-
-    <!-- Check In / Check Out Buttons -->
-    <div class="check-buttons">
-      <button class="check-in-btn" onclick="handleCheckIn()">Check In</button>
-      <button class="check-out-btn" onclick="handleCheckOut()">Check Out</button>
-    </div>
-
-    <!-- Location & Time Info Display -->
-    <div class="location-info" id="locationInfo">
-      Location info will appear here after check in/out.
-    </div>
-
     <div class="top-bar">
       <div class="summary total-qty" id="totalQty">Qty: 0</div>
       <div class="summary total-amount" id="totalAmount">Total: 0 IQD</div>
@@ -197,191 +142,133 @@
     <div class="product-list" id="productList"></div>
   </div>
 
-<script>
-  const products = [
-    { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
-    { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
-    { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
-  ];
+  <script>
+    const products = [
+      { name: "Kalesheen", unitPrice: 1000, discount: 0, stock: 50 },
+      { name: "Bottle", unitPrice: 1500, discount: 5, stock: 30 },
+      { name: "Electronics", unitPrice: 3000, discount: 10, stock: 20 },
+    ];
 
-  const items = products.map(p => ({ ...p, quantity: 0 }));
+    const items = products.map(p => ({ ...p, quantity: 0 }));
 
-  function renderProducts() {
-    const list = document.getElementById("productList");
-    const search = document.getElementById("searchBox").value.trim().toLowerCase();
-    list.innerHTML = "";
+    function renderProducts() {
+      const list = document.getElementById("productList");
+      const search = document.getElementById("searchBox").value.trim().toLowerCase();
+      list.innerHTML = "";
 
-    items.forEach((item, index) => {
-      if (search && !item.name.toLowerCase().includes(search)) return;
-      const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
-      list.innerHTML += `
-        <div class="product-item">
-          <div>
-            <div class="product-name">${item.name}</div>
-            <div class="details">
-              Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
-              Qty: 
-              <button onclick="changeQty(${index}, -1)">-</button>
-              <input 
-                type="number" 
-                min="0" 
-                max="${item.stock}" 
-                value="${item.quantity}" 
-                onchange="changeQtyDirect(${index}, this.value)" 
-                style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
-              />
-              <button onclick="changeQty(${index}, 1)">+</button>
-              | Total: ${total.toLocaleString()} IQD
+      items.forEach((item, index) => {
+        if (search && !item.name.toLowerCase().includes(search)) return;
+        const total = item.quantity * item.unitPrice * (1 - item.discount / 100);
+        list.innerHTML += `
+          <div class="product-item">
+            <div>
+              <div class="product-name">${item.name}</div>
+              <div class="details">
+                Price: ${item.unitPrice.toLocaleString()} IQD | Discount: ${item.discount}%<br>
+                Qty: 
+                <button onclick="changeQty(${index}, -1)">-</button>
+                <input 
+                  type="number" 
+                  min="0" 
+                  max="${item.stock}" 
+                  value="${item.quantity}" 
+                  onchange="changeQtyDirect(${index}, this.value)" 
+                  style="width: 60px; text-align: center; border-radius: 6px; border: 1px solid #bbb; margin: 0 6px;"
+                />
+                <button onclick="changeQty(${index}, 1)">+</button>
+                | Total: ${total.toLocaleString()} IQD
+              </div>
             </div>
           </div>
-        </div>
-      `;
-    });
+        `;
+      });
 
-    updateSummary();
-  }
-
-  function changeQty(index, delta) {
-    items[index].quantity += delta;
-    if (items[index].quantity < 0) items[index].quantity = 0;
-    if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
-    renderProducts();
-  }
-
-  function changeQtyDirect(index, value) {
-    let val = parseInt(value);
-    if (isNaN(val) || val < 0) val = 0;
-    if (val > items[index].stock) val = items[index].stock;
-    items[index].quantity = val;
-    renderProducts();
-  }
-
-  function updateSummary() {
-    const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
-    const qty = items.reduce((sum, i) => sum + i.quantity, 0);
-    document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
-    document.getElementById("totalQty").textContent = `Qty: ${qty}`;
-  }
-
-  // New: Handle Check In
-  function handleCheckIn() {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords;
-      const timestamp = new Date().toISOString();
-
-      // Save to localStorage
-      const checkIns = JSON.parse(localStorage.getItem("checkIns") || "[]");
-      checkIns.push({ latitude, longitude, timestamp });
-      localStorage.setItem("checkIns", JSON.stringify(checkIns));
-
-      // Show info
-      showLocationInfo("Check In", latitude, longitude, timestamp);
-    }, () => {
-      alert("Unable to retrieve your location.");
-    });
-  }
-
-  // New: Handle Check Out
-  function handleCheckOut() {
-    if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser.");
-      return;
-    }
-    navigator.geolocation.getCurrentPosition(position => {
-      const { latitude, longitude } = position.coords;
-      const timestamp = new Date().toISOString();
-
-      // Save to localStorage
-      const checkOuts = JSON.parse(localStorage.getItem("checkOuts") || "[]");
-      checkOuts.push({ latitude, longitude, timestamp });
-      localStorage.setItem("checkOuts", JSON.stringify(checkOuts));
-
-      // Show info
-      showLocationInfo("Check Out", latitude, longitude, timestamp);
-    }, () => {
-      alert("Unable to retrieve your location.");
-    });
-  }
-
-  function showLocationInfo(type, lat, lng, time) {
-    const el = document.getElementById("locationInfo");
-    el.textContent = `${type} at ${new Date(time).toLocaleString()} | Lat: ${lat.toFixed(5)}, Lng: ${lng.toFixed(5)}`;
-  }
-
-  function submitSale() {
-    const customer = document.getElementById("customer").value.trim();
-    if (!customer) {
-      alert("Please select a customer.");
-      return;
+      updateSummary();
     }
 
-    const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
-      name: i.name,
-      quantity: i.quantity,
-      unitPrice: i.unitPrice,
-      discount: i.discount,
-      total: i.unitPrice * i.quantity * (1 - i.discount / 100)
-    }));
-
-    if (selectedItems.length === 0) {
-      alert("No products selected.");
-      return;
+    function changeQty(index, delta) {
+      items[index].quantity += delta;
+      if (items[index].quantity < 0) items[index].quantity = 0;
+      if (items[index].quantity > items[index].stock) items[index].quantity = items[index].stock;
+      renderProducts();
     }
 
-    const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
-    const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+    function changeQtyDirect(index, value) {
+      let val = parseInt(value);
+      if (isNaN(val) || val < 0) val = 0;
+      if (val > items[index].stock) val = items[index].stock;
+      items[index].quantity = val;
+      renderProducts();
+    }
 
-    // Get latest check-in and check-out info
-    const checkIns = JSON.parse(localStorage.getItem("checkIns") || "[]");
-    const checkOuts = JSON.parse(localStorage.getItem("checkOuts") || "[]");
-    const lastCheckIn = checkIns.length ? checkIns[checkIns.length -1] : null;
-    const lastCheckOut = checkOuts.length ? checkOuts[checkOuts.length -1] : null;
+    function updateSummary() {
+      const total = items.reduce((sum, i) => sum + i.unitPrice * i.quantity * (1 - i.discount / 100), 0);
+      const qty = items.reduce((sum, i) => sum + i.quantity, 0);
+      document.getElementById("totalAmount").textContent = `Total: ${total.toLocaleString()} IQD`;
+      document.getElementById("totalQty").textContent = `Qty: ${qty}`;
+    }
 
-    const saleData = {
-      customer,
-      items: selectedItems,
-      total,
-      totalQty: qty,
-      timestamp: new Date().toISOString(),
-      checkIn: lastCheckIn,
-      checkOut: lastCheckOut
+    function submitSale() {
+      const customer = document.getElementById("customer").value.trim();
+      if (!customer) {
+        alert("Please select a customer.");
+        return;
+      }
+
+      const selectedItems = items.filter(i => i.quantity > 0).map(i => ({
+        name: i.name,
+        quantity: i.quantity,
+        unitPrice: i.unitPrice,
+        discount: i.discount,
+        total: i.unitPrice * i.quantity * (1 - i.discount / 100)
+      }));
+
+      if (selectedItems.length === 0) {
+        alert("No products selected.");
+        return;
+      }
+
+      const total = selectedItems.reduce((sum, i) => sum + i.total, 0);
+      const qty = selectedItems.reduce((sum, i) => sum + i.quantity, 0);
+
+      const saleData = {
+        customer,
+        items: selectedItems,
+        total,
+        totalQty: qty,
+        timestamp: new Date().toISOString()
+      };
+
+      let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
+      allSales.push(saleData);
+      localStorage.setItem("allSales", JSON.stringify(allSales));
+
+      document.getElementById("customer").value = "";
+      document.getElementById("searchBox").value = "";
+      items.forEach(i => i.quantity = 0);
+      renderProducts();
+
+      alert("Sale submitted! View it on sales.html.");
+    }
+
+    function loadCustomers() {
+      const select = document.getElementById("customer");
+      const customers = JSON.parse(localStorage.getItem("customers") || "[]");
+
+      select.innerHTML = `<option value="">-- Select Customer --</option>`;
+      customers.forEach(customer => {
+        const name = typeof customer === "object" ? customer.name : customer;
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        select.appendChild(opt);
+      });
+    }
+
+    window.onload = function () {
+      loadCustomers();
+      renderProducts();
     };
-
-    let allSales = JSON.parse(localStorage.getItem("allSales")) || [];
-    allSales.push(saleData);
-    localStorage.setItem("allSales", JSON.stringify(allSales));
-
-    // Reset form
-    document.getElementById("customer").value = "";
-    document.getElementById("searchBox").value = "";
-    items.forEach(i => i.quantity = 0);
-    renderProducts();
-
-    alert("Sale submitted! View it on sales.html.");
-  }
-
-  function loadCustomers() {
-    const select = document.getElementById("customer");
-    const customers = JSON.parse(localStorage.getItem("customers") || "[]");
-
-    select.innerHTML = `<option value="">-- Select Customer --</option>`;
-    customers.forEach(customer => {
-      const name = typeof customer === "object" ? customer.name : customer;
-      const opt = document.createElement("option");
-      opt.value = name;
-      opt.textContent = name;
-      select.appendChild(opt);
-    });
-  }
-
-  window.onload = function () {
-    loadCustomers();
-    renderProducts();
-  };
-</script>
+  </script>
 </body>
 </html>
