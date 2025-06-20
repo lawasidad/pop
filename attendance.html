@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Attendance In/Out Reliable</title>
+<title>Attendance with Camera Selfie Only</title>
 <style>
   body {
     font-family: Tahoma, sans-serif;
@@ -30,7 +30,7 @@
     margin-bottom: 12px;
     font-size: 16px;
   }
-  input {
+  input, button {
     padding: 12px;
     border-radius: 8px;
     border: 1px solid #aaa;
@@ -42,9 +42,7 @@
   button {
     background-color: #14532d;
     color: white;
-    padding: 14px;
     border: none;
-    border-radius: 10px;
     font-weight: 700;
     cursor: pointer;
     transition: background-color 0.3s ease;
@@ -52,7 +50,7 @@
   button:hover {
     background-color: #0c2e17;
   }
-  video, canvas {
+  video, canvas, img.preview {
     width: 100%;
     max-height: 320px;
     border-radius: 14px;
@@ -79,37 +77,38 @@
     margin-top: 6px;
     box-shadow: 0 1px 6px rgba(0,0,0,0.1);
   }
-  @media (max-width: 480px) {
-    input, button {
-      font-size: 18px;
-    }
-  }
 </style>
 </head>
 <body>
 
 <h1>Attendance In/Out</h1>
 
-<section class="section">
+<section class="section" aria-label="Attendance Form">
   <label for="name">Employee Name</label>
   <input type="text" id="name" placeholder="Enter your full name" required />
 
-  <video id="video" autoplay playsinline muted></video>
-  <button type="button" id="takeSelfieBtn">📸 Take Selfie</button>
+  <button type="button" id="startCameraBtn">🎥 Start Camera</button>
+  <video id="video" autoplay playsinline muted style="display:none;"></video>
   <canvas id="canvas" style="display:none;"></canvas>
+  <img id="previewImg" class="preview" alt="Selfie Preview" style="display:none;" />
+
+  <button id="takeSelfieBtn" style="display:none;">📸 Take Selfie</button>
 
   <button id="markInBtn">🟢 Mark In</button>
   <button id="markOutBtn">🔴 Mark Out</button>
 </section>
 
-<section id="entries"></section>
+<section id="entries" aria-live="polite" aria-atomic="true"></section>
 
 <script>
   const video = document.getElementById("video");
   const canvas = document.getElementById("canvas");
+  const previewImg = document.getElementById("previewImg");
+  const startCameraBtn = document.getElementById("startCameraBtn");
   const takeSelfieBtn = document.getElementById("takeSelfieBtn");
   const markInBtn = document.getElementById("markInBtn");
   const markOutBtn = document.getElementById("markOutBtn");
+
   let selfieData = "";
 
   async function startCamera() {
@@ -119,22 +118,40 @@
         audio: false
       });
       video.srcObject = stream;
+      video.style.display = "block";
+      takeSelfieBtn.style.display = "block";
+      startCameraBtn.style.display = "none";
+      previewImg.style.display = "none";
+      selfieData = ""; // clear previous selfie
     } catch (err) {
       alert("Camera error: " + err.message);
     }
   }
 
-  startCamera();
+  function stopCamera() {
+    if (video.srcObject) {
+      video.srcObject.getTracks().forEach(track => track.stop());
+      video.srcObject = null;
+    }
+    video.style.display = "none";
+    takeSelfieBtn.style.display = "none";
+    startCameraBtn.style.display = "block";
+  }
 
-  takeSelfieBtn.onclick = () => {
+  startCameraBtn.addEventListener("click", startCamera);
+
+  takeSelfieBtn.addEventListener("click", () => {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     const ctx = canvas.getContext("2d");
     ctx.filter = "brightness(1.2) contrast(1.3) saturate(1.2)";
     ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
     selfieData = canvas.toDataURL("image/png");
-    alert("Selfie taken!");
-  };
+    previewImg.src = selfieData;
+    previewImg.style.display = "block";
+    alert("Selfie captured from camera!");
+    stopCamera();
+  });
 
   function getTime() {
     return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -182,6 +199,7 @@
       });
       localStorage.setItem("attendance", JSON.stringify(attendance));
       selfieData = "";
+      previewImg.style.display = "none";
       alert("Marked In successfully!");
       loadEntries();
     } catch (err) {
@@ -212,6 +230,7 @@
       attendance[lastIndex].locationOut = location;
       localStorage.setItem("attendance", JSON.stringify(attendance));
       selfieData = "";
+      previewImg.style.display = "none";
       alert("Marked Out successfully!");
       loadEntries();
     } catch (err) {
@@ -225,15 +244,15 @@
     entriesDiv.innerHTML = "";
     attendance.slice().reverse().forEach(e => {
       entriesDiv.innerHTML += `
-        <div class="entry">
+        <div class="entry" tabindex="0">
           <div><strong>Name:</strong> ${e.name}</div>
           <div><strong>Date:</strong> ${e.date}</div>
           <div><strong>In:</strong> ${e.in || "—"}</div>
           <div><strong>Out:</strong> ${e.out || "—"}</div>
-          <div><strong>In Location:</strong> <a href="${e.locationIn}" target="_blank">View</a></div>
-          ${e.locationOut ? `<div><strong>Out Location:</strong> <a href="${e.locationOut}" target="_blank">View</a></div>` : ""}
-          <div><strong>Selfie In:</strong><br><img src="${e.selfieIn}" /></div>
-          ${e.selfieOut ? `<div><strong>Selfie Out:</strong><br><img src="${e.selfieOut}" /></div>` : ""}
+          <div><strong>In Location:</strong> <a href="${e.locationIn}" target="_blank" rel="noopener noreferrer">View</a></div>
+          ${e.locationOut ? `<div><strong>Out Location:</strong> <a href="${e.locationOut}" target="_blank" rel="noopener noreferrer">View</a></div>` : ""}
+          <div><strong>Selfie In:</strong><br><img src="${e.selfieIn}" alt="Selfie In" /></div>
+          ${e.selfieOut ? `<div><strong>Selfie Out:</strong><br><img src="${e.selfieOut}" alt="Selfie Out" /></div>` : ""}
         </div>
       `;
     });
