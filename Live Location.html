@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Live Location</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      padding: 20px;
+      background-color: #f0f2f5;
+      text-align: right;
+      direction: rtl;
+    }
+    #map {
+      width: 100%;
+      height: 300px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+    .location-info {
+      margin-top: 10px;
+      background: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: #000;
+      user-select: text;
+    }
+    button {
+      background-color: #256d24;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+    button:hover {
+      background-color: #1b4e18;
+    }
+    .error {
+      color: red;
+      margin-top: 15px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Live Location</h1>
+
+  <button id="getLocationBtn">گرتنی شوێن</button>
+
+  <div class="location-info" id="locationText">شوێنەکەت لێرە نیشان دەدرێت</div>
+
+  <div id="map"></div>
+
+  <div class="error" id="errorMsg"></div>
+
+  <script>
+    let map, marker;
+
+    function initMap(lat, lng) {
+      if (!window.google) {
+        document.getElementById('errorMsg').textContent = "Google Maps API ناتوانرێت باربکرێت.";
+        return;
+      }
+      const position = { lat, lng };
+
+      if (!map) {
+        map = new google.maps.Map(document.getElementById("map"), {
+          center: position,
+          zoom: 15,
+        });
+        marker = new google.maps.Marker({
+          position: position,
+          map: map,
+          title: "شوێنی تۆ",
+        });
+      } else {
+        map.setCenter(position);
+        marker.setPosition(position);
+      }
+    }
+
+    async function reverseGeocode(lat, lng) {
+      const apiKey = "API_KEY_HERE"; // API key ـ ی Google Maps هەڵبژێرە
+      const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${apiKey}&language=ku`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.status === "OK" && data.results.length > 0) {
+          return data.results[0].formatted_address;
+        } else {
+          return "ناونیشانی شوێن نەدۆزرایەوە";
+        }
+      } catch (error) {
+        return "هەڵە لە وەردەگری ناونیشان";
+      }
+    }
+
+    document.getElementById("getLocationBtn").addEventListener("click", () => {
+      document.getElementById("errorMsg").textContent = "";
+      document.getElementById("locationText").textContent = "لەخۆرایە...";
+      if (!navigator.geolocation) {
+        document.getElementById("errorMsg").textContent = "گێڕەکە لۆکەیشنی پشتیوانی ناکات";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(async (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        initMap(lat, lng);
+
+        const address = await reverseGeocode(lat, lng);
+        document.getElementById("locationText").textContent = address;
+      }, (error) => {
+        document.getElementById("errorMsg").textContent = "پێویستە رێگە بدەیت بە شوێنگرتن لە سەردەمی گێڕەکە";
+        document.getElementById("locationText").textContent = "شوێنەکەت لێرە نیشان دەدرێت";
+      });
+    });
+  </script>
+
+  <!-- Google Maps API Script -->
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=API_KEY_HERE&callback=initMap">
+  </script>
+
+</body>
+</html>
