@@ -330,6 +330,8 @@
     }
 
     window.onload = loadCustomerList;
+
+    // Listen for postMessage from iframe (new-customer.html) when a new customer is added
     window.addEventListener("message", function(e) {
       if (e.data === "customer-added") {
         closeModal();
