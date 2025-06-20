@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Live Location</title>
+  <title>Live Location Continuous</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
@@ -21,6 +21,7 @@
       color: #000;
       font-size: 16px;
       user-select: text;
+      white-space: pre-wrap;
     }
     #errorMessage {
       color: red;
@@ -44,9 +45,10 @@
 </head>
 <body>
 
-  <h1>ناونیشانی ئێستا</h1>
+  <h1>ناونیشانی ئێستا و کاتی وەستاندن</h1>
 
-  <button id="getLocationBtn">گرتنی شوێن</button>
+  <button id="startBtn">دەستپێکردنی بەردەوامی شوێنگرتن</button>
+  <button id="stopBtn" disabled>وەستاندنی شوێنگرتن</button>
 
   <div id="locationDisplay">هیچ شوێنێک نیشان نەدراوە.</div>
   <div id="errorMessage"></div>
@@ -54,11 +56,14 @@
   <script>
     const locationDisplay = document.getElementById('locationDisplay');
     const errorMessage = document.getElementById('errorMessage');
-    const getLocationBtn = document.getElementById('getLocationBtn');
+    const startBtn = document.getElementById('startBtn');
+    const stopBtn = document.getElementById('stopBtn');
 
-    // API key ی گووگڵ بۆ Geocoding API 
-    // ئەمەی خۆت لێ دانە و ئەم کۆدە بەکاربهێنە
-    const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY_HERE';
+    const GOOGLE_API_KEY = 'YOUR_GOOGLE_API_KEY_HERE'; // لێرە API key ی خۆت دابنێ
+
+    let watchId = null;
+    let lastPosition = null;
+    let stopTime = null;
 
     async function reverseGeocode(lat, lng) {
       const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_API_KEY}&language=ku`;
@@ -75,53 +80,90 @@
       }
     }
 
-    async function getLocation() {
-      errorMessage.textContent = '';
-      locationDisplay.textContent = 'لە کاتی دیاریکردنی شوێن...';
-
-      if (!navigator.geolocation) {
-        errorMessage.textContent = 'بەڕێز، شوێنگرتن پشتیوانی ناکرێت لەو وێبسایتە.';
-        locationDisplay.textContent = '';
-        return;
-      }
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-
-          // ناونیشان بدۆزەرەوە بەپێی Latitude و Longitude
-          const address = await reverseGeocode(lat, lng);
-          locationDisplay.textContent = `ناونیشانی ئێستا: ${address}`;
-        },
-        (error) => {
-          switch(error.code) {
-            case error.PERMISSION_DENIED:
-              errorMessage.textContent = "دەستپێکردنەوەی شوێنگرتن ڕەتکراوە.";
-              break;
-            case error.POSITION_UNAVAILABLE:
-              errorMessage.textContent = "زانیاری شوێن بەرز نەبوو.";
-              break;
-            case error.TIMEOUT:
-              errorMessage.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
-              break;
-            default:
-              errorMessage.textContent = "کێشەیەک ڕوویدا لە کاتی وەریگرتن.";
-          }
-          locationDisplay.textContent = '';
-        },
-        {
-          enableHighAccuracy: true,
-          timeout: 10000,
-          maximumAge: 0
-        }
-      );
+    function formatTime(date) {
+      return date.toLocaleTimeString('en-GB', { hour12: false });
     }
 
-    // دەستپێکردنەوەی خودکار کاتێک بەتایبەتی سیستەمەکەت کرایە بەکار
-    window.onload = getLocation;
+    function updateDisplay(position, address) {
+      const { latitude, longitude } = position.coords;
+      let msg = `شوێن: ${address}\n`;
+      msg += `Latitude: ${latitude.toFixed(6)}, Longitude: ${longitude.toFixed(6)}\n`;
 
-    getLocationBtn.addEventListener('click', getLocation);
+      if (stopTime) {
+        msg += `کاتی وەستاندن: ${formatTime(stopTime)}`;
+      } else {
+        msg += `کاتی کۆنترۆل: ${formatTime(new Date())}`;
+      }
+
+      locationDisplay.textContent = msg;
+    }
+
+    function handlePosition(position) {
+      stopTime = null; // چونە شوێنەوە، وەستاندن ڕەتکراوە
+      lastPosition = position;
+
+      reverseGeocode(position.coords.latitude, position.coords.longitude)
+        .then(address => {
+          updateDisplay(position, address);
+        });
+    }
+
+    function handleError(error) {
+      switch(error.code) {
+        case error.PERMISSION_DENIED:
+          errorMessage.textContent = "دەستپێکردنەوەی شوێنگرتن ڕەتکراوە.";
+          break;
+        case error.POSITION_UNAVAILABLE:
+          errorMessage.textContent = "زانیاری شوێن بەرز نەبوو.";
+          break;
+        case error.TIMEOUT:
+          errorMessage.textContent = "کاتی وەریگرتنی شوێن کۆتایی هات.";
+          break;
+        default:
+          errorMessage.textContent = "کێشەیەک ڕوویدا لە کاتی وەریگرتن.";
+      }
+    }
+
+    function startWatching() {
+      if (!navigator.geolocation) {
+        errorMessage.textContent = 'بەڕێز، شوێنگرتن پشتیوانی ناکرێت لەو وێبسایتە.';
+        return;
+      }
+      errorMessage.textContent = '';
+      locationDisplay.textContent = 'لە کاتی دیاریکردنی شوێن...';
+      watchId = navigator.geolocation.watchPosition(handlePosition, handleError, {
+        enableHighAccuracy: true,
+        maximumAge: 0,
+        timeout: 10000
+      });
+      startBtn.disabled = true;
+      stopBtn.disabled = false;
+    }
+
+    function stopWatching() {
+      if (watchId !== null) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+        stopTime = new Date();
+        errorMessage.textContent = '';
+        if (lastPosition) {
+          reverseGeocode(lastPosition.coords.latitude, lastPosition.coords.longitude)
+            .then(address => {
+              updateDisplay(lastPosition, address);
+            });
+        }
+        startBtn.disabled = false;
+        stopBtn.disabled = true;
+      }
+    }
+
+    startBtn.addEventListener('click', startWatching);
+    stopBtn.addEventListener('click', stopWatching);
+
+    // بەردەوام کردن بەخۆی خۆ لە لادانی پەڕە
+    window.onload = () => {
+      startWatching();
+    };
   </script>
 </body>
 </html>
