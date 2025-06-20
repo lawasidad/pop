@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Attendance Form</title>
+  <title>Employee Attendance</title>
   <style>
     body {
       font-family: Tahoma, sans-serif;
       background: #f0f2f5;
       padding: 20px;
-      max-width: 700px;
+      max-width: 750px;
       margin: auto;
     }
 
@@ -33,7 +33,7 @@
       font-weight: bold;
     }
 
-    input {
+    input, button {
       width: 100%;
       padding: 10px;
       margin-bottom: 15px;
@@ -44,15 +44,19 @@
     button {
       background-color: #14532d;
       color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
       font-weight: bold;
       cursor: pointer;
     }
 
     button:hover {
       background-color: #0d3b20;
+    }
+
+    video, canvas {
+      width: 100%;
+      max-height: 300px;
+      margin-bottom: 10px;
+      border-radius: 10px;
     }
 
     .entry {
@@ -65,6 +69,11 @@
     .entry div {
       margin-bottom: 6px;
     }
+
+    .entry img {
+      max-width: 150px;
+      border-radius: 10px;
+    }
   </style>
 </head>
 <body>
@@ -73,16 +82,21 @@
 
   <form id="attendance-form">
     <label for="name">Employee Name</label>
-    <input type="text" id="name" required>
+    <input type="text" id="name" required />
 
     <label for="date">Date</label>
-    <input type="date" id="date" required>
+    <input type="date" id="date" required />
 
     <label for="start">Start Time</label>
-    <input type="time" id="start" required>
+    <input type="time" id="start" required />
 
     <label for="end">End Time</label>
-    <input type="time" id="end" required>
+    <input type="time" id="end" required />
+
+    <label>Take Selfie</label>
+    <video id="video" autoplay></video>
+    <button type="button" onclick="takeSelfie()">📸 Take Selfie</button>
+    <canvas id="canvas" style="display: none;"></canvas>
 
     <button type="submit">Submit Attendance</button>
   </form>
@@ -92,6 +106,22 @@
   <script>
     const form = document.getElementById("attendance-form");
     const entriesDiv = document.getElementById("entries");
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    let selfieData = "";
+
+    // Start webcam
+    navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      video.srcObject = stream;
+    });
+
+    function takeSelfie() {
+      canvas.style.display = "block";
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      canvas.getContext("2d").drawImage(video, 0, 0);
+      selfieData = canvas.toDataURL("image/png");
+    }
 
     form.addEventListener("submit", function (e) {
       e.preventDefault();
@@ -101,34 +131,50 @@
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
 
-      if (!navigator.geolocation) {
-        alert("Geolocation is not supported by your browser");
+      if (!start || !end) {
+        alert("Please enter start and end time.");
         return;
       }
 
-      navigator.geolocation.getCurrentPosition(
-        function (position) {
-          const lat = position.coords.latitude;
-          const lng = position.coords.longitude;
-          const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
+      // Calculate duration
+      const [startH, startM] = start.split(":").map(Number);
+      const [endH, endM] = end.split(":").map(Number);
+      const startDate = new Date(0, 0, 0, startH, startM);
+      const endDate = new Date(0, 0, 0, endH, endM);
+      let diff = (endDate - startDate) / (1000 * 60 * 60); // hours
 
-          const entryHTML = `
-            <div class="entry">
-              <div><strong>Name:</strong> ${name}</div>
-              <div><strong>Date:</strong> ${date}</div>
-              <div><strong>Start Time:</strong> ${start}</div>
-              <div><strong>End Time:</strong> ${end}</div>
-              <div><strong>Location:</strong> <a href="${locationLink}" target="_blank">View on Map</a></div>
-            </div>
-          `;
+      if (diff < 0) diff += 24;
 
-          entriesDiv.innerHTML = entryHTML + entriesDiv.innerHTML;
-          form.reset();
-        },
-        function (error) {
-          alert("Failed to get location: " + error.message);
-        }
-      );
+      // Get location
+      if (!navigator.geolocation) {
+        alert("Geolocation is not supported by your browser.");
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
+
+        const entryHTML = `
+          <div class="entry">
+            <div><strong>Name:</strong> ${name}</div>
+            <div><strong>Date:</strong> ${date}</div>
+            <div><strong>Start:</strong> ${start}</div>
+            <div><strong>End:</strong> ${end}</div>
+            <div><strong>Total Hours:</strong> ${diff.toFixed(2)} hours</div>
+            <div><strong>Location:</strong> <a href="${locationLink}" target="_blank">View on Map</a></div>
+            ${selfieData ? `<div><strong>Selfie:</strong><br><img src="${selfieData}" /></div>` : ""}
+          </div>
+        `;
+
+        entriesDiv.innerHTML = entryHTML + entriesDiv.innerHTML;
+        form.reset();
+        canvas.style.display = "none";
+        selfieData = "";
+      }, error => {
+        alert("Location error: " + error.message);
+      });
     });
   </script>
 
