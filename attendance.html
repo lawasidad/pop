@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ku" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <title>نەخشەی گووگڵ - تاقی کردنەوە</title>
+  <style>
+    body {
+      font-family: Tahoma, sans-serif;
+      direction: rtl;
+      background: #f0f2f5;
+      margin: 0; padding: 0;
+      text-align: right;
+    }
+    #map {
+      height: 500px;
+      width: 100%;
+      max-width: 900px;
+      margin: 30px auto;
+      border-radius: 12px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.3);
+    }
+    h1 {
+      text-align: center;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>نەخشەی گووگڵ</h1>
+  <div id="map"></div>
+
+  <script>
+    function initMap() {
+      const location = { lat: 33.312805, lng: 44.361488 };
+      const map = new google.maps.Map(document.getElementById("map"), {
+        zoom: 12,
+        center: location,
+      });
+      new google.maps.Marker({
+        position: location,
+        map: map,
+        title: "شوێنی ناوەڕاست",
+      });
+    }
+  </script>
+
+  <script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=YOUR_GOOGLE_API_KEY_HERE&callback=initMap">
+  </script>
+
+</body>
+</html>
